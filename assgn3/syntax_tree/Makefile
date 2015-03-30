@@ -11,8 +11,8 @@ grammar:		$(OBJS)
 lex.o:		lex.c
 		$(CC) $(CFLAGS) -c lex.c -o lex.o
 
-lex.c:		grammar.l 
-		flex grammar.l
+lex.c:		gram_lex.l 
+		flex gram_lex.l
 		cp lex.yy.c lex.c
 
 bison.o:	bison.c
@@ -21,14 +21,14 @@ bison.o:	bison.c
 bison.c:	grammar.y
 		bison -d -v grammar.y
 		cp grammar.tab.c bison.c
-		cp grammar.tab.h grammar_heading.h
+		cmp -s grammar.tab.h gram_head.h || cp grammar.tab.h gram_head.h
 
 main.o:		main.cc
 		$(CC) $(CFLAGS) -c main.cc -o main.o
 
 lex.o yac.o main.o	: heading.h
-lex.o main.o		: grammar_heading.h
+lex.o main.o		: gram_head.h
 
 clean:
-	rm -f *.o *~ lex.c lex.yy.c bison.c grammar_heading.h grammar.tab.c grammar.tab.h grammar.output grammar
+	rm -f *.o *~ lex.c lex.yy.c bison.c gram_head.h grammar.tab.c grammar.tab.h grammar.output grammar
 

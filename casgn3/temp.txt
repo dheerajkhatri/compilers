@@ -1,1 +1,0 @@
-|	error '}'{cout<<"2>>>>"; vector<node*> v ; v.push_back(mkleaf("ERROR\n")); $$ = mknode(v,"Stmt");  ;}

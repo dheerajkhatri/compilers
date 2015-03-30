@@ -1,34 +1,33 @@
 %{
-	#include <bits/stdc++.h>
+  #include <bits/stdc++.h>
 	#include <cstdio>
 	#include<cstdlib>
 	#include <cstring>
 	#define pb push_back 
-	#define vns vector<node*>
+  #define vns vector<node*>
 	using namespace std;
 
 	extern int yylex(void);
 	int line_num = 1;
 	extern char* yytext ;
 	void yyerror(char *);
-  	void yyerror(string);
+  void yyerror(string);
 
-	typedef struct node{
-		string node_id;
-		vns children;
-		node(string s){
-			node_id = s;
-		}
-		node(string s,vns v){
-			children = v;
-			node_id = s;
-		}
-	}node;
-
-	node* root=NULL;
-	node* mknode(vns ,string);
-	node* leaf(string);
-	void print_graph(node*);
+  typedef struct node{
+    string node_id;
+    vns children;
+    node(string s){
+      node_id = s;
+    }
+    node(string s,vns v){
+      children = v;
+      node_id = s;
+    }
+  }node;
+  node* root=NULL;
+  node* mknode(vns ,string);
+  node* leaf(string);
+  void print_graph(node*);
 
 
 %}

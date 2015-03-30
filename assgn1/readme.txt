@@ -37,3 +37,4 @@ More scope of improvement-
 2.Your input format should be valid ie: there should not be epsilon in between string that you want to simulate
 3.For minimization Myhill Nerode Theorem is used, Hofcroft algorithm can also be implemented of less comlexity(not very sure!)
 
+
