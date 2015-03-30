@@ -1,0 +1,19 @@
+blocks are yet not included in any functions
+
+error line number number is shown next line(new line with space also removed )
+
+function call with zero arguments giving error
+
+for(int i=0;;)->declaration in for loops
+
+priting string with quotes giving error / wo quotes working  
+	out << a << b; -->ok
+	out << a << beta; not
+	out << a << b*2; not
+	out << "hi! how you doing?";
+
+struct not working properly
+	struct myStruct{
+		int a;
+		char c;
+	}

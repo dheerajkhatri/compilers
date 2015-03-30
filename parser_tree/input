@@ -1,0 +1,74 @@
+int a,b;	//global declaration
+
+
+
+/*struct myStruct{
+	int a;
+};*/
+
+//multiple functions
+int anotherFunction(int beta,char alpha){
+	out << a;
+	return p;
+}
+
+
+
+int main(){
+	int a=10,q,r;  //variable assignment while declaring
+	a = 1;
+	p = 2;
+
+	alpha = ram(myfunction(a,b));  //recursive function calling
+
+	beta = myfunction(a,b);
+
+
+	if(a==b){
+		out << a;
+	} elif(a>b){
+		out<< b;
+	} elif(a<0){
+		out << n;
+	}else {
+		out << b;
+	}
+
+
+
+	while(a<=b){ 			//while loop,do while loop
+		a = a+5;
+	}
+
+
+	for(i=0;i<10;i++){		//for loop
+		i++;			//increment decrement operators
+		for(;;){		//for without
+//			this is single line comment
+			a-=5;
+			out << a << b;  //multiple output
+		}
+	}
+/*
+This is multi
+ line 
+comment 
+*/
+
+	switch(value){
+	case 'a':
+		b = a*5;
+		break;
+	case 'c':
+		break;
+	case 'p':
+		alpha = betah;
+		break;
+
+	default:
+//		out << "this is default";
+		break;	
+	}
+
+	return 0;
+}

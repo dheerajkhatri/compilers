@@ -1,0 +1,1 @@
+int main() {double a, b; a = 3; b = 6; double c = a + b; if( c > 5) {return (1); } else {return (0); } }

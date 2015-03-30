@@ -1,0 +1,4444 @@
+Grammar
+
+    0 $accept: Program $end
+
+    1 Program: Program_element
+
+    2 Program_element: Function Program_element
+    3                | Declaration Program_element
+    4                | %empty
+
+    5 Declaration: Type Declarator_list ';'
+
+    6 Declarator_list: Declarator_list ',' Declarator
+    7                | Declarator_list ',' Declarator '=' Initializer
+    8                | Declarator
+    9                | Declarator '=' Initializer
+
+   10 Initializer: Expression
+   11            | '{' Initializer_list '}'
+   12            | '{' Initializer_list ',' '}'
+
+   13 Initializer_list: Initializer_list ',' Initializer
+   14                 | Initializer
+
+   15 Declarator: Pointer Simple_declarator
+   16           | Simple_declarator
+
+   17 Pointer: '*'
+   18        | '*' Pointer
+
+   19 Simple_declarator: IDENTIFIERS
+   20                  | '(' Declarator ')'
+   21                  | Simple_declarator '[' ']'
+   22                  | Simple_declarator '[' Expression ']'
+
+   23 Expression_list: Expression
+   24                | Expression_list ',' Expression
+
+   25 Expression: Pl1
+   26           | Unary_expression '=' Expression
+
+   27 Pl1: Pl2
+   28    | Pl1 OR_OP Pl2
+
+   29 Pl2: Pl3
+   30    | Pl2 AND_OP Pl3
+
+   31 Pl3: Pl4
+   32    | Pl3 '|' Pl4
+
+   33 Pl4: Pl5
+   34    | Pl4 '^' Pl5
+
+   35 Pl5: Pl6
+   36    | Pl5 '&' Pl6
+
+   37 Pl6: Pl7
+   38    | Pl6 EQUAL_TO_OP Pl7
+   39    | Pl6 NOT_EQUAL_TO_OP Pl7
+
+   40 Pl7: Pl8
+   41    | Pl7 '<' Pl8
+   42    | Pl7 LESS_THAN_EQUAL_TO_OP Pl8
+   43    | Pl7 '>' Pl8
+   44    | Pl7 GREATER_THAN_EQUAL_TO_OP Pl8
+
+   45 Pl8: Pl9
+   46    | Pl8 LEFT_SHIFT_OP Pl9
+   47    | Pl8 RIGHT_SHIFT_OP Pl9
+
+   48 Pl9: Pl10
+   49    | Pl9 '+' Pl10
+   50    | Pl9 '-' Pl10
+
+   51 Pl10: Unary_expression
+   52     | Pl10 '*' Unary_expression
+   53     | Pl10 '/' Unary_expression
+   54     | Pl10 '%' Unary_expression
+
+   55 Unary_expression: '(' Type ')' Pl11
+   56                 | Pl11
+
+   57 Pl11: Pl12
+   58     | INCR_OP Pl11
+   59     | DECR_OP Pl11
+   60     | SIZEOF '(' Pl11 ')'
+   61     | SIZEOF '(' Type ')'
+   62     | Unary_op Pl11
+
+   63 Pl12: Basic_expression
+   64     | Pl12 '[' Expression ']'
+   65     | Pl12 '(' ')'
+   66     | Pl12 '(' Expression_list ')'
+   67     | Pl12 '.' IDENTIFIERS
+   68     | Pl12 INCR_OP
+   69     | Pl12 DECR_OP
+   70     | Pl12 PTR_OP IDENTIFIERS
+
+   71 Basic_expression: IDENTIFIERS
+   72                 | INTEGER_CONSTANT
+   73                 | FLOAT_CONSTANT
+   74                 | CHARACTER_CONSTANT
+   75                 | STRING_CONSTANT
+   76                 | '(' Expression_list ')'
+
+   77 Unary_op: '~'
+   78         | '!'
+   79         | '*'
+   80         | '@'
+   81         | '-'
+
+   82 Type: CHAR
+   83     | INT
+   84     | BOOL
+   85     | LONG
+   86     | FLOAT
+   87     | DOUBLE
+   88     | VOID
+   89     | SHORT
+   90     | Struct
+
+   91 Function: Type Declarator '(' Parameter_list ')' '{' Stmt '}'
+   92         | Type Declarator '(' ')' '{' Stmt '}'
+
+   93 Parameter_list: Parameter_list ',' Type Declarator
+   94               | Type Declarator
+
+   95 Struct: STRUCT IDENTIFIERS '{' Struct_declaration_list '}'
+
+   96 Struct_declaration_list: Struct_declaration_list Type SS ';'
+   97                        | Type SS ';'
+
+   98 SS: SS ',' Declarator
+   99   | Declarator
+
+  100 Stmt: if_Stmt Stmt
+  101     | while_Stmt Stmt
+  102     | for_Stmt Stmt
+  103     | Expression_list ';' Stmt
+  104     | '{' Stmt '}' Stmt
+  105     | ';' Stmt
+  106     | CONTINUE ';' Stmt
+  107     | BREAK ';' Stmt
+  108     | RETURN ';' Stmt
+  109     | RETURN Expression_list ';' Stmt
+  110     | Declaration Stmt
+  111     | %empty
+  112     | error ';'
+
+  113 if_Stmt: IF '(' Expression_list ')' '{' Stmt '}' ELSE '{' Stmt '}'
+  114        | IF '(' Expression_list ')' '{' Stmt '}'
+
+  115 for_Stmt: FOR '(' Expression_list ';' Expression_list ';' Expression_list ')' '{' Stmt '}'
+
+  116 while_Stmt: WHILE '(' Expression_list ')' '{' Stmt '}'
+  117           | WHILE '(' error ')'
+
+
+Terminals, with rules where they appear
+
+$end (0) 0
+'!' (33) 78
+'%' (37) 54
+'&' (38) 36
+'(' (40) 20 55 60 61 65 66 76 91 92 113 114 115 116 117
+')' (41) 20 55 60 61 65 66 76 91 92 113 114 115 116 117
+'*' (42) 17 18 52 79
+'+' (43) 49
+',' (44) 6 7 12 13 24 93 98
+'-' (45) 50 81
+'.' (46) 67
+'/' (47) 53
+';' (59) 5 96 97 103 105 106 107 108 109 112 115
+'<' (60) 41
+'=' (61) 7 9 26
+'>' (62) 43
+'@' (64) 80
+'[' (91) 21 22 64
+']' (93) 21 22 64
+'^' (94) 34
+'{' (123) 11 12 91 92 95 104 113 114 115 116
+'|' (124) 32
+'}' (125) 11 12 91 92 95 104 113 114 115 116
+'~' (126) 77
+error (256) 112 117
+IF (258) 113 114
+STRUCT (259) 95
+VOID (260) 88
+LONG (261) 85
+SHORT (262) 89
+CONTINUE (263) 106
+BREAK (264) 107
+WHILE (265) 116 117
+ELSE (266) 113
+SIZEOF (267) 60 61
+RETURN (268) 108 109
+DOUBLE (269) 87
+FLOAT (270) 86
+INT (271) 83
+FOR (272) 115
+CHAR (273) 82
+BOOL (274) 84
+IDENTIFIERS (275) 19 67 70 71 95
+INTEGER_CONSTANT (276) 72
+FLOAT_CONSTANT (277) 73
+CHARACTER_CONSTANT (278) 74
+STRING_CONSTANT (279) 75
+RIGHT_SHIFT_OP (280) 47
+LEFT_SHIFT_OP (281) 46
+INCR_OP (282) 58 68
+DECR_OP (283) 59 69
+PTR_OP (284) 70
+AND_OP (285) 30
+OR_OP (286) 28
+LESS_THAN_EQUAL_TO_OP (287) 42
+GREATER_THAN_EQUAL_TO_OP (288) 44
+EQUAL_TO_OP (289) 38
+NOT_EQUAL_TO_OP (290) 39
+TEMPPREC (291)
+
+
+Nonterminals, with rules where they appear
+
+$accept (60)
+    on left: 0
+Program (61)
+    on left: 1, on right: 0
+Program_element (62)
+    on left: 2 3 4, on right: 1 2 3
+Declaration (63)
+    on left: 5, on right: 3 110
+Declarator_list (64)
+    on left: 6 7 8 9, on right: 5 6 7
+Initializer (65)
+    on left: 10 11 12, on right: 7 9 13 14
+Initializer_list (66)
+    on left: 13 14, on right: 11 12 13
+Declarator (67)
+    on left: 15 16, on right: 6 7 8 9 20 91 92 93 94 98 99
+Pointer (68)
+    on left: 17 18, on right: 15 18
+Simple_declarator (69)
+    on left: 19 20 21 22, on right: 15 16 21 22
+Expression_list (70)
+    on left: 23 24, on right: 24 66 76 103 109 113 114 115 116
+Expression (71)
+    on left: 25 26, on right: 10 22 23 24 26 64
+Pl1 (72)
+    on left: 27 28, on right: 25 28
+Pl2 (73)
+    on left: 29 30, on right: 27 28 30
+Pl3 (74)
+    on left: 31 32, on right: 29 30 32
+Pl4 (75)
+    on left: 33 34, on right: 31 32 34
+Pl5 (76)
+    on left: 35 36, on right: 33 34 36
+Pl6 (77)
+    on left: 37 38 39, on right: 35 36 38 39
+Pl7 (78)
+    on left: 40 41 42 43 44, on right: 37 38 39 41 42 43 44
+Pl8 (79)
+    on left: 45 46 47, on right: 40 41 42 43 44 46 47
+Pl9 (80)
+    on left: 48 49 50, on right: 45 46 47 49 50
+Pl10 (81)
+    on left: 51 52 53 54, on right: 48 49 50 52 53 54
+Unary_expression (82)
+    on left: 55 56, on right: 26 51 52 53 54
+Pl11 (83)
+    on left: 57 58 59 60 61 62, on right: 55 56 58 59 60 62
+Pl12 (84)
+    on left: 63 64 65 66 67 68 69 70, on right: 57 64 65 66 67 68 69
+    70
+Basic_expression (85)
+    on left: 71 72 73 74 75 76, on right: 63
+Unary_op (86)
+    on left: 77 78 79 80 81, on right: 62
+Type (87)
+    on left: 82 83 84 85 86 87 88 89 90, on right: 5 55 61 91 92 93
+    94 96 97
+Function (88)
+    on left: 91 92, on right: 2
+Parameter_list (89)
+    on left: 93 94, on right: 91 93
+Struct (90)
+    on left: 95, on right: 90
+Struct_declaration_list (91)
+    on left: 96 97, on right: 95 96
+SS (92)
+    on left: 98 99, on right: 96 97 98
+Stmt (93)
+    on left: 100 101 102 103 104 105 106 107 108 109 110 111 112, on right:
+    91 92 100 101 102 103 104 105 106 107 108 109 110 113 114 115 116
+if_Stmt (94)
+    on left: 113 114, on right: 100
+for_Stmt (95)
+    on left: 115, on right: 102
+while_Stmt (96)
+    on left: 116 117, on right: 101
+
+
+State 0
+
+    0 $accept: . Program $end
+
+    STRUCT  shift, and go to state 1
+    VOID    shift, and go to state 2
+    LONG    shift, and go to state 3
+    SHORT   shift, and go to state 4
+    DOUBLE  shift, and go to state 5
+    FLOAT   shift, and go to state 6
+    INT     shift, and go to state 7
+    CHAR    shift, and go to state 8
+    BOOL    shift, and go to state 9
+
+    $default  reduce using rule 4 (Program_element)
+
+    Program          go to state 10
+    Program_element  go to state 11
+    Declaration      go to state 12
+    Type             go to state 13
+    Function         go to state 14
+    Struct           go to state 15
+
+
+State 1
+
+   95 Struct: STRUCT . IDENTIFIERS '{' Struct_declaration_list '}'
+
+    IDENTIFIERS  shift, and go to state 16
+
+
+State 2
+
+   88 Type: VOID .
+
+    $default  reduce using rule 88 (Type)
+
+
+State 3
+
+   85 Type: LONG .
+
+    $default  reduce using rule 85 (Type)
+
+
+State 4
+
+   89 Type: SHORT .
+
+    $default  reduce using rule 89 (Type)
+
+
+State 5
+
+   87 Type: DOUBLE .
+
+    $default  reduce using rule 87 (Type)
+
+
+State 6
+
+   86 Type: FLOAT .
+
+    $default  reduce using rule 86 (Type)
+
+
+State 7
+
+   83 Type: INT .
+
+    $default  reduce using rule 83 (Type)
+
+
+State 8
+
+   82 Type: CHAR .
+
+    $default  reduce using rule 82 (Type)
+
+
+State 9
+
+   84 Type: BOOL .
+
+    $default  reduce using rule 84 (Type)
+
+
+State 10
+
+    0 $accept: Program . $end
+
+    $end  shift, and go to state 17
+
+
+State 11
+
+    1 Program: Program_element .
+
+    $default  reduce using rule 1 (Program)
+
+
+State 12
+
+    3 Program_element: Declaration . Program_element
+
+    STRUCT  shift, and go to state 1
+    VOID    shift, and go to state 2
+    LONG    shift, and go to state 3
+    SHORT   shift, and go to state 4
+    DOUBLE  shift, and go to state 5
+    FLOAT   shift, and go to state 6
+    INT     shift, and go to state 7
+    CHAR    shift, and go to state 8
+    BOOL    shift, and go to state 9
+
+    $default  reduce using rule 4 (Program_element)
+
+    Program_element  go to state 18
+    Declaration      go to state 12
+    Type             go to state 13
+    Function         go to state 14
+    Struct           go to state 15
+
+
+State 13
+
+    5 Declaration: Type . Declarator_list ';'
+   91 Function: Type . Declarator '(' Parameter_list ')' '{' Stmt '}'
+   92         | Type . Declarator '(' ')' '{' Stmt '}'
+
+    IDENTIFIERS  shift, and go to state 19
+    '*'          shift, and go to state 20
+    '('          shift, and go to state 21
+
+    Declarator_list    go to state 22
+    Declarator         go to state 23
+    Pointer            go to state 24
+    Simple_declarator  go to state 25
+
+
+State 14
+
+    2 Program_element: Function . Program_element
+
+    STRUCT  shift, and go to state 1
+    VOID    shift, and go to state 2
+    LONG    shift, and go to state 3
+    SHORT   shift, and go to state 4
+    DOUBLE  shift, and go to state 5
+    FLOAT   shift, and go to state 6
+    INT     shift, and go to state 7
+    CHAR    shift, and go to state 8
+    BOOL    shift, and go to state 9
+
+    $default  reduce using rule 4 (Program_element)
+
+    Program_element  go to state 26
+    Declaration      go to state 12
+    Type             go to state 13
+    Function         go to state 14
+    Struct           go to state 15
+
+
+State 15
+
+   90 Type: Struct .
+
+    $default  reduce using rule 90 (Type)
+
+
+State 16
+
+   95 Struct: STRUCT IDENTIFIERS . '{' Struct_declaration_list '}'
+
+    '{'  shift, and go to state 27
+
+
+State 17
+
+    0 $accept: Program $end .
+
+    $default  accept
+
+
+State 18
+
+    3 Program_element: Declaration Program_element .
+
+    $default  reduce using rule 3 (Program_element)
+
+
+State 19
+
+   19 Simple_declarator: IDENTIFIERS .
+
+    $default  reduce using rule 19 (Simple_declarator)
+
+
+State 20
+
+   17 Pointer: '*' .
+   18        | '*' . Pointer
+
+    '*'  shift, and go to state 20
+
+    $default  reduce using rule 17 (Pointer)
+
+    Pointer  go to state 28
+
+
+State 21
+
+   20 Simple_declarator: '(' . Declarator ')'
+
+    IDENTIFIERS  shift, and go to state 19
+    '*'          shift, and go to state 20
+    '('          shift, and go to state 21
+
+    Declarator         go to state 29
+    Pointer            go to state 24
+    Simple_declarator  go to state 25
+
+
+State 22
+
+    5 Declaration: Type Declarator_list . ';'
+    6 Declarator_list: Declarator_list . ',' Declarator
+    7                | Declarator_list . ',' Declarator '=' Initializer
+
+    ';'  shift, and go to state 30
+    ','  shift, and go to state 31
+
+
+State 23
+
+    8 Declarator_list: Declarator .
+    9                | Declarator . '=' Initializer
+   91 Function: Type Declarator . '(' Parameter_list ')' '{' Stmt '}'
+   92         | Type Declarator . '(' ')' '{' Stmt '}'
+
+    '('  shift, and go to state 32
+    '='  shift, and go to state 33
+
+    $default  reduce using rule 8 (Declarator_list)
+
+
+State 24
+
+   15 Declarator: Pointer . Simple_declarator
+
+    IDENTIFIERS  shift, and go to state 19
+    '('          shift, and go to state 21
+
+    Simple_declarator  go to state 34
+
+
+State 25
+
+   16 Declarator: Simple_declarator .
+   21 Simple_declarator: Simple_declarator . '[' ']'
+   22                  | Simple_declarator . '[' Expression ']'
+
+    '['  shift, and go to state 35
+
+    $default  reduce using rule 16 (Declarator)
+
+
+State 26
+
+    2 Program_element: Function Program_element .
+
+    $default  reduce using rule 2 (Program_element)
+
+
+State 27
+
+   95 Struct: STRUCT IDENTIFIERS '{' . Struct_declaration_list '}'
+
+    STRUCT  shift, and go to state 1
+    VOID    shift, and go to state 2
+    LONG    shift, and go to state 3
+    SHORT   shift, and go to state 4
+    DOUBLE  shift, and go to state 5
+    FLOAT   shift, and go to state 6
+    INT     shift, and go to state 7
+    CHAR    shift, and go to state 8
+    BOOL    shift, and go to state 9
+
+    Type                     go to state 36
+    Struct                   go to state 15
+    Struct_declaration_list  go to state 37
+
+
+State 28
+
+   18 Pointer: '*' Pointer .
+
+    $default  reduce using rule 18 (Pointer)
+
+
+State 29
+
+   20 Simple_declarator: '(' Declarator . ')'
+
+    ')'  shift, and go to state 38
+
+
+State 30
+
+    5 Declaration: Type Declarator_list ';' .
+
+    $default  reduce using rule 5 (Declaration)
+
+
+State 31
+
+    6 Declarator_list: Declarator_list ',' . Declarator
+    7                | Declarator_list ',' . Declarator '=' Initializer
+
+    IDENTIFIERS  shift, and go to state 19
+    '*'          shift, and go to state 20
+    '('          shift, and go to state 21
+
+    Declarator         go to state 39
+    Pointer            go to state 24
+    Simple_declarator  go to state 25
+
+
+State 32
+
+   91 Function: Type Declarator '(' . Parameter_list ')' '{' Stmt '}'
+   92         | Type Declarator '(' . ')' '{' Stmt '}'
+
+    STRUCT  shift, and go to state 1
+    VOID    shift, and go to state 2
+    LONG    shift, and go to state 3
+    SHORT   shift, and go to state 4
+    DOUBLE  shift, and go to state 5
+    FLOAT   shift, and go to state 6
+    INT     shift, and go to state 7
+    CHAR    shift, and go to state 8
+    BOOL    shift, and go to state 9
+    ')'     shift, and go to state 40
+
+    Type            go to state 41
+    Parameter_list  go to state 42
+    Struct          go to state 15
+
+
+State 33
+
+    9 Declarator_list: Declarator '=' . Initializer
+
+    SIZEOF              shift, and go to state 43
+    IDENTIFIERS         shift, and go to state 44
+    INTEGER_CONSTANT    shift, and go to state 45
+    FLOAT_CONSTANT      shift, and go to state 46
+    CHARACTER_CONSTANT  shift, and go to state 47
+    STRING_CONSTANT     shift, and go to state 48
+    INCR_OP             shift, and go to state 49
+    DECR_OP             shift, and go to state 50
+    '-'                 shift, and go to state 51
+    '*'                 shift, and go to state 52
+    '('                 shift, and go to state 53
+    '{'                 shift, and go to state 54
+    '~'                 shift, and go to state 55
+    '!'                 shift, and go to state 56
+    '@'                 shift, and go to state 57
+
+    Initializer       go to state 58
+    Expression        go to state 59
+    Pl1               go to state 60
+    Pl2               go to state 61
+    Pl3               go to state 62
+    Pl4               go to state 63
+    Pl5               go to state 64
+    Pl6               go to state 65
+    Pl7               go to state 66
+    Pl8               go to state 67
+    Pl9               go to state 68
+    Pl10              go to state 69
+    Unary_expression  go to state 70
+    Pl11              go to state 71
+    Pl12              go to state 72
+    Basic_expression  go to state 73
+    Unary_op          go to state 74
+
+
+State 34
+
+   15 Declarator: Pointer Simple_declarator .
+   21 Simple_declarator: Simple_declarator . '[' ']'
+   22                  | Simple_declarator . '[' Expression ']'
+
+    '['  shift, and go to state 35
+
+    $default  reduce using rule 15 (Declarator)
+
+
+State 35
+
+   21 Simple_declarator: Simple_declarator '[' . ']'
+   22                  | Simple_declarator '[' . Expression ']'
+
+    SIZEOF              shift, and go to state 43
+    IDENTIFIERS         shift, and go to state 44
+    INTEGER_CONSTANT    shift, and go to state 45
+    FLOAT_CONSTANT      shift, and go to state 46
+    CHARACTER_CONSTANT  shift, and go to state 47
+    STRING_CONSTANT     shift, and go to state 48
+    INCR_OP             shift, and go to state 49
+    DECR_OP             shift, and go to state 50
+    '-'                 shift, and go to state 51
+    '*'                 shift, and go to state 52
+    '('                 shift, and go to state 53
+    ']'                 shift, and go to state 75
+    '~'                 shift, and go to state 55
+    '!'                 shift, and go to state 56
+    '@'                 shift, and go to state 57
+
+    Expression        go to state 76
+    Pl1               go to state 60
+    Pl2               go to state 61
+    Pl3               go to state 62
+    Pl4               go to state 63
+    Pl5               go to state 64
+    Pl6               go to state 65
+    Pl7               go to state 66
+    Pl8               go to state 67
+    Pl9               go to state 68
+    Pl10              go to state 69
+    Unary_expression  go to state 70
+    Pl11              go to state 71
+    Pl12              go to state 72
+    Basic_expression  go to state 73
+    Unary_op          go to state 74
+
+
+State 36
+
+   97 Struct_declaration_list: Type . SS ';'
+
+    IDENTIFIERS  shift, and go to state 19
+    '*'          shift, and go to state 20
+    '('          shift, and go to state 21
+
+    Declarator         go to state 77
+    Pointer            go to state 24
+    Simple_declarator  go to state 25
+    SS                 go to state 78
+
+
+State 37
+
+   95 Struct: STRUCT IDENTIFIERS '{' Struct_declaration_list . '}'
+   96 Struct_declaration_list: Struct_declaration_list . Type SS ';'
+
+    STRUCT  shift, and go to state 1
+    VOID    shift, and go to state 2
+    LONG    shift, and go to state 3
+    SHORT   shift, and go to state 4
+    DOUBLE  shift, and go to state 5
+    FLOAT   shift, and go to state 6
+    INT     shift, and go to state 7
+    CHAR    shift, and go to state 8
+    BOOL    shift, and go to state 9
+    '}'     shift, and go to state 79
+
+    Type    go to state 80
+    Struct  go to state 15
+
+
+State 38
+
+   20 Simple_declarator: '(' Declarator ')' .
+
+    $default  reduce using rule 20 (Simple_declarator)
+
+
+State 39
+
+    6 Declarator_list: Declarator_list ',' Declarator .
+    7                | Declarator_list ',' Declarator . '=' Initializer
+
+    '='  shift, and go to state 81
+
+    $default  reduce using rule 6 (Declarator_list)
+
+
+State 40
+
+   92 Function: Type Declarator '(' ')' . '{' Stmt '}'
+
+    '{'  shift, and go to state 82
+
+
+State 41
+
+   94 Parameter_list: Type . Declarator
+
+    IDENTIFIERS  shift, and go to state 19
+    '*'          shift, and go to state 20
+    '('          shift, and go to state 21
+
+    Declarator         go to state 83
+    Pointer            go to state 24
+    Simple_declarator  go to state 25
+
+
+State 42
+
+   91 Function: Type Declarator '(' Parameter_list . ')' '{' Stmt '}'
+   93 Parameter_list: Parameter_list . ',' Type Declarator
+
+    ','  shift, and go to state 84
+    ')'  shift, and go to state 85
+
+
+State 43
+
+   60 Pl11: SIZEOF . '(' Pl11 ')'
+   61     | SIZEOF . '(' Type ')'
+
+    '('  shift, and go to state 86
+
+
+State 44
+
+   71 Basic_expression: IDENTIFIERS .
+
+    $default  reduce using rule 71 (Basic_expression)
+
+
+State 45
+
+   72 Basic_expression: INTEGER_CONSTANT .
+
+    $default  reduce using rule 72 (Basic_expression)
+
+
+State 46
+
+   73 Basic_expression: FLOAT_CONSTANT .
+
+    $default  reduce using rule 73 (Basic_expression)
+
+
+State 47
+
+   74 Basic_expression: CHARACTER_CONSTANT .
+
+    $default  reduce using rule 74 (Basic_expression)
+
+
+State 48
+
+   75 Basic_expression: STRING_CONSTANT .
+
+    $default  reduce using rule 75 (Basic_expression)
+
+
+State 49
+
+   58 Pl11: INCR_OP . Pl11
+
+    SIZEOF              shift, and go to state 43
+    IDENTIFIERS         shift, and go to state 44
+    INTEGER_CONSTANT    shift, and go to state 45
+    FLOAT_CONSTANT      shift, and go to state 46
+    CHARACTER_CONSTANT  shift, and go to state 47
+    STRING_CONSTANT     shift, and go to state 48
+    INCR_OP             shift, and go to state 49
+    DECR_OP             shift, and go to state 50
+    '-'                 shift, and go to state 51
+    '*'                 shift, and go to state 52
+    '('                 shift, and go to state 87
+    '~'                 shift, and go to state 55
+    '!'                 shift, and go to state 56
+    '@'                 shift, and go to state 57
+
+    Pl11              go to state 88
+    Pl12              go to state 72
+    Basic_expression  go to state 73
+    Unary_op          go to state 74
+
+
+State 50
+
+   59 Pl11: DECR_OP . Pl11
+
+    SIZEOF              shift, and go to state 43
+    IDENTIFIERS         shift, and go to state 44
+    INTEGER_CONSTANT    shift, and go to state 45
+    FLOAT_CONSTANT      shift, and go to state 46
+    CHARACTER_CONSTANT  shift, and go to state 47
+    STRING_CONSTANT     shift, and go to state 48
+    INCR_OP             shift, and go to state 49
+    DECR_OP             shift, and go to state 50
+    '-'                 shift, and go to state 51
+    '*'                 shift, and go to state 52
+    '('                 shift, and go to state 87
+    '~'                 shift, and go to state 55
+    '!'                 shift, and go to state 56
+    '@'                 shift, and go to state 57
+
+    Pl11              go to state 89
+    Pl12              go to state 72
+    Basic_expression  go to state 73
+    Unary_op          go to state 74
+
+
+State 51
+
+   81 Unary_op: '-' .
+
+    $default  reduce using rule 81 (Unary_op)
+
+
+State 52
+
+   79 Unary_op: '*' .
+
+    $default  reduce using rule 79 (Unary_op)
+
+
+State 53
+
+   55 Unary_expression: '(' . Type ')' Pl11
+   76 Basic_expression: '(' . Expression_list ')'
+
+    STRUCT              shift, and go to state 1
+    VOID                shift, and go to state 2
+    LONG                shift, and go to state 3
+    SHORT               shift, and go to state 4
+    SIZEOF              shift, and go to state 43
+    DOUBLE              shift, and go to state 5
+    FLOAT               shift, and go to state 6
+    INT                 shift, and go to state 7
+    CHAR                shift, and go to state 8
+    BOOL                shift, and go to state 9
+    IDENTIFIERS         shift, and go to state 44
+    INTEGER_CONSTANT    shift, and go to state 45
+    FLOAT_CONSTANT      shift, and go to state 46
+    CHARACTER_CONSTANT  shift, and go to state 47
+    STRING_CONSTANT     shift, and go to state 48
+    INCR_OP             shift, and go to state 49
+    DECR_OP             shift, and go to state 50
+    '-'                 shift, and go to state 51
+    '*'                 shift, and go to state 52
+    '('                 shift, and go to state 53
+    '~'                 shift, and go to state 55
+    '!'                 shift, and go to state 56
+    '@'                 shift, and go to state 57
+
+    Expression_list   go to state 90
+    Expression        go to state 91
+    Pl1               go to state 60
+    Pl2               go to state 61
+    Pl3               go to state 62
+    Pl4               go to state 63
+    Pl5               go to state 64
+    Pl6               go to state 65
+    Pl7               go to state 66
+    Pl8               go to state 67
+    Pl9               go to state 68
+    Pl10              go to state 69
+    Unary_expression  go to state 70
+    Pl11              go to state 71
+    Pl12              go to state 72
+    Basic_expression  go to state 73
+    Unary_op          go to state 74
+    Type              go to state 92
+    Struct            go to state 15
+
+
+State 54
+
+   11 Initializer: '{' . Initializer_list '}'
+   12            | '{' . Initializer_list ',' '}'
+
+    SIZEOF              shift, and go to state 43
+    IDENTIFIERS         shift, and go to state 44
+    INTEGER_CONSTANT    shift, and go to state 45
+    FLOAT_CONSTANT      shift, and go to state 46
+    CHARACTER_CONSTANT  shift, and go to state 47
+    STRING_CONSTANT     shift, and go to state 48
+    INCR_OP             shift, and go to state 49
+    DECR_OP             shift, and go to state 50
+    '-'                 shift, and go to state 51
+    '*'                 shift, and go to state 52
+    '('                 shift, and go to state 53
+    '{'                 shift, and go to state 54
+    '~'                 shift, and go to state 55
+    '!'                 shift, and go to state 56
+    '@'                 shift, and go to state 57
+
+    Initializer       go to state 93
+    Initializer_list  go to state 94
+    Expression        go to state 59
+    Pl1               go to state 60
+    Pl2               go to state 61
+    Pl3               go to state 62
+    Pl4               go to state 63
+    Pl5               go to state 64
+    Pl6               go to state 65
+    Pl7               go to state 66
+    Pl8               go to state 67
+    Pl9               go to state 68
+    Pl10              go to state 69
+    Unary_expression  go to state 70
+    Pl11              go to state 71
+    Pl12              go to state 72
+    Basic_expression  go to state 73
+    Unary_op          go to state 74
+
+
+State 55
+
+   77 Unary_op: '~' .
+
+    $default  reduce using rule 77 (Unary_op)
+
+
+State 56
+
+   78 Unary_op: '!' .
+
+    $default  reduce using rule 78 (Unary_op)
+
+
+State 57
+
+   80 Unary_op: '@' .
+
+    $default  reduce using rule 80 (Unary_op)
+
+
+State 58
+
+    9 Declarator_list: Declarator '=' Initializer .
+
+    $default  reduce using rule 9 (Declarator_list)
+
+
+State 59
+
+   10 Initializer: Expression .
+
+    $default  reduce using rule 10 (Initializer)
+
+
+State 60
+
+   25 Expression: Pl1 .
+   28 Pl1: Pl1 . OR_OP Pl2
+
+    OR_OP  shift, and go to state 95
+
+    $default  reduce using rule 25 (Expression)
+
+
+State 61
+
+   27 Pl1: Pl2 .
+   30 Pl2: Pl2 . AND_OP Pl3
+
+    AND_OP  shift, and go to state 96
+
+    $default  reduce using rule 27 (Pl1)
+
+
+State 62
+
+   29 Pl2: Pl3 .
+   32 Pl3: Pl3 . '|' Pl4
+
+    '|'  shift, and go to state 97
+
+    $default  reduce using rule 29 (Pl2)
+
+
+State 63
+
+   31 Pl3: Pl4 .
+   34 Pl4: Pl4 . '^' Pl5
+
+    '^'  shift, and go to state 98
+
+    $default  reduce using rule 31 (Pl3)
+
+
+State 64
+
+   33 Pl4: Pl5 .
+   36 Pl5: Pl5 . '&' Pl6
+
+    '&'  shift, and go to state 99
+
+    $default  reduce using rule 33 (Pl4)
+
+
+State 65
+
+   35 Pl5: Pl6 .
+   38 Pl6: Pl6 . EQUAL_TO_OP Pl7
+   39    | Pl6 . NOT_EQUAL_TO_OP Pl7
+
+    EQUAL_TO_OP      shift, and go to state 100
+    NOT_EQUAL_TO_OP  shift, and go to state 101
+
+    $default  reduce using rule 35 (Pl5)
+
+
+State 66
+
+   37 Pl6: Pl7 .
+   41 Pl7: Pl7 . '<' Pl8
+   42    | Pl7 . LESS_THAN_EQUAL_TO_OP Pl8
+   43    | Pl7 . '>' Pl8
+   44    | Pl7 . GREATER_THAN_EQUAL_TO_OP Pl8
+
+    LESS_THAN_EQUAL_TO_OP     shift, and go to state 102
+    GREATER_THAN_EQUAL_TO_OP  shift, and go to state 103
+    '<'                       shift, and go to state 104
+    '>'                       shift, and go to state 105
+
+    $default  reduce using rule 37 (Pl6)
+
+
+State 67
+
+   40 Pl7: Pl8 .
+   46 Pl8: Pl8 . LEFT_SHIFT_OP Pl9
+   47    | Pl8 . RIGHT_SHIFT_OP Pl9
+
+    RIGHT_SHIFT_OP  shift, and go to state 106
+    LEFT_SHIFT_OP   shift, and go to state 107
+
+    $default  reduce using rule 40 (Pl7)
+
+
+State 68
+
+   45 Pl8: Pl9 .
+   49 Pl9: Pl9 . '+' Pl10
+   50    | Pl9 . '-' Pl10
+
+    '+'  shift, and go to state 108
+    '-'  shift, and go to state 109
+
+    $default  reduce using rule 45 (Pl8)
+
+
+State 69
+
+   48 Pl9: Pl10 .
+   52 Pl10: Pl10 . '*' Unary_expression
+   53     | Pl10 . '/' Unary_expression
+   54     | Pl10 . '%' Unary_expression
+
+    '*'  shift, and go to state 110
+    '/'  shift, and go to state 111
+    '%'  shift, and go to state 112
+
+    $default  reduce using rule 48 (Pl9)
+
+
+State 70
+
+   26 Expression: Unary_expression . '=' Expression
+   51 Pl10: Unary_expression .
+
+    '='  shift, and go to state 113
+
+    $default  reduce using rule 51 (Pl10)
+
+
+State 71
+
+   56 Unary_expression: Pl11 .
+
+    $default  reduce using rule 56 (Unary_expression)
+
+
+State 72
+
+   57 Pl11: Pl12 .
+   64 Pl12: Pl12 . '[' Expression ']'
+   65     | Pl12 . '(' ')'
+   66     | Pl12 . '(' Expression_list ')'
+   67     | Pl12 . '.' IDENTIFIERS
+   68     | Pl12 . INCR_OP
+   69     | Pl12 . DECR_OP
+   70     | Pl12 . PTR_OP IDENTIFIERS
+
+    INCR_OP  shift, and go to state 114
+    DECR_OP  shift, and go to state 115
+    PTR_OP   shift, and go to state 116
+    '('      shift, and go to state 117
+    '['      shift, and go to state 118
+    '.'      shift, and go to state 119
+
+    $default  reduce using rule 57 (Pl11)
+
+
+State 73
+
+   63 Pl12: Basic_expression .
+
+    $default  reduce using rule 63 (Pl12)
+
+
+State 74
+
+   62 Pl11: Unary_op . Pl11
+
+    SIZEOF              shift, and go to state 43
+    IDENTIFIERS         shift, and go to state 44
+    INTEGER_CONSTANT    shift, and go to state 45
+    FLOAT_CONSTANT      shift, and go to state 46
+    CHARACTER_CONSTANT  shift, and go to state 47
+    STRING_CONSTANT     shift, and go to state 48
+    INCR_OP             shift, and go to state 49
+    DECR_OP             shift, and go to state 50
+    '-'                 shift, and go to state 51
+    '*'                 shift, and go to state 52
+    '('                 shift, and go to state 87
+    '~'                 shift, and go to state 55
+    '!'                 shift, and go to state 56
+    '@'                 shift, and go to state 57
+
+    Pl11              go to state 120
+    Pl12              go to state 72
+    Basic_expression  go to state 73
+    Unary_op          go to state 74
+
+
+State 75
+
+   21 Simple_declarator: Simple_declarator '[' ']' .
+
+    $default  reduce using rule 21 (Simple_declarator)
+
+
+State 76
+
+   22 Simple_declarator: Simple_declarator '[' Expression . ']'
+
+    ']'  shift, and go to state 121
+
+
+State 77
+
+   99 SS: Declarator .
+
+    $default  reduce using rule 99 (SS)
+
+
+State 78
+
+   97 Struct_declaration_list: Type SS . ';'
+   98 SS: SS . ',' Declarator
+
+    ';'  shift, and go to state 122
+    ','  shift, and go to state 123
+
+
+State 79
+
+   95 Struct: STRUCT IDENTIFIERS '{' Struct_declaration_list '}' .
+
+    $default  reduce using rule 95 (Struct)
+
+
+State 80
+
+   96 Struct_declaration_list: Struct_declaration_list Type . SS ';'
+
+    IDENTIFIERS  shift, and go to state 19
+    '*'          shift, and go to state 20
+    '('          shift, and go to state 21
+
+    Declarator         go to state 77
+    Pointer            go to state 24
+    Simple_declarator  go to state 25
+    SS                 go to state 124
+
+
+State 81
+
+    7 Declarator_list: Declarator_list ',' Declarator '=' . Initializer
+
+    SIZEOF              shift, and go to state 43
+    IDENTIFIERS         shift, and go to state 44
+    INTEGER_CONSTANT    shift, and go to state 45
+    FLOAT_CONSTANT      shift, and go to state 46
+    CHARACTER_CONSTANT  shift, and go to state 47
+    STRING_CONSTANT     shift, and go to state 48
+    INCR_OP             shift, and go to state 49
+    DECR_OP             shift, and go to state 50
+    '-'                 shift, and go to state 51
+    '*'                 shift, and go to state 52
+    '('                 shift, and go to state 53
+    '{'                 shift, and go to state 54
+    '~'                 shift, and go to state 55
+    '!'                 shift, and go to state 56
+    '@'                 shift, and go to state 57
+
+    Initializer       go to state 125
+    Expression        go to state 59
+    Pl1               go to state 60
+    Pl2               go to state 61
+    Pl3               go to state 62
+    Pl4               go to state 63
+    Pl5               go to state 64
+    Pl6               go to state 65
+    Pl7               go to state 66
+    Pl8               go to state 67
+    Pl9               go to state 68
+    Pl10              go to state 69
+    Unary_expression  go to state 70
+    Pl11              go to state 71
+    Pl12              go to state 72
+    Basic_expression  go to state 73
+    Unary_op          go to state 74
+
+
+State 82
+
+   92 Function: Type Declarator '(' ')' '{' . Stmt '}'
+
+    error               shift, and go to state 126
+    IF                  shift, and go to state 127
+    STRUCT              shift, and go to state 1
+    VOID                shift, and go to state 2
+    LONG                shift, and go to state 3
+    SHORT               shift, and go to state 4
+    CONTINUE            shift, and go to state 128
+    BREAK               shift, and go to state 129
+    WHILE               shift, and go to state 130
+    SIZEOF              shift, and go to state 43
+    RETURN              shift, and go to state 131
+    DOUBLE              shift, and go to state 5
+    FLOAT               shift, and go to state 6
+    INT                 shift, and go to state 7
+    FOR                 shift, and go to state 132
+    CHAR                shift, and go to state 8
+    BOOL                shift, and go to state 9
+    IDENTIFIERS         shift, and go to state 44
+    INTEGER_CONSTANT    shift, and go to state 45
+    FLOAT_CONSTANT      shift, and go to state 46
+    CHARACTER_CONSTANT  shift, and go to state 47
+    STRING_CONSTANT     shift, and go to state 48
+    INCR_OP             shift, and go to state 49
+    DECR_OP             shift, and go to state 50
+    '-'                 shift, and go to state 51
+    '*'                 shift, and go to state 52
+    '('                 shift, and go to state 53
+    ';'                 shift, and go to state 133
+    '{'                 shift, and go to state 134
+    '~'                 shift, and go to state 55
+    '!'                 shift, and go to state 56
+    '@'                 shift, and go to state 57
+
+    '}'  reduce using rule 111 (Stmt)
+
+    Declaration       go to state 135
+    Expression_list   go to state 136
+    Expression        go to state 91
+    Pl1               go to state 60
+    Pl2               go to state 61
+    Pl3               go to state 62
+    Pl4               go to state 63
+    Pl5               go to state 64
+    Pl6               go to state 65
+    Pl7               go to state 66
+    Pl8               go to state 67
+    Pl9               go to state 68
+    Pl10              go to state 69
+    Unary_expression  go to state 70
+    Pl11              go to state 71
+    Pl12              go to state 72
+    Basic_expression  go to state 73
+    Unary_op          go to state 74
+    Type              go to state 137
+    Struct            go to state 15
+    Stmt              go to state 138
+    if_Stmt           go to state 139
+    for_Stmt          go to state 140
+    while_Stmt        go to state 141
+
+
+State 83
+
+   94 Parameter_list: Type Declarator .
+
+    $default  reduce using rule 94 (Parameter_list)
+
+
+State 84
+
+   93 Parameter_list: Parameter_list ',' . Type Declarator
+
+    STRUCT  shift, and go to state 1
+    VOID    shift, and go to state 2
+    LONG    shift, and go to state 3
+    SHORT   shift, and go to state 4
+    DOUBLE  shift, and go to state 5
+    FLOAT   shift, and go to state 6
+    INT     shift, and go to state 7
+    CHAR    shift, and go to state 8
+    BOOL    shift, and go to state 9
+
+    Type    go to state 142
+    Struct  go to state 15
+
+
+State 85
+
+   91 Function: Type Declarator '(' Parameter_list ')' . '{' Stmt '}'
+
+    '{'  shift, and go to state 143
+
+
+State 86
+
+   60 Pl11: SIZEOF '(' . Pl11 ')'
+   61     | SIZEOF '(' . Type ')'
+
+    STRUCT              shift, and go to state 1
+    VOID                shift, and go to state 2
+    LONG                shift, and go to state 3
+    SHORT               shift, and go to state 4
+    SIZEOF              shift, and go to state 43
+    DOUBLE              shift, and go to state 5
+    FLOAT               shift, and go to state 6
+    INT                 shift, and go to state 7
+    CHAR                shift, and go to state 8
+    BOOL                shift, and go to state 9
+    IDENTIFIERS         shift, and go to state 44
+    INTEGER_CONSTANT    shift, and go to state 45
+    FLOAT_CONSTANT      shift, and go to state 46
+    CHARACTER_CONSTANT  shift, and go to state 47
+    STRING_CONSTANT     shift, and go to state 48
+    INCR_OP             shift, and go to state 49
+    DECR_OP             shift, and go to state 50
+    '-'                 shift, and go to state 51
+    '*'                 shift, and go to state 52
+    '('                 shift, and go to state 87
+    '~'                 shift, and go to state 55
+    '!'                 shift, and go to state 56
+    '@'                 shift, and go to state 57
+
+    Pl11              go to state 144
+    Pl12              go to state 72
+    Basic_expression  go to state 73
+    Unary_op          go to state 74
+    Type              go to state 145
+    Struct            go to state 15
+
+
+State 87
+
+   76 Basic_expression: '(' . Expression_list ')'
+
+    SIZEOF              shift, and go to state 43
+    IDENTIFIERS         shift, and go to state 44
+    INTEGER_CONSTANT    shift, and go to state 45
+    FLOAT_CONSTANT      shift, and go to state 46
+    CHARACTER_CONSTANT  shift, and go to state 47
+    STRING_CONSTANT     shift, and go to state 48
+    INCR_OP             shift, and go to state 49
+    DECR_OP             shift, and go to state 50
+    '-'                 shift, and go to state 51
+    '*'                 shift, and go to state 52
+    '('                 shift, and go to state 53
+    '~'                 shift, and go to state 55
+    '!'                 shift, and go to state 56
+    '@'                 shift, and go to state 57
+
+    Expression_list   go to state 90
+    Expression        go to state 91
+    Pl1               go to state 60
+    Pl2               go to state 61
+    Pl3               go to state 62
+    Pl4               go to state 63
+    Pl5               go to state 64
+    Pl6               go to state 65
+    Pl7               go to state 66
+    Pl8               go to state 67
+    Pl9               go to state 68
+    Pl10              go to state 69
+    Unary_expression  go to state 70
+    Pl11              go to state 71
+    Pl12              go to state 72
+    Basic_expression  go to state 73
+    Unary_op          go to state 74
+
+
+State 88
+
+   58 Pl11: INCR_OP Pl11 .
+
+    $default  reduce using rule 58 (Pl11)
+
+
+State 89
+
+   59 Pl11: DECR_OP Pl11 .
+
+    $default  reduce using rule 59 (Pl11)
+
+
+State 90
+
+   24 Expression_list: Expression_list . ',' Expression
+   76 Basic_expression: '(' Expression_list . ')'
+
+    ','  shift, and go to state 146
+    ')'  shift, and go to state 147
+
+
+State 91
+
+   23 Expression_list: Expression .
+
+    $default  reduce using rule 23 (Expression_list)
+
+
+State 92
+
+   55 Unary_expression: '(' Type . ')' Pl11
+
+    ')'  shift, and go to state 148
+
+
+State 93
+
+   14 Initializer_list: Initializer .
+
+    $default  reduce using rule 14 (Initializer_list)
+
+
+State 94
+
+   11 Initializer: '{' Initializer_list . '}'
+   12            | '{' Initializer_list . ',' '}'
+   13 Initializer_list: Initializer_list . ',' Initializer
+
+    ','  shift, and go to state 149
+    '}'  shift, and go to state 150
+
+
+State 95
+
+   28 Pl1: Pl1 OR_OP . Pl2
+
+    SIZEOF              shift, and go to state 43
+    IDENTIFIERS         shift, and go to state 44
+    INTEGER_CONSTANT    shift, and go to state 45
+    FLOAT_CONSTANT      shift, and go to state 46
+    CHARACTER_CONSTANT  shift, and go to state 47
+    STRING_CONSTANT     shift, and go to state 48
+    INCR_OP             shift, and go to state 49
+    DECR_OP             shift, and go to state 50
+    '-'                 shift, and go to state 51
+    '*'                 shift, and go to state 52
+    '('                 shift, and go to state 53
+    '~'                 shift, and go to state 55
+    '!'                 shift, and go to state 56
+    '@'                 shift, and go to state 57
+
+    Pl2               go to state 151
+    Pl3               go to state 62
+    Pl4               go to state 63
+    Pl5               go to state 64
+    Pl6               go to state 65
+    Pl7               go to state 66
+    Pl8               go to state 67
+    Pl9               go to state 68
+    Pl10              go to state 69
+    Unary_expression  go to state 152
+    Pl11              go to state 71
+    Pl12              go to state 72
+    Basic_expression  go to state 73
+    Unary_op          go to state 74
+
+
+State 96
+
+   30 Pl2: Pl2 AND_OP . Pl3
+
+    SIZEOF              shift, and go to state 43
+    IDENTIFIERS         shift, and go to state 44
+    INTEGER_CONSTANT    shift, and go to state 45
+    FLOAT_CONSTANT      shift, and go to state 46
+    CHARACTER_CONSTANT  shift, and go to state 47
+    STRING_CONSTANT     shift, and go to state 48
+    INCR_OP             shift, and go to state 49
+    DECR_OP             shift, and go to state 50
+    '-'                 shift, and go to state 51
+    '*'                 shift, and go to state 52
+    '('                 shift, and go to state 53
+    '~'                 shift, and go to state 55
+    '!'                 shift, and go to state 56
+    '@'                 shift, and go to state 57
+
+    Pl3               go to state 153
+    Pl4               go to state 63
+    Pl5               go to state 64
+    Pl6               go to state 65
+    Pl7               go to state 66
+    Pl8               go to state 67
+    Pl9               go to state 68
+    Pl10              go to state 69
+    Unary_expression  go to state 152
+    Pl11              go to state 71
+    Pl12              go to state 72
+    Basic_expression  go to state 73
+    Unary_op          go to state 74
+
+
+State 97
+
+   32 Pl3: Pl3 '|' . Pl4
+
+    SIZEOF              shift, and go to state 43
+    IDENTIFIERS         shift, and go to state 44
+    INTEGER_CONSTANT    shift, and go to state 45
+    FLOAT_CONSTANT      shift, and go to state 46
+    CHARACTER_CONSTANT  shift, and go to state 47
+    STRING_CONSTANT     shift, and go to state 48
+    INCR_OP             shift, and go to state 49
+    DECR_OP             shift, and go to state 50
+    '-'                 shift, and go to state 51
+    '*'                 shift, and go to state 52
+    '('                 shift, and go to state 53
+    '~'                 shift, and go to state 55
+    '!'                 shift, and go to state 56
+    '@'                 shift, and go to state 57
+
+    Pl4               go to state 154
+    Pl5               go to state 64
+    Pl6               go to state 65
+    Pl7               go to state 66
+    Pl8               go to state 67
+    Pl9               go to state 68
+    Pl10              go to state 69
+    Unary_expression  go to state 152
+    Pl11              go to state 71
+    Pl12              go to state 72
+    Basic_expression  go to state 73
+    Unary_op          go to state 74
+
+
+State 98
+
+   34 Pl4: Pl4 '^' . Pl5
+
+    SIZEOF              shift, and go to state 43
+    IDENTIFIERS         shift, and go to state 44
+    INTEGER_CONSTANT    shift, and go to state 45
+    FLOAT_CONSTANT      shift, and go to state 46
+    CHARACTER_CONSTANT  shift, and go to state 47
+    STRING_CONSTANT     shift, and go to state 48
+    INCR_OP             shift, and go to state 49
+    DECR_OP             shift, and go to state 50
+    '-'                 shift, and go to state 51
+    '*'                 shift, and go to state 52
+    '('                 shift, and go to state 53
+    '~'                 shift, and go to state 55
+    '!'                 shift, and go to state 56
+    '@'                 shift, and go to state 57
+
+    Pl5               go to state 155
+    Pl6               go to state 65
+    Pl7               go to state 66
+    Pl8               go to state 67
+    Pl9               go to state 68
+    Pl10              go to state 69
+    Unary_expression  go to state 152
+    Pl11              go to state 71
+    Pl12              go to state 72
+    Basic_expression  go to state 73
+    Unary_op          go to state 74
+
+
+State 99
+
+   36 Pl5: Pl5 '&' . Pl6
+
+    SIZEOF              shift, and go to state 43
+    IDENTIFIERS         shift, and go to state 44
+    INTEGER_CONSTANT    shift, and go to state 45
+    FLOAT_CONSTANT      shift, and go to state 46
+    CHARACTER_CONSTANT  shift, and go to state 47
+    STRING_CONSTANT     shift, and go to state 48
+    INCR_OP             shift, and go to state 49
+    DECR_OP             shift, and go to state 50
+    '-'                 shift, and go to state 51
+    '*'                 shift, and go to state 52
+    '('                 shift, and go to state 53
+    '~'                 shift, and go to state 55
+    '!'                 shift, and go to state 56
+    '@'                 shift, and go to state 57
+
+    Pl6               go to state 156
+    Pl7               go to state 66
+    Pl8               go to state 67
+    Pl9               go to state 68
+    Pl10              go to state 69
+    Unary_expression  go to state 152
+    Pl11              go to state 71
+    Pl12              go to state 72
+    Basic_expression  go to state 73
+    Unary_op          go to state 74
+
+
+State 100
+
+   38 Pl6: Pl6 EQUAL_TO_OP . Pl7
+
+    SIZEOF              shift, and go to state 43
+    IDENTIFIERS         shift, and go to state 44
+    INTEGER_CONSTANT    shift, and go to state 45
+    FLOAT_CONSTANT      shift, and go to state 46
+    CHARACTER_CONSTANT  shift, and go to state 47
+    STRING_CONSTANT     shift, and go to state 48
+    INCR_OP             shift, and go to state 49
+    DECR_OP             shift, and go to state 50
+    '-'                 shift, and go to state 51
+    '*'                 shift, and go to state 52
+    '('                 shift, and go to state 53
+    '~'                 shift, and go to state 55
+    '!'                 shift, and go to state 56
+    '@'                 shift, and go to state 57
+
+    Pl7               go to state 157
+    Pl8               go to state 67
+    Pl9               go to state 68
+    Pl10              go to state 69
+    Unary_expression  go to state 152
+    Pl11              go to state 71
+    Pl12              go to state 72
+    Basic_expression  go to state 73
+    Unary_op          go to state 74
+
+
+State 101
+
+   39 Pl6: Pl6 NOT_EQUAL_TO_OP . Pl7
+
+    SIZEOF              shift, and go to state 43
+    IDENTIFIERS         shift, and go to state 44
+    INTEGER_CONSTANT    shift, and go to state 45
+    FLOAT_CONSTANT      shift, and go to state 46
+    CHARACTER_CONSTANT  shift, and go to state 47
+    STRING_CONSTANT     shift, and go to state 48
+    INCR_OP             shift, and go to state 49
+    DECR_OP             shift, and go to state 50
+    '-'                 shift, and go to state 51
+    '*'                 shift, and go to state 52
+    '('                 shift, and go to state 53
+    '~'                 shift, and go to state 55
+    '!'                 shift, and go to state 56
+    '@'                 shift, and go to state 57
+
+    Pl7               go to state 158
+    Pl8               go to state 67
+    Pl9               go to state 68
+    Pl10              go to state 69
+    Unary_expression  go to state 152
+    Pl11              go to state 71
+    Pl12              go to state 72
+    Basic_expression  go to state 73
+    Unary_op          go to state 74
+
+
+State 102
+
+   42 Pl7: Pl7 LESS_THAN_EQUAL_TO_OP . Pl8
+
+    SIZEOF              shift, and go to state 43
+    IDENTIFIERS         shift, and go to state 44
+    INTEGER_CONSTANT    shift, and go to state 45
+    FLOAT_CONSTANT      shift, and go to state 46
+    CHARACTER_CONSTANT  shift, and go to state 47
+    STRING_CONSTANT     shift, and go to state 48
+    INCR_OP             shift, and go to state 49
+    DECR_OP             shift, and go to state 50
+    '-'                 shift, and go to state 51
+    '*'                 shift, and go to state 52
+    '('                 shift, and go to state 53
+    '~'                 shift, and go to state 55
+    '!'                 shift, and go to state 56
+    '@'                 shift, and go to state 57
+
+    Pl8               go to state 159
+    Pl9               go to state 68
+    Pl10              go to state 69
+    Unary_expression  go to state 152
+    Pl11              go to state 71
+    Pl12              go to state 72
+    Basic_expression  go to state 73
+    Unary_op          go to state 74
+
+
+State 103
+
+   44 Pl7: Pl7 GREATER_THAN_EQUAL_TO_OP . Pl8
+
+    SIZEOF              shift, and go to state 43
+    IDENTIFIERS         shift, and go to state 44
+    INTEGER_CONSTANT    shift, and go to state 45
+    FLOAT_CONSTANT      shift, and go to state 46
+    CHARACTER_CONSTANT  shift, and go to state 47
+    STRING_CONSTANT     shift, and go to state 48
+    INCR_OP             shift, and go to state 49
+    DECR_OP             shift, and go to state 50
+    '-'                 shift, and go to state 51
+    '*'                 shift, and go to state 52
+    '('                 shift, and go to state 53
+    '~'                 shift, and go to state 55
+    '!'                 shift, and go to state 56
+    '@'                 shift, and go to state 57
+
+    Pl8               go to state 160
+    Pl9               go to state 68
+    Pl10              go to state 69
+    Unary_expression  go to state 152
+    Pl11              go to state 71
+    Pl12              go to state 72
+    Basic_expression  go to state 73
+    Unary_op          go to state 74
+
+
+State 104
+
+   41 Pl7: Pl7 '<' . Pl8
+
+    SIZEOF              shift, and go to state 43
+    IDENTIFIERS         shift, and go to state 44
+    INTEGER_CONSTANT    shift, and go to state 45
+    FLOAT_CONSTANT      shift, and go to state 46
+    CHARACTER_CONSTANT  shift, and go to state 47
+    STRING_CONSTANT     shift, and go to state 48
+    INCR_OP             shift, and go to state 49
+    DECR_OP             shift, and go to state 50
+    '-'                 shift, and go to state 51
+    '*'                 shift, and go to state 52
+    '('                 shift, and go to state 53
+    '~'                 shift, and go to state 55
+    '!'                 shift, and go to state 56
+    '@'                 shift, and go to state 57
+
+    Pl8               go to state 161
+    Pl9               go to state 68
+    Pl10              go to state 69
+    Unary_expression  go to state 152
+    Pl11              go to state 71
+    Pl12              go to state 72
+    Basic_expression  go to state 73
+    Unary_op          go to state 74
+
+
+State 105
+
+   43 Pl7: Pl7 '>' . Pl8
+
+    SIZEOF              shift, and go to state 43
+    IDENTIFIERS         shift, and go to state 44
+    INTEGER_CONSTANT    shift, and go to state 45
+    FLOAT_CONSTANT      shift, and go to state 46
+    CHARACTER_CONSTANT  shift, and go to state 47
+    STRING_CONSTANT     shift, and go to state 48
+    INCR_OP             shift, and go to state 49
+    DECR_OP             shift, and go to state 50
+    '-'                 shift, and go to state 51
+    '*'                 shift, and go to state 52
+    '('                 shift, and go to state 53
+    '~'                 shift, and go to state 55
+    '!'                 shift, and go to state 56
+    '@'                 shift, and go to state 57
+
+    Pl8               go to state 162
+    Pl9               go to state 68
+    Pl10              go to state 69
+    Unary_expression  go to state 152
+    Pl11              go to state 71
+    Pl12              go to state 72
+    Basic_expression  go to state 73
+    Unary_op          go to state 74
+
+
+State 106
+
+   47 Pl8: Pl8 RIGHT_SHIFT_OP . Pl9
+
+    SIZEOF              shift, and go to state 43
+    IDENTIFIERS         shift, and go to state 44
+    INTEGER_CONSTANT    shift, and go to state 45
+    FLOAT_CONSTANT      shift, and go to state 46
+    CHARACTER_CONSTANT  shift, and go to state 47
+    STRING_CONSTANT     shift, and go to state 48
+    INCR_OP             shift, and go to state 49
+    DECR_OP             shift, and go to state 50
+    '-'                 shift, and go to state 51
+    '*'                 shift, and go to state 52
+    '('                 shift, and go to state 53
+    '~'                 shift, and go to state 55
+    '!'                 shift, and go to state 56
+    '@'                 shift, and go to state 57
+
+    Pl9               go to state 163
+    Pl10              go to state 69
+    Unary_expression  go to state 152
+    Pl11              go to state 71
+    Pl12              go to state 72
+    Basic_expression  go to state 73
+    Unary_op          go to state 74
+
+
+State 107
+
+   46 Pl8: Pl8 LEFT_SHIFT_OP . Pl9
+
+    SIZEOF              shift, and go to state 43
+    IDENTIFIERS         shift, and go to state 44
+    INTEGER_CONSTANT    shift, and go to state 45
+    FLOAT_CONSTANT      shift, and go to state 46
+    CHARACTER_CONSTANT  shift, and go to state 47
+    STRING_CONSTANT     shift, and go to state 48
+    INCR_OP             shift, and go to state 49
+    DECR_OP             shift, and go to state 50
+    '-'                 shift, and go to state 51
+    '*'                 shift, and go to state 52
+    '('                 shift, and go to state 53
+    '~'                 shift, and go to state 55
+    '!'                 shift, and go to state 56
+    '@'                 shift, and go to state 57
+
+    Pl9               go to state 164
+    Pl10              go to state 69
+    Unary_expression  go to state 152
+    Pl11              go to state 71
+    Pl12              go to state 72
+    Basic_expression  go to state 73
+    Unary_op          go to state 74
+
+
+State 108
+
+   49 Pl9: Pl9 '+' . Pl10
+
+    SIZEOF              shift, and go to state 43
+    IDENTIFIERS         shift, and go to state 44
+    INTEGER_CONSTANT    shift, and go to state 45
+    FLOAT_CONSTANT      shift, and go to state 46
+    CHARACTER_CONSTANT  shift, and go to state 47
+    STRING_CONSTANT     shift, and go to state 48
+    INCR_OP             shift, and go to state 49
+    DECR_OP             shift, and go to state 50
+    '-'                 shift, and go to state 51
+    '*'                 shift, and go to state 52
+    '('                 shift, and go to state 53
+    '~'                 shift, and go to state 55
+    '!'                 shift, and go to state 56
+    '@'                 shift, and go to state 57
+
+    Pl10              go to state 165
+    Unary_expression  go to state 152
+    Pl11              go to state 71
+    Pl12              go to state 72
+    Basic_expression  go to state 73
+    Unary_op          go to state 74
+
+
+State 109
+
+   50 Pl9: Pl9 '-' . Pl10
+
+    SIZEOF              shift, and go to state 43
+    IDENTIFIERS         shift, and go to state 44
+    INTEGER_CONSTANT    shift, and go to state 45
+    FLOAT_CONSTANT      shift, and go to state 46
+    CHARACTER_CONSTANT  shift, and go to state 47
+    STRING_CONSTANT     shift, and go to state 48
+    INCR_OP             shift, and go to state 49
+    DECR_OP             shift, and go to state 50
+    '-'                 shift, and go to state 51
+    '*'                 shift, and go to state 52
+    '('                 shift, and go to state 53
+    '~'                 shift, and go to state 55
+    '!'                 shift, and go to state 56
+    '@'                 shift, and go to state 57
+
+    Pl10              go to state 166
+    Unary_expression  go to state 152
+    Pl11              go to state 71
+    Pl12              go to state 72
+    Basic_expression  go to state 73
+    Unary_op          go to state 74
+
+
+State 110
+
+   52 Pl10: Pl10 '*' . Unary_expression
+
+    SIZEOF              shift, and go to state 43
+    IDENTIFIERS         shift, and go to state 44
+    INTEGER_CONSTANT    shift, and go to state 45
+    FLOAT_CONSTANT      shift, and go to state 46
+    CHARACTER_CONSTANT  shift, and go to state 47
+    STRING_CONSTANT     shift, and go to state 48
+    INCR_OP             shift, and go to state 49
+    DECR_OP             shift, and go to state 50
+    '-'                 shift, and go to state 51
+    '*'                 shift, and go to state 52
+    '('                 shift, and go to state 53
+    '~'                 shift, and go to state 55
+    '!'                 shift, and go to state 56
+    '@'                 shift, and go to state 57
+
+    Unary_expression  go to state 167
+    Pl11              go to state 71
+    Pl12              go to state 72
+    Basic_expression  go to state 73
+    Unary_op          go to state 74
+
+
+State 111
+
+   53 Pl10: Pl10 '/' . Unary_expression
+
+    SIZEOF              shift, and go to state 43
+    IDENTIFIERS         shift, and go to state 44
+    INTEGER_CONSTANT    shift, and go to state 45
+    FLOAT_CONSTANT      shift, and go to state 46
+    CHARACTER_CONSTANT  shift, and go to state 47
+    STRING_CONSTANT     shift, and go to state 48
+    INCR_OP             shift, and go to state 49
+    DECR_OP             shift, and go to state 50
+    '-'                 shift, and go to state 51
+    '*'                 shift, and go to state 52
+    '('                 shift, and go to state 53
+    '~'                 shift, and go to state 55
+    '!'                 shift, and go to state 56
+    '@'                 shift, and go to state 57
+
+    Unary_expression  go to state 168
+    Pl11              go to state 71
+    Pl12              go to state 72
+    Basic_expression  go to state 73
+    Unary_op          go to state 74
+
+
+State 112
+
+   54 Pl10: Pl10 '%' . Unary_expression
+
+    SIZEOF              shift, and go to state 43
+    IDENTIFIERS         shift, and go to state 44
+    INTEGER_CONSTANT    shift, and go to state 45
+    FLOAT_CONSTANT      shift, and go to state 46
+    CHARACTER_CONSTANT  shift, and go to state 47
+    STRING_CONSTANT     shift, and go to state 48
+    INCR_OP             shift, and go to state 49
+    DECR_OP             shift, and go to state 50
+    '-'                 shift, and go to state 51
+    '*'                 shift, and go to state 52
+    '('                 shift, and go to state 53
+    '~'                 shift, and go to state 55
+    '!'                 shift, and go to state 56
+    '@'                 shift, and go to state 57
+
+    Unary_expression  go to state 169
+    Pl11              go to state 71
+    Pl12              go to state 72
+    Basic_expression  go to state 73
+    Unary_op          go to state 74
+
+
+State 113
+
+   26 Expression: Unary_expression '=' . Expression
+
+    SIZEOF              shift, and go to state 43
+    IDENTIFIERS         shift, and go to state 44
+    INTEGER_CONSTANT    shift, and go to state 45
+    FLOAT_CONSTANT      shift, and go to state 46
+    CHARACTER_CONSTANT  shift, and go to state 47
+    STRING_CONSTANT     shift, and go to state 48
+    INCR_OP             shift, and go to state 49
+    DECR_OP             shift, and go to state 50
+    '-'                 shift, and go to state 51
+    '*'                 shift, and go to state 52
+    '('                 shift, and go to state 53
+    '~'                 shift, and go to state 55
+    '!'                 shift, and go to state 56
+    '@'                 shift, and go to state 57
+
+    Expression        go to state 170
+    Pl1               go to state 60
+    Pl2               go to state 61
+    Pl3               go to state 62
+    Pl4               go to state 63
+    Pl5               go to state 64
+    Pl6               go to state 65
+    Pl7               go to state 66
+    Pl8               go to state 67
+    Pl9               go to state 68
+    Pl10              go to state 69
+    Unary_expression  go to state 70
+    Pl11              go to state 71
+    Pl12              go to state 72
+    Basic_expression  go to state 73
+    Unary_op          go to state 74
+
+
+State 114
+
+   68 Pl12: Pl12 INCR_OP .
+
+    $default  reduce using rule 68 (Pl12)
+
+
+State 115
+
+   69 Pl12: Pl12 DECR_OP .
+
+    $default  reduce using rule 69 (Pl12)
+
+
+State 116
+
+   70 Pl12: Pl12 PTR_OP . IDENTIFIERS
+
+    IDENTIFIERS  shift, and go to state 171
+
+
+State 117
+
+   65 Pl12: Pl12 '(' . ')'
+   66     | Pl12 '(' . Expression_list ')'
+
+    SIZEOF              shift, and go to state 43
+    IDENTIFIERS         shift, and go to state 44
+    INTEGER_CONSTANT    shift, and go to state 45
+    FLOAT_CONSTANT      shift, and go to state 46
+    CHARACTER_CONSTANT  shift, and go to state 47
+    STRING_CONSTANT     shift, and go to state 48
+    INCR_OP             shift, and go to state 49
+    DECR_OP             shift, and go to state 50
+    '-'                 shift, and go to state 51
+    '*'                 shift, and go to state 52
+    '('                 shift, and go to state 53
+    ')'                 shift, and go to state 172
+    '~'                 shift, and go to state 55
+    '!'                 shift, and go to state 56
+    '@'                 shift, and go to state 57
+
+    Expression_list   go to state 173
+    Expression        go to state 91
+    Pl1               go to state 60
+    Pl2               go to state 61
+    Pl3               go to state 62
+    Pl4               go to state 63
+    Pl5               go to state 64
+    Pl6               go to state 65
+    Pl7               go to state 66
+    Pl8               go to state 67
+    Pl9               go to state 68
+    Pl10              go to state 69
+    Unary_expression  go to state 70
+    Pl11              go to state 71
+    Pl12              go to state 72
+    Basic_expression  go to state 73
+    Unary_op          go to state 74
+
+
+State 118
+
+   64 Pl12: Pl12 '[' . Expression ']'
+
+    SIZEOF              shift, and go to state 43
+    IDENTIFIERS         shift, and go to state 44
+    INTEGER_CONSTANT    shift, and go to state 45
+    FLOAT_CONSTANT      shift, and go to state 46
+    CHARACTER_CONSTANT  shift, and go to state 47
+    STRING_CONSTANT     shift, and go to state 48
+    INCR_OP             shift, and go to state 49
+    DECR_OP             shift, and go to state 50
+    '-'                 shift, and go to state 51
+    '*'                 shift, and go to state 52
+    '('                 shift, and go to state 53
+    '~'                 shift, and go to state 55
+    '!'                 shift, and go to state 56
+    '@'                 shift, and go to state 57
+
+    Expression        go to state 174
+    Pl1               go to state 60
+    Pl2               go to state 61
+    Pl3               go to state 62
+    Pl4               go to state 63
+    Pl5               go to state 64
+    Pl6               go to state 65
+    Pl7               go to state 66
+    Pl8               go to state 67
+    Pl9               go to state 68
+    Pl10              go to state 69
+    Unary_expression  go to state 70
+    Pl11              go to state 71
+    Pl12              go to state 72
+    Basic_expression  go to state 73
+    Unary_op          go to state 74
+
+
+State 119
+
+   67 Pl12: Pl12 '.' . IDENTIFIERS
+
+    IDENTIFIERS  shift, and go to state 175
+
+
+State 120
+
+   62 Pl11: Unary_op Pl11 .
+
+    $default  reduce using rule 62 (Pl11)
+
+
+State 121
+
+   22 Simple_declarator: Simple_declarator '[' Expression ']' .
+
+    $default  reduce using rule 22 (Simple_declarator)
+
+
+State 122
+
+   97 Struct_declaration_list: Type SS ';' .
+
+    $default  reduce using rule 97 (Struct_declaration_list)
+
+
+State 123
+
+   98 SS: SS ',' . Declarator
+
+    IDENTIFIERS  shift, and go to state 19
+    '*'          shift, and go to state 20
+    '('          shift, and go to state 21
+
+    Declarator         go to state 176
+    Pointer            go to state 24
+    Simple_declarator  go to state 25
+
+
+State 124
+
+   96 Struct_declaration_list: Struct_declaration_list Type SS . ';'
+   98 SS: SS . ',' Declarator
+
+    ';'  shift, and go to state 177
+    ','  shift, and go to state 123
+
+
+State 125
+
+    7 Declarator_list: Declarator_list ',' Declarator '=' Initializer .
+
+    $default  reduce using rule 7 (Declarator_list)
+
+
+State 126
+
+  112 Stmt: error . ';'
+
+    ';'  shift, and go to state 178
+
+
+State 127
+
+  113 if_Stmt: IF . '(' Expression_list ')' '{' Stmt '}' ELSE '{' Stmt '}'
+  114        | IF . '(' Expression_list ')' '{' Stmt '}'
+
+    '('  shift, and go to state 179
+
+
+State 128
+
+  106 Stmt: CONTINUE . ';' Stmt
+
+    ';'  shift, and go to state 180
+
+
+State 129
+
+  107 Stmt: BREAK . ';' Stmt
+
+    ';'  shift, and go to state 181
+
+
+State 130
+
+  116 while_Stmt: WHILE . '(' Expression_list ')' '{' Stmt '}'
+  117           | WHILE . '(' error ')'
+
+    '('  shift, and go to state 182
+
+
+State 131
+
+  108 Stmt: RETURN . ';' Stmt
+  109     | RETURN . Expression_list ';' Stmt
+
+    SIZEOF              shift, and go to state 43
+    IDENTIFIERS         shift, and go to state 44
+    INTEGER_CONSTANT    shift, and go to state 45
+    FLOAT_CONSTANT      shift, and go to state 46
+    CHARACTER_CONSTANT  shift, and go to state 47
+    STRING_CONSTANT     shift, and go to state 48
+    INCR_OP             shift, and go to state 49
+    DECR_OP             shift, and go to state 50
+    '-'                 shift, and go to state 51
+    '*'                 shift, and go to state 52
+    '('                 shift, and go to state 53
+    ';'                 shift, and go to state 183
+    '~'                 shift, and go to state 55
+    '!'                 shift, and go to state 56
+    '@'                 shift, and go to state 57
+
+    Expression_list   go to state 184
+    Expression        go to state 91
+    Pl1               go to state 60
+    Pl2               go to state 61
+    Pl3               go to state 62
+    Pl4               go to state 63
+    Pl5               go to state 64
+    Pl6               go to state 65
+    Pl7               go to state 66
+    Pl8               go to state 67
+    Pl9               go to state 68
+    Pl10              go to state 69
+    Unary_expression  go to state 70
+    Pl11              go to state 71
+    Pl12              go to state 72
+    Basic_expression  go to state 73
+    Unary_op          go to state 74
+
+
+State 132
+
+  115 for_Stmt: FOR . '(' Expression_list ';' Expression_list ';' Expression_list ')' '{' Stmt '}'
+
+    '('  shift, and go to state 185
+
+
+State 133
+
+  105 Stmt: ';' . Stmt
+
+    error               shift, and go to state 126
+    IF                  shift, and go to state 127
+    STRUCT              shift, and go to state 1
+    VOID                shift, and go to state 2
+    LONG                shift, and go to state 3
+    SHORT               shift, and go to state 4
+    CONTINUE            shift, and go to state 128
+    BREAK               shift, and go to state 129
+    WHILE               shift, and go to state 130
+    SIZEOF              shift, and go to state 43
+    RETURN              shift, and go to state 131
+    DOUBLE              shift, and go to state 5
+    FLOAT               shift, and go to state 6
+    INT                 shift, and go to state 7
+    FOR                 shift, and go to state 132
+    CHAR                shift, and go to state 8
+    BOOL                shift, and go to state 9
+    IDENTIFIERS         shift, and go to state 44
+    INTEGER_CONSTANT    shift, and go to state 45
+    FLOAT_CONSTANT      shift, and go to state 46
+    CHARACTER_CONSTANT  shift, and go to state 47
+    STRING_CONSTANT     shift, and go to state 48
+    INCR_OP             shift, and go to state 49
+    DECR_OP             shift, and go to state 50
+    '-'                 shift, and go to state 51
+    '*'                 shift, and go to state 52
+    '('                 shift, and go to state 53
+    ';'                 shift, and go to state 133
+    '{'                 shift, and go to state 134
+    '~'                 shift, and go to state 55
+    '!'                 shift, and go to state 56
+    '@'                 shift, and go to state 57
+
+    '}'  reduce using rule 111 (Stmt)
+
+    Declaration       go to state 135
+    Expression_list   go to state 136
+    Expression        go to state 91
+    Pl1               go to state 60
+    Pl2               go to state 61
+    Pl3               go to state 62
+    Pl4               go to state 63
+    Pl5               go to state 64
+    Pl6               go to state 65
+    Pl7               go to state 66
+    Pl8               go to state 67
+    Pl9               go to state 68
+    Pl10              go to state 69
+    Unary_expression  go to state 70
+    Pl11              go to state 71
+    Pl12              go to state 72
+    Basic_expression  go to state 73
+    Unary_op          go to state 74
+    Type              go to state 137
+    Struct            go to state 15
+    Stmt              go to state 186
+    if_Stmt           go to state 139
+    for_Stmt          go to state 140
+    while_Stmt        go to state 141
+
+
+State 134
+
+  104 Stmt: '{' . Stmt '}' Stmt
+
+    error               shift, and go to state 126
+    IF                  shift, and go to state 127
+    STRUCT              shift, and go to state 1
+    VOID                shift, and go to state 2
+    LONG                shift, and go to state 3
+    SHORT               shift, and go to state 4
+    CONTINUE            shift, and go to state 128
+    BREAK               shift, and go to state 129
+    WHILE               shift, and go to state 130
+    SIZEOF              shift, and go to state 43
+    RETURN              shift, and go to state 131
+    DOUBLE              shift, and go to state 5
+    FLOAT               shift, and go to state 6
+    INT                 shift, and go to state 7
+    FOR                 shift, and go to state 132
+    CHAR                shift, and go to state 8
+    BOOL                shift, and go to state 9
+    IDENTIFIERS         shift, and go to state 44
+    INTEGER_CONSTANT    shift, and go to state 45
+    FLOAT_CONSTANT      shift, and go to state 46
+    CHARACTER_CONSTANT  shift, and go to state 47
+    STRING_CONSTANT     shift, and go to state 48
+    INCR_OP             shift, and go to state 49
+    DECR_OP             shift, and go to state 50
+    '-'                 shift, and go to state 51
+    '*'                 shift, and go to state 52
+    '('                 shift, and go to state 53
+    ';'                 shift, and go to state 133
+    '{'                 shift, and go to state 134
+    '~'                 shift, and go to state 55
+    '!'                 shift, and go to state 56
+    '@'                 shift, and go to state 57
+
+    '}'  reduce using rule 111 (Stmt)
+
+    Declaration       go to state 135
+    Expression_list   go to state 136
+    Expression        go to state 91
+    Pl1               go to state 60
+    Pl2               go to state 61
+    Pl3               go to state 62
+    Pl4               go to state 63
+    Pl5               go to state 64
+    Pl6               go to state 65
+    Pl7               go to state 66
+    Pl8               go to state 67
+    Pl9               go to state 68
+    Pl10              go to state 69
+    Unary_expression  go to state 70
+    Pl11              go to state 71
+    Pl12              go to state 72
+    Basic_expression  go to state 73
+    Unary_op          go to state 74
+    Type              go to state 137
+    Struct            go to state 15
+    Stmt              go to state 187
+    if_Stmt           go to state 139
+    for_Stmt          go to state 140
+    while_Stmt        go to state 141
+
+
+State 135
+
+  110 Stmt: Declaration . Stmt
+
+    error               shift, and go to state 126
+    IF                  shift, and go to state 127
+    STRUCT              shift, and go to state 1
+    VOID                shift, and go to state 2
+    LONG                shift, and go to state 3
+    SHORT               shift, and go to state 4
+    CONTINUE            shift, and go to state 128
+    BREAK               shift, and go to state 129
+    WHILE               shift, and go to state 130
+    SIZEOF              shift, and go to state 43
+    RETURN              shift, and go to state 131
+    DOUBLE              shift, and go to state 5
+    FLOAT               shift, and go to state 6
+    INT                 shift, and go to state 7
+    FOR                 shift, and go to state 132
+    CHAR                shift, and go to state 8
+    BOOL                shift, and go to state 9
+    IDENTIFIERS         shift, and go to state 44
+    INTEGER_CONSTANT    shift, and go to state 45
+    FLOAT_CONSTANT      shift, and go to state 46
+    CHARACTER_CONSTANT  shift, and go to state 47
+    STRING_CONSTANT     shift, and go to state 48
+    INCR_OP             shift, and go to state 49
+    DECR_OP             shift, and go to state 50
+    '-'                 shift, and go to state 51
+    '*'                 shift, and go to state 52
+    '('                 shift, and go to state 53
+    ';'                 shift, and go to state 133
+    '{'                 shift, and go to state 134
+    '~'                 shift, and go to state 55
+    '!'                 shift, and go to state 56
+    '@'                 shift, and go to state 57
+
+    '}'  reduce using rule 111 (Stmt)
+
+    Declaration       go to state 135
+    Expression_list   go to state 136
+    Expression        go to state 91
+    Pl1               go to state 60
+    Pl2               go to state 61
+    Pl3               go to state 62
+    Pl4               go to state 63
+    Pl5               go to state 64
+    Pl6               go to state 65
+    Pl7               go to state 66
+    Pl8               go to state 67
+    Pl9               go to state 68
+    Pl10              go to state 69
+    Unary_expression  go to state 70
+    Pl11              go to state 71
+    Pl12              go to state 72
+    Basic_expression  go to state 73
+    Unary_op          go to state 74
+    Type              go to state 137
+    Struct            go to state 15
+    Stmt              go to state 188
+    if_Stmt           go to state 139
+    for_Stmt          go to state 140
+    while_Stmt        go to state 141
+
+
+State 136
+
+   24 Expression_list: Expression_list . ',' Expression
+  103 Stmt: Expression_list . ';' Stmt
+
+    ';'  shift, and go to state 189
+    ','  shift, and go to state 146
+
+
+State 137
+
+    5 Declaration: Type . Declarator_list ';'
+
+    IDENTIFIERS  shift, and go to state 19
+    '*'          shift, and go to state 20
+    '('          shift, and go to state 21
+
+    Declarator_list    go to state 22
+    Declarator         go to state 190
+    Pointer            go to state 24
+    Simple_declarator  go to state 25
+
+
+State 138
+
+   92 Function: Type Declarator '(' ')' '{' Stmt . '}'
+
+    '}'  shift, and go to state 191
+
+
+State 139
+
+  100 Stmt: if_Stmt . Stmt
+
+    error               shift, and go to state 126
+    IF                  shift, and go to state 127
+    STRUCT              shift, and go to state 1
+    VOID                shift, and go to state 2
+    LONG                shift, and go to state 3
+    SHORT               shift, and go to state 4
+    CONTINUE            shift, and go to state 128
+    BREAK               shift, and go to state 129
+    WHILE               shift, and go to state 130
+    SIZEOF              shift, and go to state 43
+    RETURN              shift, and go to state 131
+    DOUBLE              shift, and go to state 5
+    FLOAT               shift, and go to state 6
+    INT                 shift, and go to state 7
+    FOR                 shift, and go to state 132
+    CHAR                shift, and go to state 8
+    BOOL                shift, and go to state 9
+    IDENTIFIERS         shift, and go to state 44
+    INTEGER_CONSTANT    shift, and go to state 45
+    FLOAT_CONSTANT      shift, and go to state 46
+    CHARACTER_CONSTANT  shift, and go to state 47
+    STRING_CONSTANT     shift, and go to state 48
+    INCR_OP             shift, and go to state 49
+    DECR_OP             shift, and go to state 50
+    '-'                 shift, and go to state 51
+    '*'                 shift, and go to state 52
+    '('                 shift, and go to state 53
+    ';'                 shift, and go to state 133
+    '{'                 shift, and go to state 134
+    '~'                 shift, and go to state 55
+    '!'                 shift, and go to state 56
+    '@'                 shift, and go to state 57
+
+    '}'  reduce using rule 111 (Stmt)
+
+    Declaration       go to state 135
+    Expression_list   go to state 136
+    Expression        go to state 91
+    Pl1               go to state 60
+    Pl2               go to state 61
+    Pl3               go to state 62
+    Pl4               go to state 63
+    Pl5               go to state 64
+    Pl6               go to state 65
+    Pl7               go to state 66
+    Pl8               go to state 67
+    Pl9               go to state 68
+    Pl10              go to state 69
+    Unary_expression  go to state 70
+    Pl11              go to state 71
+    Pl12              go to state 72
+    Basic_expression  go to state 73
+    Unary_op          go to state 74
+    Type              go to state 137
+    Struct            go to state 15
+    Stmt              go to state 192
+    if_Stmt           go to state 139
+    for_Stmt          go to state 140
+    while_Stmt        go to state 141
+
+
+State 140
+
+  102 Stmt: for_Stmt . Stmt
+
+    error               shift, and go to state 126
+    IF                  shift, and go to state 127
+    STRUCT              shift, and go to state 1
+    VOID                shift, and go to state 2
+    LONG                shift, and go to state 3
+    SHORT               shift, and go to state 4
+    CONTINUE            shift, and go to state 128
+    BREAK               shift, and go to state 129
+    WHILE               shift, and go to state 130
+    SIZEOF              shift, and go to state 43
+    RETURN              shift, and go to state 131
+    DOUBLE              shift, and go to state 5
+    FLOAT               shift, and go to state 6
+    INT                 shift, and go to state 7
+    FOR                 shift, and go to state 132
+    CHAR                shift, and go to state 8
+    BOOL                shift, and go to state 9
+    IDENTIFIERS         shift, and go to state 44
+    INTEGER_CONSTANT    shift, and go to state 45
+    FLOAT_CONSTANT      shift, and go to state 46
+    CHARACTER_CONSTANT  shift, and go to state 47
+    STRING_CONSTANT     shift, and go to state 48
+    INCR_OP             shift, and go to state 49
+    DECR_OP             shift, and go to state 50
+    '-'                 shift, and go to state 51
+    '*'                 shift, and go to state 52
+    '('                 shift, and go to state 53
+    ';'                 shift, and go to state 133
+    '{'                 shift, and go to state 134
+    '~'                 shift, and go to state 55
+    '!'                 shift, and go to state 56
+    '@'                 shift, and go to state 57
+
+    '}'  reduce using rule 111 (Stmt)
+
+    Declaration       go to state 135
+    Expression_list   go to state 136
+    Expression        go to state 91
+    Pl1               go to state 60
+    Pl2               go to state 61
+    Pl3               go to state 62
+    Pl4               go to state 63
+    Pl5               go to state 64
+    Pl6               go to state 65
+    Pl7               go to state 66
+    Pl8               go to state 67
+    Pl9               go to state 68
+    Pl10              go to state 69
+    Unary_expression  go to state 70
+    Pl11              go to state 71
+    Pl12              go to state 72
+    Basic_expression  go to state 73
+    Unary_op          go to state 74
+    Type              go to state 137
+    Struct            go to state 15
+    Stmt              go to state 193
+    if_Stmt           go to state 139
+    for_Stmt          go to state 140
+    while_Stmt        go to state 141
+
+
+State 141
+
+  101 Stmt: while_Stmt . Stmt
+
+    error               shift, and go to state 126
+    IF                  shift, and go to state 127
+    STRUCT              shift, and go to state 1
+    VOID                shift, and go to state 2
+    LONG                shift, and go to state 3
+    SHORT               shift, and go to state 4
+    CONTINUE            shift, and go to state 128
+    BREAK               shift, and go to state 129
+    WHILE               shift, and go to state 130
+    SIZEOF              shift, and go to state 43
+    RETURN              shift, and go to state 131
+    DOUBLE              shift, and go to state 5
+    FLOAT               shift, and go to state 6
+    INT                 shift, and go to state 7
+    FOR                 shift, and go to state 132
+    CHAR                shift, and go to state 8
+    BOOL                shift, and go to state 9
+    IDENTIFIERS         shift, and go to state 44
+    INTEGER_CONSTANT    shift, and go to state 45
+    FLOAT_CONSTANT      shift, and go to state 46
+    CHARACTER_CONSTANT  shift, and go to state 47
+    STRING_CONSTANT     shift, and go to state 48
+    INCR_OP             shift, and go to state 49
+    DECR_OP             shift, and go to state 50
+    '-'                 shift, and go to state 51
+    '*'                 shift, and go to state 52
+    '('                 shift, and go to state 53
+    ';'                 shift, and go to state 133
+    '{'                 shift, and go to state 134
+    '~'                 shift, and go to state 55
+    '!'                 shift, and go to state 56
+    '@'                 shift, and go to state 57
+
+    '}'  reduce using rule 111 (Stmt)
+
+    Declaration       go to state 135
+    Expression_list   go to state 136
+    Expression        go to state 91
+    Pl1               go to state 60
+    Pl2               go to state 61
+    Pl3               go to state 62
+    Pl4               go to state 63
+    Pl5               go to state 64
+    Pl6               go to state 65
+    Pl7               go to state 66
+    Pl8               go to state 67
+    Pl9               go to state 68
+    Pl10              go to state 69
+    Unary_expression  go to state 70
+    Pl11              go to state 71
+    Pl12              go to state 72
+    Basic_expression  go to state 73
+    Unary_op          go to state 74
+    Type              go to state 137
+    Struct            go to state 15
+    Stmt              go to state 194
+    if_Stmt           go to state 139
+    for_Stmt          go to state 140
+    while_Stmt        go to state 141
+
+
+State 142
+
+   93 Parameter_list: Parameter_list ',' Type . Declarator
+
+    IDENTIFIERS  shift, and go to state 19
+    '*'          shift, and go to state 20
+    '('          shift, and go to state 21
+
+    Declarator         go to state 195
+    Pointer            go to state 24
+    Simple_declarator  go to state 25
+
+
+State 143
+
+   91 Function: Type Declarator '(' Parameter_list ')' '{' . Stmt '}'
+
+    error               shift, and go to state 126
+    IF                  shift, and go to state 127
+    STRUCT              shift, and go to state 1
+    VOID                shift, and go to state 2
+    LONG                shift, and go to state 3
+    SHORT               shift, and go to state 4
+    CONTINUE            shift, and go to state 128
+    BREAK               shift, and go to state 129
+    WHILE               shift, and go to state 130
+    SIZEOF              shift, and go to state 43
+    RETURN              shift, and go to state 131
+    DOUBLE              shift, and go to state 5
+    FLOAT               shift, and go to state 6
+    INT                 shift, and go to state 7
+    FOR                 shift, and go to state 132
+    CHAR                shift, and go to state 8
+    BOOL                shift, and go to state 9
+    IDENTIFIERS         shift, and go to state 44
+    INTEGER_CONSTANT    shift, and go to state 45
+    FLOAT_CONSTANT      shift, and go to state 46
+    CHARACTER_CONSTANT  shift, and go to state 47
+    STRING_CONSTANT     shift, and go to state 48
+    INCR_OP             shift, and go to state 49
+    DECR_OP             shift, and go to state 50
+    '-'                 shift, and go to state 51
+    '*'                 shift, and go to state 52
+    '('                 shift, and go to state 53
+    ';'                 shift, and go to state 133
+    '{'                 shift, and go to state 134
+    '~'                 shift, and go to state 55
+    '!'                 shift, and go to state 56
+    '@'                 shift, and go to state 57
+
+    '}'  reduce using rule 111 (Stmt)
+
+    Declaration       go to state 135
+    Expression_list   go to state 136
+    Expression        go to state 91
+    Pl1               go to state 60
+    Pl2               go to state 61
+    Pl3               go to state 62
+    Pl4               go to state 63
+    Pl5               go to state 64
+    Pl6               go to state 65
+    Pl7               go to state 66
+    Pl8               go to state 67
+    Pl9               go to state 68
+    Pl10              go to state 69
+    Unary_expression  go to state 70
+    Pl11              go to state 71
+    Pl12              go to state 72
+    Basic_expression  go to state 73
+    Unary_op          go to state 74
+    Type              go to state 137
+    Struct            go to state 15
+    Stmt              go to state 196
+    if_Stmt           go to state 139
+    for_Stmt          go to state 140
+    while_Stmt        go to state 141
+
+
+State 144
+
+   60 Pl11: SIZEOF '(' Pl11 . ')'
+
+    ')'  shift, and go to state 197
+
+
+State 145
+
+   61 Pl11: SIZEOF '(' Type . ')'
+
+    ')'  shift, and go to state 198
+
+
+State 146
+
+   24 Expression_list: Expression_list ',' . Expression
+
+    SIZEOF              shift, and go to state 43
+    IDENTIFIERS         shift, and go to state 44
+    INTEGER_CONSTANT    shift, and go to state 45
+    FLOAT_CONSTANT      shift, and go to state 46
+    CHARACTER_CONSTANT  shift, and go to state 47
+    STRING_CONSTANT     shift, and go to state 48
+    INCR_OP             shift, and go to state 49
+    DECR_OP             shift, and go to state 50
+    '-'                 shift, and go to state 51
+    '*'                 shift, and go to state 52
+    '('                 shift, and go to state 53
+    '~'                 shift, and go to state 55
+    '!'                 shift, and go to state 56
+    '@'                 shift, and go to state 57
+
+    Expression        go to state 199
+    Pl1               go to state 60
+    Pl2               go to state 61
+    Pl3               go to state 62
+    Pl4               go to state 63
+    Pl5               go to state 64
+    Pl6               go to state 65
+    Pl7               go to state 66
+    Pl8               go to state 67
+    Pl9               go to state 68
+    Pl10              go to state 69
+    Unary_expression  go to state 70
+    Pl11              go to state 71
+    Pl12              go to state 72
+    Basic_expression  go to state 73
+    Unary_op          go to state 74
+
+
+State 147
+
+   76 Basic_expression: '(' Expression_list ')' .
+
+    $default  reduce using rule 76 (Basic_expression)
+
+
+State 148
+
+   55 Unary_expression: '(' Type ')' . Pl11
+
+    SIZEOF              shift, and go to state 43
+    IDENTIFIERS         shift, and go to state 44
+    INTEGER_CONSTANT    shift, and go to state 45
+    FLOAT_CONSTANT      shift, and go to state 46
+    CHARACTER_CONSTANT  shift, and go to state 47
+    STRING_CONSTANT     shift, and go to state 48
+    INCR_OP             shift, and go to state 49
+    DECR_OP             shift, and go to state 50
+    '-'                 shift, and go to state 51
+    '*'                 shift, and go to state 52
+    '('                 shift, and go to state 87
+    '~'                 shift, and go to state 55
+    '!'                 shift, and go to state 56
+    '@'                 shift, and go to state 57
+
+    Pl11              go to state 200
+    Pl12              go to state 72
+    Basic_expression  go to state 73
+    Unary_op          go to state 74
+
+
+State 149
+
+   12 Initializer: '{' Initializer_list ',' . '}'
+   13 Initializer_list: Initializer_list ',' . Initializer
+
+    SIZEOF              shift, and go to state 43
+    IDENTIFIERS         shift, and go to state 44
+    INTEGER_CONSTANT    shift, and go to state 45
+    FLOAT_CONSTANT      shift, and go to state 46
+    CHARACTER_CONSTANT  shift, and go to state 47
+    STRING_CONSTANT     shift, and go to state 48
+    INCR_OP             shift, and go to state 49
+    DECR_OP             shift, and go to state 50
+    '-'                 shift, and go to state 51
+    '*'                 shift, and go to state 52
+    '('                 shift, and go to state 53
+    '{'                 shift, and go to state 54
+    '}'                 shift, and go to state 201
+    '~'                 shift, and go to state 55
+    '!'                 shift, and go to state 56
+    '@'                 shift, and go to state 57
+
+    Initializer       go to state 202
+    Expression        go to state 59
+    Pl1               go to state 60
+    Pl2               go to state 61
+    Pl3               go to state 62
+    Pl4               go to state 63
+    Pl5               go to state 64
+    Pl6               go to state 65
+    Pl7               go to state 66
+    Pl8               go to state 67
+    Pl9               go to state 68
+    Pl10              go to state 69
+    Unary_expression  go to state 70
+    Pl11              go to state 71
+    Pl12              go to state 72
+    Basic_expression  go to state 73
+    Unary_op          go to state 74
+
+
+State 150
+
+   11 Initializer: '{' Initializer_list '}' .
+
+    $default  reduce using rule 11 (Initializer)
+
+
+State 151
+
+   28 Pl1: Pl1 OR_OP Pl2 .
+   30 Pl2: Pl2 . AND_OP Pl3
+
+    AND_OP  shift, and go to state 96
+
+    $default  reduce using rule 28 (Pl1)
+
+
+State 152
+
+   51 Pl10: Unary_expression .
+
+    $default  reduce using rule 51 (Pl10)
+
+
+State 153
+
+   30 Pl2: Pl2 AND_OP Pl3 .
+   32 Pl3: Pl3 . '|' Pl4
+
+    '|'  shift, and go to state 97
+
+    $default  reduce using rule 30 (Pl2)
+
+
+State 154
+
+   32 Pl3: Pl3 '|' Pl4 .
+   34 Pl4: Pl4 . '^' Pl5
+
+    '^'  shift, and go to state 98
+
+    $default  reduce using rule 32 (Pl3)
+
+
+State 155
+
+   34 Pl4: Pl4 '^' Pl5 .
+   36 Pl5: Pl5 . '&' Pl6
+
+    '&'  shift, and go to state 99
+
+    $default  reduce using rule 34 (Pl4)
+
+
+State 156
+
+   36 Pl5: Pl5 '&' Pl6 .
+   38 Pl6: Pl6 . EQUAL_TO_OP Pl7
+   39    | Pl6 . NOT_EQUAL_TO_OP Pl7
+
+    EQUAL_TO_OP      shift, and go to state 100
+    NOT_EQUAL_TO_OP  shift, and go to state 101
+
+    $default  reduce using rule 36 (Pl5)
+
+
+State 157
+
+   38 Pl6: Pl6 EQUAL_TO_OP Pl7 .
+   41 Pl7: Pl7 . '<' Pl8
+   42    | Pl7 . LESS_THAN_EQUAL_TO_OP Pl8
+   43    | Pl7 . '>' Pl8
+   44    | Pl7 . GREATER_THAN_EQUAL_TO_OP Pl8
+
+    LESS_THAN_EQUAL_TO_OP     shift, and go to state 102
+    GREATER_THAN_EQUAL_TO_OP  shift, and go to state 103
+    '<'                       shift, and go to state 104
+    '>'                       shift, and go to state 105
+
+    $default  reduce using rule 38 (Pl6)
+
+
+State 158
+
+   39 Pl6: Pl6 NOT_EQUAL_TO_OP Pl7 .
+   41 Pl7: Pl7 . '<' Pl8
+   42    | Pl7 . LESS_THAN_EQUAL_TO_OP Pl8
+   43    | Pl7 . '>' Pl8
+   44    | Pl7 . GREATER_THAN_EQUAL_TO_OP Pl8
+
+    LESS_THAN_EQUAL_TO_OP     shift, and go to state 102
+    GREATER_THAN_EQUAL_TO_OP  shift, and go to state 103
+    '<'                       shift, and go to state 104
+    '>'                       shift, and go to state 105
+
+    $default  reduce using rule 39 (Pl6)
+
+
+State 159
+
+   42 Pl7: Pl7 LESS_THAN_EQUAL_TO_OP Pl8 .
+   46 Pl8: Pl8 . LEFT_SHIFT_OP Pl9
+   47    | Pl8 . RIGHT_SHIFT_OP Pl9
+
+    RIGHT_SHIFT_OP  shift, and go to state 106
+    LEFT_SHIFT_OP   shift, and go to state 107
+
+    $default  reduce using rule 42 (Pl7)
+
+
+State 160
+
+   44 Pl7: Pl7 GREATER_THAN_EQUAL_TO_OP Pl8 .
+   46 Pl8: Pl8 . LEFT_SHIFT_OP Pl9
+   47    | Pl8 . RIGHT_SHIFT_OP Pl9
+
+    RIGHT_SHIFT_OP  shift, and go to state 106
+    LEFT_SHIFT_OP   shift, and go to state 107
+
+    $default  reduce using rule 44 (Pl7)
+
+
+State 161
+
+   41 Pl7: Pl7 '<' Pl8 .
+   46 Pl8: Pl8 . LEFT_SHIFT_OP Pl9
+   47    | Pl8 . RIGHT_SHIFT_OP Pl9
+
+    RIGHT_SHIFT_OP  shift, and go to state 106
+    LEFT_SHIFT_OP   shift, and go to state 107
+
+    $default  reduce using rule 41 (Pl7)
+
+
+State 162
+
+   43 Pl7: Pl7 '>' Pl8 .
+   46 Pl8: Pl8 . LEFT_SHIFT_OP Pl9
+   47    | Pl8 . RIGHT_SHIFT_OP Pl9
+
+    RIGHT_SHIFT_OP  shift, and go to state 106
+    LEFT_SHIFT_OP   shift, and go to state 107
+
+    $default  reduce using rule 43 (Pl7)
+
+
+State 163
+
+   47 Pl8: Pl8 RIGHT_SHIFT_OP Pl9 .
+   49 Pl9: Pl9 . '+' Pl10
+   50    | Pl9 . '-' Pl10
+
+    '+'  shift, and go to state 108
+    '-'  shift, and go to state 109
+
+    $default  reduce using rule 47 (Pl8)
+
+
+State 164
+
+   46 Pl8: Pl8 LEFT_SHIFT_OP Pl9 .
+   49 Pl9: Pl9 . '+' Pl10
+   50    | Pl9 . '-' Pl10
+
+    '+'  shift, and go to state 108
+    '-'  shift, and go to state 109
+
+    $default  reduce using rule 46 (Pl8)
+
+
+State 165
+
+   49 Pl9: Pl9 '+' Pl10 .
+   52 Pl10: Pl10 . '*' Unary_expression
+   53     | Pl10 . '/' Unary_expression
+   54     | Pl10 . '%' Unary_expression
+
+    '*'  shift, and go to state 110
+    '/'  shift, and go to state 111
+    '%'  shift, and go to state 112
+
+    $default  reduce using rule 49 (Pl9)
+
+
+State 166
+
+   50 Pl9: Pl9 '-' Pl10 .
+   52 Pl10: Pl10 . '*' Unary_expression
+   53     | Pl10 . '/' Unary_expression
+   54     | Pl10 . '%' Unary_expression
+
+    '*'  shift, and go to state 110
+    '/'  shift, and go to state 111
+    '%'  shift, and go to state 112
+
+    $default  reduce using rule 50 (Pl9)
+
+
+State 167
+
+   52 Pl10: Pl10 '*' Unary_expression .
+
+    $default  reduce using rule 52 (Pl10)
+
+
+State 168
+
+   53 Pl10: Pl10 '/' Unary_expression .
+
+    $default  reduce using rule 53 (Pl10)
+
+
+State 169
+
+   54 Pl10: Pl10 '%' Unary_expression .
+
+    $default  reduce using rule 54 (Pl10)
+
+
+State 170
+
+   26 Expression: Unary_expression '=' Expression .
+
+    $default  reduce using rule 26 (Expression)
+
+
+State 171
+
+   70 Pl12: Pl12 PTR_OP IDENTIFIERS .
+
+    $default  reduce using rule 70 (Pl12)
+
+
+State 172
+
+   65 Pl12: Pl12 '(' ')' .
+
+    $default  reduce using rule 65 (Pl12)
+
+
+State 173
+
+   24 Expression_list: Expression_list . ',' Expression
+   66 Pl12: Pl12 '(' Expression_list . ')'
+
+    ','  shift, and go to state 146
+    ')'  shift, and go to state 203
+
+
+State 174
+
+   64 Pl12: Pl12 '[' Expression . ']'
+
+    ']'  shift, and go to state 204
+
+
+State 175
+
+   67 Pl12: Pl12 '.' IDENTIFIERS .
+
+    $default  reduce using rule 67 (Pl12)
+
+
+State 176
+
+   98 SS: SS ',' Declarator .
+
+    $default  reduce using rule 98 (SS)
+
+
+State 177
+
+   96 Struct_declaration_list: Struct_declaration_list Type SS ';' .
+
+    $default  reduce using rule 96 (Struct_declaration_list)
+
+
+State 178
+
+  112 Stmt: error ';' .
+
+    $default  reduce using rule 112 (Stmt)
+
+
+State 179
+
+  113 if_Stmt: IF '(' . Expression_list ')' '{' Stmt '}' ELSE '{' Stmt '}'
+  114        | IF '(' . Expression_list ')' '{' Stmt '}'
+
+    SIZEOF              shift, and go to state 43
+    IDENTIFIERS         shift, and go to state 44
+    INTEGER_CONSTANT    shift, and go to state 45
+    FLOAT_CONSTANT      shift, and go to state 46
+    CHARACTER_CONSTANT  shift, and go to state 47
+    STRING_CONSTANT     shift, and go to state 48
+    INCR_OP             shift, and go to state 49
+    DECR_OP             shift, and go to state 50
+    '-'                 shift, and go to state 51
+    '*'                 shift, and go to state 52
+    '('                 shift, and go to state 53
+    '~'                 shift, and go to state 55
+    '!'                 shift, and go to state 56
+    '@'                 shift, and go to state 57
+
+    Expression_list   go to state 205
+    Expression        go to state 91
+    Pl1               go to state 60
+    Pl2               go to state 61
+    Pl3               go to state 62
+    Pl4               go to state 63
+    Pl5               go to state 64
+    Pl6               go to state 65
+    Pl7               go to state 66
+    Pl8               go to state 67
+    Pl9               go to state 68
+    Pl10              go to state 69
+    Unary_expression  go to state 70
+    Pl11              go to state 71
+    Pl12              go to state 72
+    Basic_expression  go to state 73
+    Unary_op          go to state 74
+
+
+State 180
+
+  106 Stmt: CONTINUE ';' . Stmt
+
+    error               shift, and go to state 126
+    IF                  shift, and go to state 127
+    STRUCT              shift, and go to state 1
+    VOID                shift, and go to state 2
+    LONG                shift, and go to state 3
+    SHORT               shift, and go to state 4
+    CONTINUE            shift, and go to state 128
+    BREAK               shift, and go to state 129
+    WHILE               shift, and go to state 130
+    SIZEOF              shift, and go to state 43
+    RETURN              shift, and go to state 131
+    DOUBLE              shift, and go to state 5
+    FLOAT               shift, and go to state 6
+    INT                 shift, and go to state 7
+    FOR                 shift, and go to state 132
+    CHAR                shift, and go to state 8
+    BOOL                shift, and go to state 9
+    IDENTIFIERS         shift, and go to state 44
+    INTEGER_CONSTANT    shift, and go to state 45
+    FLOAT_CONSTANT      shift, and go to state 46
+    CHARACTER_CONSTANT  shift, and go to state 47
+    STRING_CONSTANT     shift, and go to state 48
+    INCR_OP             shift, and go to state 49
+    DECR_OP             shift, and go to state 50
+    '-'                 shift, and go to state 51
+    '*'                 shift, and go to state 52
+    '('                 shift, and go to state 53
+    ';'                 shift, and go to state 133
+    '{'                 shift, and go to state 134
+    '~'                 shift, and go to state 55
+    '!'                 shift, and go to state 56
+    '@'                 shift, and go to state 57
+
+    '}'  reduce using rule 111 (Stmt)
+
+    Declaration       go to state 135
+    Expression_list   go to state 136
+    Expression        go to state 91
+    Pl1               go to state 60
+    Pl2               go to state 61
+    Pl3               go to state 62
+    Pl4               go to state 63
+    Pl5               go to state 64
+    Pl6               go to state 65
+    Pl7               go to state 66
+    Pl8               go to state 67
+    Pl9               go to state 68
+    Pl10              go to state 69
+    Unary_expression  go to state 70
+    Pl11              go to state 71
+    Pl12              go to state 72
+    Basic_expression  go to state 73
+    Unary_op          go to state 74
+    Type              go to state 137
+    Struct            go to state 15
+    Stmt              go to state 206
+    if_Stmt           go to state 139
+    for_Stmt          go to state 140
+    while_Stmt        go to state 141
+
+
+State 181
+
+  107 Stmt: BREAK ';' . Stmt
+
+    error               shift, and go to state 126
+    IF                  shift, and go to state 127
+    STRUCT              shift, and go to state 1
+    VOID                shift, and go to state 2
+    LONG                shift, and go to state 3
+    SHORT               shift, and go to state 4
+    CONTINUE            shift, and go to state 128
+    BREAK               shift, and go to state 129
+    WHILE               shift, and go to state 130
+    SIZEOF              shift, and go to state 43
+    RETURN              shift, and go to state 131
+    DOUBLE              shift, and go to state 5
+    FLOAT               shift, and go to state 6
+    INT                 shift, and go to state 7
+    FOR                 shift, and go to state 132
+    CHAR                shift, and go to state 8
+    BOOL                shift, and go to state 9
+    IDENTIFIERS         shift, and go to state 44
+    INTEGER_CONSTANT    shift, and go to state 45
+    FLOAT_CONSTANT      shift, and go to state 46
+    CHARACTER_CONSTANT  shift, and go to state 47
+    STRING_CONSTANT     shift, and go to state 48
+    INCR_OP             shift, and go to state 49
+    DECR_OP             shift, and go to state 50
+    '-'                 shift, and go to state 51
+    '*'                 shift, and go to state 52
+    '('                 shift, and go to state 53
+    ';'                 shift, and go to state 133
+    '{'                 shift, and go to state 134
+    '~'                 shift, and go to state 55
+    '!'                 shift, and go to state 56
+    '@'                 shift, and go to state 57
+
+    '}'  reduce using rule 111 (Stmt)
+
+    Declaration       go to state 135
+    Expression_list   go to state 136
+    Expression        go to state 91
+    Pl1               go to state 60
+    Pl2               go to state 61
+    Pl3               go to state 62
+    Pl4               go to state 63
+    Pl5               go to state 64
+    Pl6               go to state 65
+    Pl7               go to state 66
+    Pl8               go to state 67
+    Pl9               go to state 68
+    Pl10              go to state 69
+    Unary_expression  go to state 70
+    Pl11              go to state 71
+    Pl12              go to state 72
+    Basic_expression  go to state 73
+    Unary_op          go to state 74
+    Type              go to state 137
+    Struct            go to state 15
+    Stmt              go to state 207
+    if_Stmt           go to state 139
+    for_Stmt          go to state 140
+    while_Stmt        go to state 141
+
+
+State 182
+
+  116 while_Stmt: WHILE '(' . Expression_list ')' '{' Stmt '}'
+  117           | WHILE '(' . error ')'
+
+    error               shift, and go to state 208
+    SIZEOF              shift, and go to state 43
+    IDENTIFIERS         shift, and go to state 44
+    INTEGER_CONSTANT    shift, and go to state 45
+    FLOAT_CONSTANT      shift, and go to state 46
+    CHARACTER_CONSTANT  shift, and go to state 47
+    STRING_CONSTANT     shift, and go to state 48
+    INCR_OP             shift, and go to state 49
+    DECR_OP             shift, and go to state 50
+    '-'                 shift, and go to state 51
+    '*'                 shift, and go to state 52
+    '('                 shift, and go to state 53
+    '~'                 shift, and go to state 55
+    '!'                 shift, and go to state 56
+    '@'                 shift, and go to state 57
+
+    Expression_list   go to state 209
+    Expression        go to state 91
+    Pl1               go to state 60
+    Pl2               go to state 61
+    Pl3               go to state 62
+    Pl4               go to state 63
+    Pl5               go to state 64
+    Pl6               go to state 65
+    Pl7               go to state 66
+    Pl8               go to state 67
+    Pl9               go to state 68
+    Pl10              go to state 69
+    Unary_expression  go to state 70
+    Pl11              go to state 71
+    Pl12              go to state 72
+    Basic_expression  go to state 73
+    Unary_op          go to state 74
+
+
+State 183
+
+  108 Stmt: RETURN ';' . Stmt
+
+    error               shift, and go to state 126
+    IF                  shift, and go to state 127
+    STRUCT              shift, and go to state 1
+    VOID                shift, and go to state 2
+    LONG                shift, and go to state 3
+    SHORT               shift, and go to state 4
+    CONTINUE            shift, and go to state 128
+    BREAK               shift, and go to state 129
+    WHILE               shift, and go to state 130
+    SIZEOF              shift, and go to state 43
+    RETURN              shift, and go to state 131
+    DOUBLE              shift, and go to state 5
+    FLOAT               shift, and go to state 6
+    INT                 shift, and go to state 7
+    FOR                 shift, and go to state 132
+    CHAR                shift, and go to state 8
+    BOOL                shift, and go to state 9
+    IDENTIFIERS         shift, and go to state 44
+    INTEGER_CONSTANT    shift, and go to state 45
+    FLOAT_CONSTANT      shift, and go to state 46
+    CHARACTER_CONSTANT  shift, and go to state 47
+    STRING_CONSTANT     shift, and go to state 48
+    INCR_OP             shift, and go to state 49
+    DECR_OP             shift, and go to state 50
+    '-'                 shift, and go to state 51
+    '*'                 shift, and go to state 52
+    '('                 shift, and go to state 53
+    ';'                 shift, and go to state 133
+    '{'                 shift, and go to state 134
+    '~'                 shift, and go to state 55
+    '!'                 shift, and go to state 56
+    '@'                 shift, and go to state 57
+
+    '}'  reduce using rule 111 (Stmt)
+
+    Declaration       go to state 135
+    Expression_list   go to state 136
+    Expression        go to state 91
+    Pl1               go to state 60
+    Pl2               go to state 61
+    Pl3               go to state 62
+    Pl4               go to state 63
+    Pl5               go to state 64
+    Pl6               go to state 65
+    Pl7               go to state 66
+    Pl8               go to state 67
+    Pl9               go to state 68
+    Pl10              go to state 69
+    Unary_expression  go to state 70
+    Pl11              go to state 71
+    Pl12              go to state 72
+    Basic_expression  go to state 73
+    Unary_op          go to state 74
+    Type              go to state 137
+    Struct            go to state 15
+    Stmt              go to state 210
+    if_Stmt           go to state 139
+    for_Stmt          go to state 140
+    while_Stmt        go to state 141
+
+
+State 184
+
+   24 Expression_list: Expression_list . ',' Expression
+  109 Stmt: RETURN Expression_list . ';' Stmt
+
+    ';'  shift, and go to state 211
+    ','  shift, and go to state 146
+
+
+State 185
+
+  115 for_Stmt: FOR '(' . Expression_list ';' Expression_list ';' Expression_list ')' '{' Stmt '}'
+
+    SIZEOF              shift, and go to state 43
+    IDENTIFIERS         shift, and go to state 44
+    INTEGER_CONSTANT    shift, and go to state 45
+    FLOAT_CONSTANT      shift, and go to state 46
+    CHARACTER_CONSTANT  shift, and go to state 47
+    STRING_CONSTANT     shift, and go to state 48
+    INCR_OP             shift, and go to state 49
+    DECR_OP             shift, and go to state 50
+    '-'                 shift, and go to state 51
+    '*'                 shift, and go to state 52
+    '('                 shift, and go to state 53
+    '~'                 shift, and go to state 55
+    '!'                 shift, and go to state 56
+    '@'                 shift, and go to state 57
+
+    Expression_list   go to state 212
+    Expression        go to state 91
+    Pl1               go to state 60
+    Pl2               go to state 61
+    Pl3               go to state 62
+    Pl4               go to state 63
+    Pl5               go to state 64
+    Pl6               go to state 65
+    Pl7               go to state 66
+    Pl8               go to state 67
+    Pl9               go to state 68
+    Pl10              go to state 69
+    Unary_expression  go to state 70
+    Pl11              go to state 71
+    Pl12              go to state 72
+    Basic_expression  go to state 73
+    Unary_op          go to state 74
+
+
+State 186
+
+  105 Stmt: ';' Stmt .
+
+    $default  reduce using rule 105 (Stmt)
+
+
+State 187
+
+  104 Stmt: '{' Stmt . '}' Stmt
+
+    '}'  shift, and go to state 213
+
+
+State 188
+
+  110 Stmt: Declaration Stmt .
+
+    $default  reduce using rule 110 (Stmt)
+
+
+State 189
+
+  103 Stmt: Expression_list ';' . Stmt
+
+    error               shift, and go to state 126
+    IF                  shift, and go to state 127
+    STRUCT              shift, and go to state 1
+    VOID                shift, and go to state 2
+    LONG                shift, and go to state 3
+    SHORT               shift, and go to state 4
+    CONTINUE            shift, and go to state 128
+    BREAK               shift, and go to state 129
+    WHILE               shift, and go to state 130
+    SIZEOF              shift, and go to state 43
+    RETURN              shift, and go to state 131
+    DOUBLE              shift, and go to state 5
+    FLOAT               shift, and go to state 6
+    INT                 shift, and go to state 7
+    FOR                 shift, and go to state 132
+    CHAR                shift, and go to state 8
+    BOOL                shift, and go to state 9
+    IDENTIFIERS         shift, and go to state 44
+    INTEGER_CONSTANT    shift, and go to state 45
+    FLOAT_CONSTANT      shift, and go to state 46
+    CHARACTER_CONSTANT  shift, and go to state 47
+    STRING_CONSTANT     shift, and go to state 48
+    INCR_OP             shift, and go to state 49
+    DECR_OP             shift, and go to state 50
+    '-'                 shift, and go to state 51
+    '*'                 shift, and go to state 52
+    '('                 shift, and go to state 53
+    ';'                 shift, and go to state 133
+    '{'                 shift, and go to state 134
+    '~'                 shift, and go to state 55
+    '!'                 shift, and go to state 56
+    '@'                 shift, and go to state 57
+
+    '}'  reduce using rule 111 (Stmt)
+
+    Declaration       go to state 135
+    Expression_list   go to state 136
+    Expression        go to state 91
+    Pl1               go to state 60
+    Pl2               go to state 61
+    Pl3               go to state 62
+    Pl4               go to state 63
+    Pl5               go to state 64
+    Pl6               go to state 65
+    Pl7               go to state 66
+    Pl8               go to state 67
+    Pl9               go to state 68
+    Pl10              go to state 69
+    Unary_expression  go to state 70
+    Pl11              go to state 71
+    Pl12              go to state 72
+    Basic_expression  go to state 73
+    Unary_op          go to state 74
+    Type              go to state 137
+    Struct            go to state 15
+    Stmt              go to state 214
+    if_Stmt           go to state 139
+    for_Stmt          go to state 140
+    while_Stmt        go to state 141
+
+
+State 190
+
+    8 Declarator_list: Declarator .
+    9                | Declarator . '=' Initializer
+
+    '='  shift, and go to state 33
+
+    $default  reduce using rule 8 (Declarator_list)
+
+
+State 191
+
+   92 Function: Type Declarator '(' ')' '{' Stmt '}' .
+
+    $default  reduce using rule 92 (Function)
+
+
+State 192
+
+  100 Stmt: if_Stmt Stmt .
+
+    $default  reduce using rule 100 (Stmt)
+
+
+State 193
+
+  102 Stmt: for_Stmt Stmt .
+
+    $default  reduce using rule 102 (Stmt)
+
+
+State 194
+
+  101 Stmt: while_Stmt Stmt .
+
+    $default  reduce using rule 101 (Stmt)
+
+
+State 195
+
+   93 Parameter_list: Parameter_list ',' Type Declarator .
+
+    $default  reduce using rule 93 (Parameter_list)
+
+
+State 196
+
+   91 Function: Type Declarator '(' Parameter_list ')' '{' Stmt . '}'
+
+    '}'  shift, and go to state 215
+
+
+State 197
+
+   60 Pl11: SIZEOF '(' Pl11 ')' .
+
+    $default  reduce using rule 60 (Pl11)
+
+
+State 198
+
+   61 Pl11: SIZEOF '(' Type ')' .
+
+    $default  reduce using rule 61 (Pl11)
+
+
+State 199
+
+   24 Expression_list: Expression_list ',' Expression .
+
+    $default  reduce using rule 24 (Expression_list)
+
+
+State 200
+
+   55 Unary_expression: '(' Type ')' Pl11 .
+
+    $default  reduce using rule 55 (Unary_expression)
+
+
+State 201
+
+   12 Initializer: '{' Initializer_list ',' '}' .
+
+    $default  reduce using rule 12 (Initializer)
+
+
+State 202
+
+   13 Initializer_list: Initializer_list ',' Initializer .
+
+    $default  reduce using rule 13 (Initializer_list)
+
+
+State 203
+
+   66 Pl12: Pl12 '(' Expression_list ')' .
+
+    $default  reduce using rule 66 (Pl12)
+
+
+State 204
+
+   64 Pl12: Pl12 '[' Expression ']' .
+
+    $default  reduce using rule 64 (Pl12)
+
+
+State 205
+
+   24 Expression_list: Expression_list . ',' Expression
+  113 if_Stmt: IF '(' Expression_list . ')' '{' Stmt '}' ELSE '{' Stmt '}'
+  114        | IF '(' Expression_list . ')' '{' Stmt '}'
+
+    ','  shift, and go to state 146
+    ')'  shift, and go to state 216
+
+
+State 206
+
+  106 Stmt: CONTINUE ';' Stmt .
+
+    $default  reduce using rule 106 (Stmt)
+
+
+State 207
+
+  107 Stmt: BREAK ';' Stmt .
+
+    $default  reduce using rule 107 (Stmt)
+
+
+State 208
+
+  117 while_Stmt: WHILE '(' error . ')'
+
+    ')'  shift, and go to state 217
+
+
+State 209
+
+   24 Expression_list: Expression_list . ',' Expression
+  116 while_Stmt: WHILE '(' Expression_list . ')' '{' Stmt '}'
+
+    ','  shift, and go to state 146
+    ')'  shift, and go to state 218
+
+
+State 210
+
+  108 Stmt: RETURN ';' Stmt .
+
+    $default  reduce using rule 108 (Stmt)
+
+
+State 211
+
+  109 Stmt: RETURN Expression_list ';' . Stmt
+
+    error               shift, and go to state 126
+    IF                  shift, and go to state 127
+    STRUCT              shift, and go to state 1
+    VOID                shift, and go to state 2
+    LONG                shift, and go to state 3
+    SHORT               shift, and go to state 4
+    CONTINUE            shift, and go to state 128
+    BREAK               shift, and go to state 129
+    WHILE               shift, and go to state 130
+    SIZEOF              shift, and go to state 43
+    RETURN              shift, and go to state 131
+    DOUBLE              shift, and go to state 5
+    FLOAT               shift, and go to state 6
+    INT                 shift, and go to state 7
+    FOR                 shift, and go to state 132
+    CHAR                shift, and go to state 8
+    BOOL                shift, and go to state 9
+    IDENTIFIERS         shift, and go to state 44
+    INTEGER_CONSTANT    shift, and go to state 45
+    FLOAT_CONSTANT      shift, and go to state 46
+    CHARACTER_CONSTANT  shift, and go to state 47
+    STRING_CONSTANT     shift, and go to state 48
+    INCR_OP             shift, and go to state 49
+    DECR_OP             shift, and go to state 50
+    '-'                 shift, and go to state 51
+    '*'                 shift, and go to state 52
+    '('                 shift, and go to state 53
+    ';'                 shift, and go to state 133
+    '{'                 shift, and go to state 134
+    '~'                 shift, and go to state 55
+    '!'                 shift, and go to state 56
+    '@'                 shift, and go to state 57
+
+    '}'  reduce using rule 111 (Stmt)
+
+    Declaration       go to state 135
+    Expression_list   go to state 136
+    Expression        go to state 91
+    Pl1               go to state 60
+    Pl2               go to state 61
+    Pl3               go to state 62
+    Pl4               go to state 63
+    Pl5               go to state 64
+    Pl6               go to state 65
+    Pl7               go to state 66
+    Pl8               go to state 67
+    Pl9               go to state 68
+    Pl10              go to state 69
+    Unary_expression  go to state 70
+    Pl11              go to state 71
+    Pl12              go to state 72
+    Basic_expression  go to state 73
+    Unary_op          go to state 74
+    Type              go to state 137
+    Struct            go to state 15
+    Stmt              go to state 219
+    if_Stmt           go to state 139
+    for_Stmt          go to state 140
+    while_Stmt        go to state 141
+
+
+State 212
+
+   24 Expression_list: Expression_list . ',' Expression
+  115 for_Stmt: FOR '(' Expression_list . ';' Expression_list ';' Expression_list ')' '{' Stmt '}'
+
+    ';'  shift, and go to state 220
+    ','  shift, and go to state 146
+
+
+State 213
+
+  104 Stmt: '{' Stmt '}' . Stmt
+
+    error               shift, and go to state 126
+    IF                  shift, and go to state 127
+    STRUCT              shift, and go to state 1
+    VOID                shift, and go to state 2
+    LONG                shift, and go to state 3
+    SHORT               shift, and go to state 4
+    CONTINUE            shift, and go to state 128
+    BREAK               shift, and go to state 129
+    WHILE               shift, and go to state 130
+    SIZEOF              shift, and go to state 43
+    RETURN              shift, and go to state 131
+    DOUBLE              shift, and go to state 5
+    FLOAT               shift, and go to state 6
+    INT                 shift, and go to state 7
+    FOR                 shift, and go to state 132
+    CHAR                shift, and go to state 8
+    BOOL                shift, and go to state 9
+    IDENTIFIERS         shift, and go to state 44
+    INTEGER_CONSTANT    shift, and go to state 45
+    FLOAT_CONSTANT      shift, and go to state 46
+    CHARACTER_CONSTANT  shift, and go to state 47
+    STRING_CONSTANT     shift, and go to state 48
+    INCR_OP             shift, and go to state 49
+    DECR_OP             shift, and go to state 50
+    '-'                 shift, and go to state 51
+    '*'                 shift, and go to state 52
+    '('                 shift, and go to state 53
+    ';'                 shift, and go to state 133
+    '{'                 shift, and go to state 134
+    '~'                 shift, and go to state 55
+    '!'                 shift, and go to state 56
+    '@'                 shift, and go to state 57
+
+    '}'  reduce using rule 111 (Stmt)
+
+    Declaration       go to state 135
+    Expression_list   go to state 136
+    Expression        go to state 91
+    Pl1               go to state 60
+    Pl2               go to state 61
+    Pl3               go to state 62
+    Pl4               go to state 63
+    Pl5               go to state 64
+    Pl6               go to state 65
+    Pl7               go to state 66
+    Pl8               go to state 67
+    Pl9               go to state 68
+    Pl10              go to state 69
+    Unary_expression  go to state 70
+    Pl11              go to state 71
+    Pl12              go to state 72
+    Basic_expression  go to state 73
+    Unary_op          go to state 74
+    Type              go to state 137
+    Struct            go to state 15
+    Stmt              go to state 221
+    if_Stmt           go to state 139
+    for_Stmt          go to state 140
+    while_Stmt        go to state 141
+
+
+State 214
+
+  103 Stmt: Expression_list ';' Stmt .
+
+    $default  reduce using rule 103 (Stmt)
+
+
+State 215
+
+   91 Function: Type Declarator '(' Parameter_list ')' '{' Stmt '}' .
+
+    $default  reduce using rule 91 (Function)
+
+
+State 216
+
+  113 if_Stmt: IF '(' Expression_list ')' . '{' Stmt '}' ELSE '{' Stmt '}'
+  114        | IF '(' Expression_list ')' . '{' Stmt '}'
+
+    '{'  shift, and go to state 222
+
+
+State 217
+
+  117 while_Stmt: WHILE '(' error ')' .
+
+    $default  reduce using rule 117 (while_Stmt)
+
+
+State 218
+
+  116 while_Stmt: WHILE '(' Expression_list ')' . '{' Stmt '}'
+
+    '{'  shift, and go to state 223
+
+
+State 219
+
+  109 Stmt: RETURN Expression_list ';' Stmt .
+
+    $default  reduce using rule 109 (Stmt)
+
+
+State 220
+
+  115 for_Stmt: FOR '(' Expression_list ';' . Expression_list ';' Expression_list ')' '{' Stmt '}'
+
+    SIZEOF              shift, and go to state 43
+    IDENTIFIERS         shift, and go to state 44
+    INTEGER_CONSTANT    shift, and go to state 45
+    FLOAT_CONSTANT      shift, and go to state 46
+    CHARACTER_CONSTANT  shift, and go to state 47
+    STRING_CONSTANT     shift, and go to state 48
+    INCR_OP             shift, and go to state 49
+    DECR_OP             shift, and go to state 50
+    '-'                 shift, and go to state 51
+    '*'                 shift, and go to state 52
+    '('                 shift, and go to state 53
+    '~'                 shift, and go to state 55
+    '!'                 shift, and go to state 56
+    '@'                 shift, and go to state 57
+
+    Expression_list   go to state 224
+    Expression        go to state 91
+    Pl1               go to state 60
+    Pl2               go to state 61
+    Pl3               go to state 62
+    Pl4               go to state 63
+    Pl5               go to state 64
+    Pl6               go to state 65
+    Pl7               go to state 66
+    Pl8               go to state 67
+    Pl9               go to state 68
+    Pl10              go to state 69
+    Unary_expression  go to state 70
+    Pl11              go to state 71
+    Pl12              go to state 72
+    Basic_expression  go to state 73
+    Unary_op          go to state 74
+
+
+State 221
+
+  104 Stmt: '{' Stmt '}' Stmt .
+
+    $default  reduce using rule 104 (Stmt)
+
+
+State 222
+
+  113 if_Stmt: IF '(' Expression_list ')' '{' . Stmt '}' ELSE '{' Stmt '}'
+  114        | IF '(' Expression_list ')' '{' . Stmt '}'
+
+    error               shift, and go to state 126
+    IF                  shift, and go to state 127
+    STRUCT              shift, and go to state 1
+    VOID                shift, and go to state 2
+    LONG                shift, and go to state 3
+    SHORT               shift, and go to state 4
+    CONTINUE            shift, and go to state 128
+    BREAK               shift, and go to state 129
+    WHILE               shift, and go to state 130
+    SIZEOF              shift, and go to state 43
+    RETURN              shift, and go to state 131
+    DOUBLE              shift, and go to state 5
+    FLOAT               shift, and go to state 6
+    INT                 shift, and go to state 7
+    FOR                 shift, and go to state 132
+    CHAR                shift, and go to state 8
+    BOOL                shift, and go to state 9
+    IDENTIFIERS         shift, and go to state 44
+    INTEGER_CONSTANT    shift, and go to state 45
+    FLOAT_CONSTANT      shift, and go to state 46
+    CHARACTER_CONSTANT  shift, and go to state 47
+    STRING_CONSTANT     shift, and go to state 48
+    INCR_OP             shift, and go to state 49
+    DECR_OP             shift, and go to state 50
+    '-'                 shift, and go to state 51
+    '*'                 shift, and go to state 52
+    '('                 shift, and go to state 53
+    ';'                 shift, and go to state 133
+    '{'                 shift, and go to state 134
+    '~'                 shift, and go to state 55
+    '!'                 shift, and go to state 56
+    '@'                 shift, and go to state 57
+
+    '}'  reduce using rule 111 (Stmt)
+
+    Declaration       go to state 135
+    Expression_list   go to state 136
+    Expression        go to state 91
+    Pl1               go to state 60
+    Pl2               go to state 61
+    Pl3               go to state 62
+    Pl4               go to state 63
+    Pl5               go to state 64
+    Pl6               go to state 65
+    Pl7               go to state 66
+    Pl8               go to state 67
+    Pl9               go to state 68
+    Pl10              go to state 69
+    Unary_expression  go to state 70
+    Pl11              go to state 71
+    Pl12              go to state 72
+    Basic_expression  go to state 73
+    Unary_op          go to state 74
+    Type              go to state 137
+    Struct            go to state 15
+    Stmt              go to state 225
+    if_Stmt           go to state 139
+    for_Stmt          go to state 140
+    while_Stmt        go to state 141
+
+
+State 223
+
+  116 while_Stmt: WHILE '(' Expression_list ')' '{' . Stmt '}'
+
+    error               shift, and go to state 126
+    IF                  shift, and go to state 127
+    STRUCT              shift, and go to state 1
+    VOID                shift, and go to state 2
+    LONG                shift, and go to state 3
+    SHORT               shift, and go to state 4
+    CONTINUE            shift, and go to state 128
+    BREAK               shift, and go to state 129
+    WHILE               shift, and go to state 130
+    SIZEOF              shift, and go to state 43
+    RETURN              shift, and go to state 131
+    DOUBLE              shift, and go to state 5
+    FLOAT               shift, and go to state 6
+    INT                 shift, and go to state 7
+    FOR                 shift, and go to state 132
+    CHAR                shift, and go to state 8
+    BOOL                shift, and go to state 9
+    IDENTIFIERS         shift, and go to state 44
+    INTEGER_CONSTANT    shift, and go to state 45
+    FLOAT_CONSTANT      shift, and go to state 46
+    CHARACTER_CONSTANT  shift, and go to state 47
+    STRING_CONSTANT     shift, and go to state 48
+    INCR_OP             shift, and go to state 49
+    DECR_OP             shift, and go to state 50
+    '-'                 shift, and go to state 51
+    '*'                 shift, and go to state 52
+    '('                 shift, and go to state 53
+    ';'                 shift, and go to state 133
+    '{'                 shift, and go to state 134
+    '~'                 shift, and go to state 55
+    '!'                 shift, and go to state 56
+    '@'                 shift, and go to state 57
+
+    '}'  reduce using rule 111 (Stmt)
+
+    Declaration       go to state 135
+    Expression_list   go to state 136
+    Expression        go to state 91
+    Pl1               go to state 60
+    Pl2               go to state 61
+    Pl3               go to state 62
+    Pl4               go to state 63
+    Pl5               go to state 64
+    Pl6               go to state 65
+    Pl7               go to state 66
+    Pl8               go to state 67
+    Pl9               go to state 68
+    Pl10              go to state 69
+    Unary_expression  go to state 70
+    Pl11              go to state 71
+    Pl12              go to state 72
+    Basic_expression  go to state 73
+    Unary_op          go to state 74
+    Type              go to state 137
+    Struct            go to state 15
+    Stmt              go to state 226
+    if_Stmt           go to state 139
+    for_Stmt          go to state 140
+    while_Stmt        go to state 141
+
+
+State 224
+
+   24 Expression_list: Expression_list . ',' Expression
+  115 for_Stmt: FOR '(' Expression_list ';' Expression_list . ';' Expression_list ')' '{' Stmt '}'
+
+    ';'  shift, and go to state 227
+    ','  shift, and go to state 146
+
+
+State 225
+
+  113 if_Stmt: IF '(' Expression_list ')' '{' Stmt . '}' ELSE '{' Stmt '}'
+  114        | IF '(' Expression_list ')' '{' Stmt . '}'
+
+    '}'  shift, and go to state 228
+
+
+State 226
+
+  116 while_Stmt: WHILE '(' Expression_list ')' '{' Stmt . '}'
+
+    '}'  shift, and go to state 229
+
+
+State 227
+
+  115 for_Stmt: FOR '(' Expression_list ';' Expression_list ';' . Expression_list ')' '{' Stmt '}'
+
+    SIZEOF              shift, and go to state 43
+    IDENTIFIERS         shift, and go to state 44
+    INTEGER_CONSTANT    shift, and go to state 45
+    FLOAT_CONSTANT      shift, and go to state 46
+    CHARACTER_CONSTANT  shift, and go to state 47
+    STRING_CONSTANT     shift, and go to state 48
+    INCR_OP             shift, and go to state 49
+    DECR_OP             shift, and go to state 50
+    '-'                 shift, and go to state 51
+    '*'                 shift, and go to state 52
+    '('                 shift, and go to state 53
+    '~'                 shift, and go to state 55
+    '!'                 shift, and go to state 56
+    '@'                 shift, and go to state 57
+
+    Expression_list   go to state 230
+    Expression        go to state 91
+    Pl1               go to state 60
+    Pl2               go to state 61
+    Pl3               go to state 62
+    Pl4               go to state 63
+    Pl5               go to state 64
+    Pl6               go to state 65
+    Pl7               go to state 66
+    Pl8               go to state 67
+    Pl9               go to state 68
+    Pl10              go to state 69
+    Unary_expression  go to state 70
+    Pl11              go to state 71
+    Pl12              go to state 72
+    Basic_expression  go to state 73
+    Unary_op          go to state 74
+
+
+State 228
+
+  113 if_Stmt: IF '(' Expression_list ')' '{' Stmt '}' . ELSE '{' Stmt '}'
+  114        | IF '(' Expression_list ')' '{' Stmt '}' .
+
+    ELSE  shift, and go to state 231
+
+    $default  reduce using rule 114 (if_Stmt)
+
+
+State 229
+
+  116 while_Stmt: WHILE '(' Expression_list ')' '{' Stmt '}' .
+
+    $default  reduce using rule 116 (while_Stmt)
+
+
+State 230
+
+   24 Expression_list: Expression_list . ',' Expression
+  115 for_Stmt: FOR '(' Expression_list ';' Expression_list ';' Expression_list . ')' '{' Stmt '}'
+
+    ','  shift, and go to state 146
+    ')'  shift, and go to state 232
+
+
+State 231
+
+  113 if_Stmt: IF '(' Expression_list ')' '{' Stmt '}' ELSE . '{' Stmt '}'
+
+    '{'  shift, and go to state 233
+
+
+State 232
+
+  115 for_Stmt: FOR '(' Expression_list ';' Expression_list ';' Expression_list ')' . '{' Stmt '}'
+
+    '{'  shift, and go to state 234
+
+
+State 233
+
+  113 if_Stmt: IF '(' Expression_list ')' '{' Stmt '}' ELSE '{' . Stmt '}'
+
+    error               shift, and go to state 126
+    IF                  shift, and go to state 127
+    STRUCT              shift, and go to state 1
+    VOID                shift, and go to state 2
+    LONG                shift, and go to state 3
+    SHORT               shift, and go to state 4
+    CONTINUE            shift, and go to state 128
+    BREAK               shift, and go to state 129
+    WHILE               shift, and go to state 130
+    SIZEOF              shift, and go to state 43
+    RETURN              shift, and go to state 131
+    DOUBLE              shift, and go to state 5
+    FLOAT               shift, and go to state 6
+    INT                 shift, and go to state 7
+    FOR                 shift, and go to state 132
+    CHAR                shift, and go to state 8
+    BOOL                shift, and go to state 9
+    IDENTIFIERS         shift, and go to state 44
+    INTEGER_CONSTANT    shift, and go to state 45
+    FLOAT_CONSTANT      shift, and go to state 46
+    CHARACTER_CONSTANT  shift, and go to state 47
+    STRING_CONSTANT     shift, and go to state 48
+    INCR_OP             shift, and go to state 49
+    DECR_OP             shift, and go to state 50
+    '-'                 shift, and go to state 51
+    '*'                 shift, and go to state 52
+    '('                 shift, and go to state 53
+    ';'                 shift, and go to state 133
+    '{'                 shift, and go to state 134
+    '~'                 shift, and go to state 55
+    '!'                 shift, and go to state 56
+    '@'                 shift, and go to state 57
+
+    '}'  reduce using rule 111 (Stmt)
+
+    Declaration       go to state 135
+    Expression_list   go to state 136
+    Expression        go to state 91
+    Pl1               go to state 60
+    Pl2               go to state 61
+    Pl3               go to state 62
+    Pl4               go to state 63
+    Pl5               go to state 64
+    Pl6               go to state 65
+    Pl7               go to state 66
+    Pl8               go to state 67
+    Pl9               go to state 68
+    Pl10              go to state 69
+    Unary_expression  go to state 70
+    Pl11              go to state 71
+    Pl12              go to state 72
+    Basic_expression  go to state 73
+    Unary_op          go to state 74
+    Type              go to state 137
+    Struct            go to state 15
+    Stmt              go to state 235
+    if_Stmt           go to state 139
+    for_Stmt          go to state 140
+    while_Stmt        go to state 141
+
+
+State 234
+
+  115 for_Stmt: FOR '(' Expression_list ';' Expression_list ';' Expression_list ')' '{' . Stmt '}'
+
+    error               shift, and go to state 126
+    IF                  shift, and go to state 127
+    STRUCT              shift, and go to state 1
+    VOID                shift, and go to state 2
+    LONG                shift, and go to state 3
+    SHORT               shift, and go to state 4
+    CONTINUE            shift, and go to state 128
+    BREAK               shift, and go to state 129
+    WHILE               shift, and go to state 130
+    SIZEOF              shift, and go to state 43
+    RETURN              shift, and go to state 131
+    DOUBLE              shift, and go to state 5
+    FLOAT               shift, and go to state 6
+    INT                 shift, and go to state 7
+    FOR                 shift, and go to state 132
+    CHAR                shift, and go to state 8
+    BOOL                shift, and go to state 9
+    IDENTIFIERS         shift, and go to state 44
+    INTEGER_CONSTANT    shift, and go to state 45
+    FLOAT_CONSTANT      shift, and go to state 46
+    CHARACTER_CONSTANT  shift, and go to state 47
+    STRING_CONSTANT     shift, and go to state 48
+    INCR_OP             shift, and go to state 49
+    DECR_OP             shift, and go to state 50
+    '-'                 shift, and go to state 51
+    '*'                 shift, and go to state 52
+    '('                 shift, and go to state 53
+    ';'                 shift, and go to state 133
+    '{'                 shift, and go to state 134
+    '~'                 shift, and go to state 55
+    '!'                 shift, and go to state 56
+    '@'                 shift, and go to state 57
+
+    '}'  reduce using rule 111 (Stmt)
+
+    Declaration       go to state 135
+    Expression_list   go to state 136
+    Expression        go to state 91
+    Pl1               go to state 60
+    Pl2               go to state 61
+    Pl3               go to state 62
+    Pl4               go to state 63
+    Pl5               go to state 64
+    Pl6               go to state 65
+    Pl7               go to state 66
+    Pl8               go to state 67
+    Pl9               go to state 68
+    Pl10              go to state 69
+    Unary_expression  go to state 70
+    Pl11              go to state 71
+    Pl12              go to state 72
+    Basic_expression  go to state 73
+    Unary_op          go to state 74
+    Type              go to state 137
+    Struct            go to state 15
+    Stmt              go to state 236
+    if_Stmt           go to state 139
+    for_Stmt          go to state 140
+    while_Stmt        go to state 141
+
+
+State 235
+
+  113 if_Stmt: IF '(' Expression_list ')' '{' Stmt '}' ELSE '{' Stmt . '}'
+
+    '}'  shift, and go to state 237
+
+
+State 236
+
+  115 for_Stmt: FOR '(' Expression_list ';' Expression_list ';' Expression_list ')' '{' Stmt . '}'
+
+    '}'  shift, and go to state 238
+
+
+State 237
+
+  113 if_Stmt: IF '(' Expression_list ')' '{' Stmt '}' ELSE '{' Stmt '}' .
+
+    $default  reduce using rule 113 (if_Stmt)
+
+
+State 238
+
+  115 for_Stmt: FOR '(' Expression_list ';' Expression_list ';' Expression_list ')' '{' Stmt '}' .
+
+    $default  reduce using rule 115 (for_Stmt)

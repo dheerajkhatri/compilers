@@ -1,0 +1,6114 @@
+Terminals unused in grammar
+
+   CONSTANT
+   STRING
+   OR_OP
+   AND_OP
+
+
+Rules useless in parser due to conflicts
+
+   75 RADDSUB: RADDSUB '-' RMULTIDIV
+   76        | RADDSUB '+' RMULTIDIV
+
+   78 RMULTIDIV: RMULTIDIV '*' RMATH
+   79          | RMULTIDIV '/' RMATH
+   80          | RMULTIDIV '%' RMATH
+
+   93 ADDSUB: ADDSUB '-' MULTIDIV
+   94       | ADDSUB '+' MULTIDIV
+
+   96 MULTIDIV: MULTIDIV '*' INTMATH
+   97         | MULTIDIV '/' INTMATH
+   98         | MULTIDIV '%' INTMATH
+
+  112 COND: RMATH
+
+  126 ARGT: MARGT RMATH
+
+  137 FL3: VARNAME '=' RMATH
+  138    | TYPE VARNAME '=' RMATH
+  139    | VARNAME OPERATOR '=' RMATH
+
+
+State 0 conflicts: 2 shift/reduce
+State 10 conflicts: 3 shift/reduce
+State 11 conflicts: 2 shift/reduce
+State 12 conflicts: 2 shift/reduce
+State 13 conflicts: 2 shift/reduce
+State 20 conflicts: 3 shift/reduce
+State 40 conflicts: 1 shift/reduce
+State 45 conflicts: 6 shift/reduce
+State 47 conflicts: 1 shift/reduce
+State 55 conflicts: 1 shift/reduce
+State 56 conflicts: 1 shift/reduce
+State 58 conflicts: 1 shift/reduce
+State 59 conflicts: 2 shift/reduce
+State 60 conflicts: 3 shift/reduce
+State 75 conflicts: 2 shift/reduce
+State 77 conflicts: 2 shift/reduce
+State 78 conflicts: 2 shift/reduce
+State 79 conflicts: 3 shift/reduce
+State 80 conflicts: 2 shift/reduce
+State 81 conflicts: 2 shift/reduce
+State 89 conflicts: 1 shift/reduce
+State 90 conflicts: 7 reduce/reduce
+State 95 conflicts: 1 shift/reduce
+State 96 conflicts: 1 shift/reduce
+State 97 conflicts: 1 shift/reduce
+State 98 conflicts: 1 shift/reduce
+State 99 conflicts: 1 shift/reduce
+State 104 conflicts: 3 shift/reduce
+State 105 conflicts: 1 shift/reduce
+State 109 conflicts: 44 reduce/reduce
+State 134 conflicts: 3 shift/reduce, 7 reduce/reduce
+State 135 conflicts: 3 shift/reduce, 7 reduce/reduce
+State 136 conflicts: 7 reduce/reduce
+State 137 conflicts: 7 reduce/reduce
+State 138 conflicts: 7 reduce/reduce
+State 151 conflicts: 3 reduce/reduce
+State 152 conflicts: 3 shift/reduce
+State 171 conflicts: 3 shift/reduce, 44 reduce/reduce
+State 172 conflicts: 3 shift/reduce, 44 reduce/reduce
+State 173 conflicts: 44 reduce/reduce
+State 174 conflicts: 44 reduce/reduce
+State 175 conflicts: 44 reduce/reduce
+State 179 conflicts: 1 shift/reduce, 1 reduce/reduce
+State 185 conflicts: 8 shift/reduce
+State 187 conflicts: 2 reduce/reduce
+State 220 conflicts: 10 reduce/reduce
+State 236 conflicts: 1 shift/reduce
+State 240 conflicts: 1 shift/reduce, 9 reduce/reduce
+State 242 conflicts: 15 reduce/reduce
+State 243 conflicts: 8 shift/reduce
+State 262 conflicts: 30 reduce/reduce
+State 264 conflicts: 1 shift/reduce
+State 268 conflicts: 8 shift/reduce
+State 269 conflicts: 8 shift/reduce
+State 270 conflicts: 8 shift/reduce
+State 309 conflicts: 1 reduce/reduce
+State 318 conflicts: 1 reduce/reduce
+State 319 conflicts: 1 reduce/reduce
+
+
+Grammar
+
+    0 $accept: START $end
+
+    1 START: OUTER MAINF OUTER
+
+    2 OUTER: %empty
+    3      | VARDEF OUTER
+    4      | STRUCT1 OUTER
+    5      | FUNCTION OUTER
+
+    6 MAINARG: %empty
+    7        | "int argc, char* argv[]"
+
+    8 MAINF: VOID MAIN '(' MAINARG ')' '{' INNER '}'
+    9      | INT MAIN '(' MAINARG ')' '{' INNER '}'
+
+   10 TYPE: INT
+   11     | BOOL
+   12     | VOID
+   13     | FLOAT
+   14     | DOUBLE
+   15     | STRUCT IDENTIFIER
+   16     | TYPE '*'
+   17     | CHAR
+
+   18 STRUCT1: STRUCT IDENTIFIER '{' MVARDEF VARDEF ';' '}'
+
+   19 MVARDEF: MVARDEF VARDEF ';'
+   20        | %empty
+
+   21 FUNCTION: TYPE VARNAME '(' FARG ')' '{' INNER '}'
+
+   22 INNER: LOOP INNER
+   23      | CONDITIONAL INNER
+   24      | VARDEF INNER
+   25      | STRUCT INNER
+   26      | FCALL INNER
+   27      | RETURN INNER
+   28      | ';'
+   29      | %empty
+   30      | INPUT INNER
+   31      | OUTPUT INNER
+   32      | MATH INNER
+
+   33 VARNAME: '*' VARNAME
+   34        | '&' VARNAME
+   35        | IDENTIFIER BRACKET
+
+   36 BRACKET: BRACKET '[' INTMATH ']'
+   37        | %empty
+
+   38 MARG: MARG TYPE VARNAME ','
+   39     | %empty
+
+   40 FARG: MARG TYPE VARNAME
+
+   41 VARDEF: TYPE MVAR VARNAME ';'
+   42       | TYPE MVAR VARNAME '=' CONST ';'
+   43       | TYPE MVAR VARNAME '=' FCALL ';'
+   44       | TYPE MVAR VARNAME '=' RMATH ';'
+   45       | TYPE MVAR VARNAME '=' VARNAME ';'
+   46       | TYPE MVAR VARNAME '=' '{' MCONST CONST '}' ';'
+
+   47 MVAR: MVAR VARNAME ','
+   48     | MVAR VARNAME '=' CONST ','
+   49     | MVAR VARNAME '=' FCALL ','
+   50     | MVAR VARNAME '=' RMATH ','
+   51     | MVAR VARNAME '=' VARNAME ','
+   52     | MVAR VARNAME '=' MCONST ','
+   53     | %empty
+
+   54 MCONST: MCONST CONST ','
+   55       | %empty
+
+   56 MATH: VARNAME '=' RMATH ';'
+   57     | ';'
+   58     | TYPE VARNAME '=' RMATH
+   59     | VARNAME OPERATOR '=' RMATH ';'
+   60     | VARNAME INC_OP ';'
+   61     | VARNAME DEC_OP ';'
+   62     | INC_OP VARNAME ';'
+   63     | DEC_OP VARNAME ';'
+
+   64 RMATH: VARNAME
+   65      | FCALL
+   66      | VARNAME INC_OP
+   67      | VARNAME DEC_OP
+   68      | INC_OP VARNAME
+   69      | DEC_OP VARNAME
+   70      | '(' RMATH ')'
+   71      | '!' RMATH
+   72      | CONST
+   73      | RADDSUB
+
+   74 RADDSUB: RMULTIDIV
+   75        | RADDSUB '-' RMULTIDIV
+   76        | RADDSUB '+' RMULTIDIV
+
+   77 RMULTIDIV: RMATH
+   78          | RMULTIDIV '*' RMATH
+   79          | RMULTIDIV '/' RMATH
+   80          | RMULTIDIV '%' RMATH
+
+   81 INTMATH: VARNAME
+   82        | FCALL
+   83        | '(' INTMATH ')'
+   84        | '!' INTMATH
+   85        | INTCONST
+   86        | ADDSUB
+   87        | VARNAME INC_OP
+   88        | VARNAME DEC_OP
+   89        | INC_OP VARNAME
+   90        | DEC_OP VARNAME
+   91        | %empty
+
+   92 ADDSUB: MULTIDIV
+   93       | ADDSUB '-' MULTIDIV
+   94       | ADDSUB '+' MULTIDIV
+
+   95 MULTIDIV: INTMATH
+   96         | MULTIDIV '*' INTMATH
+   97         | MULTIDIV '/' INTMATH
+   98         | MULTIDIV '%' INTMATH
+
+   99 CONDITIONAL: IFN
+  100            | SWITCHN
+
+  101 IFN: IF '(' COND ')' '{' INNER '}' ELSEC
+
+  102 RELATIONALOPERATOR: '>'
+  103                   | '<'
+  104                   | DOUBLE_EQ_OP
+  105                   | NOT_EQ_OP
+  106                   | LESS_EQ_OP
+  107                   | GRE_EQ_OP
+
+  108 COND: '(' COND ')'
+  109     | COND "&&" COND
+  110     | COND "||" COND
+  111     | '!' COND
+  112     | RMATH
+  113     | COND RELATIONALOPERATOR COND
+
+  114 ELSEC: ELIF '(' COND ')' '{' INNER '}' ELSEC
+  115      | ELSE '{' INNER '}'
+  116      | %empty
+
+  117 SWITCHN: SWITCH '(' COND ')' '{' SWITCHINNER '}'
+
+  118 SWITCHINNER: CASE CONST ':' '{' INNER '}' SWITCHINNER
+  119            | CASE CONST ':' INNER SWITCHINNER
+  120            | DEFAULT ':' '{' INNER '}' WODEFAULT
+  121            | DEFAULT ':' INNER WODEFAULT
+  122            | %empty
+
+  123 WODEFAULT: CASE CONST ':' '{' INNER '}' WODEFAULT
+  124          | CASE CONST ':' INNER WODEFAULT
+  125          | %empty
+
+  126 ARGT: MARGT RMATH
+
+  127 MARGT: MARGT RMATH ','
+  128      | %empty
+
+  129 FCALL: VARNAME '(' ARGT ')'
+
+  130 LOOP: FORN
+  131     | WHILEN
+  132     | DOWHILEN
+
+  133 FL1: MATH
+  134    | %empty
+
+  135 FL2: COND
+  136    | %empty
+
+  137 FL3: VARNAME '=' RMATH
+  138    | TYPE VARNAME '=' RMATH
+  139    | VARNAME OPERATOR '=' RMATH
+  140    | VARNAME INC_OP
+  141    | VARNAME DEC_OP
+  142    | INC_OP VARNAME
+  143    | DEC_OP VARNAME
+
+  144 OPERATOR: '+'
+  145         | '-'
+  146         | '*'
+  147         | '/'
+  148         | '&'
+  149         | '^'
+  150         | '|'
+  151         | '%'
+
+  152 FORN: FOR '(' FL1 FL2 ';' FL3 ')' '{' INNER '}'
+
+  153 WHILEN: WHILE '(' COND ')' '{' INNER '}'
+
+  154 DOWHILEN: DO '{' INNER '}' WHILE '(' COND ')' ';'
+
+  155 MIN: MIN INP_OP VARNAME
+  156    | %empty
+
+  157 MOUT: MOUT OUT_OP VARNAME
+  158     | MOUT OUT_OP CONST
+  159     | MOUT OUT_OP WHITESPACE
+  160     | %empty
+
+  161 INPUT: IN MIN INP_OP VARNAME ';'
+
+  162 OUTPUT: OUT MOUT OUT_OP VARNAME ';'
+  163       | OUT MOUT OUT_OP CONST ';'
+  164       | OUT MOUT OUT_OP WHITESPACE ';'
+
+  165 CONST: TRUE
+  166      | FALSE
+  167      | INTCONST
+  168      | FLOAT
+  169      | DOUBLE
+  170      | CHAR_CONSTANT
+
+
+Terminals, with rules where they appear
+
+$end (0) 0
+'!' (33) 71 84 111
+'%' (37) 80 98 151
+'&' (38) 34 148
+'(' (40) 8 9 21 70 83 101 108 114 117 129 152 153 154
+')' (41) 8 9 21 70 83 101 108 114 117 129 152 153 154
+'*' (42) 16 33 78 96 146
+'+' (43) 76 94 144
+',' (44) 38 47 48 49 50 51 52 54 127
+'-' (45) 75 93 145
+'/' (47) 79 97 147
+':' (58) 118 119 120 121 123 124
+';' (59) 18 19 28 41 42 43 44 45 46 56 57 59 60 61 62 63 152 154 161
+    162 163 164
+'<' (60) 103
+'=' (61) 42 43 44 45 46 48 49 50 51 52 56 58 59 137 138 139
+'>' (62) 102
+'[' (91) 36
+']' (93) 36
+'^' (94) 149
+'{' (123) 8 9 18 21 46 101 114 115 117 118 120 123 152 153 154
+'|' (124) 150
+'}' (125) 8 9 18 21 46 101 114 115 117 118 120 123 152 153 154
+error (256)
+IDENTIFIER (258) 15 18 35
+BOOL (259) 11
+INT (260) 9 10
+FLOAT (261) 13 168
+DOUBLE (262) 14 169
+CHAR (263) 17
+DO (264) 154
+WHILE (265) 153 154
+IF (266) 101
+ELIF (267) 114
+FALSE (268) 166
+TRUE (269) 165
+IN (270) 161
+OUT (271) 162 163 164
+MAIN (272) 8 9
+VOID (273) 8 12
+FOR (274) 152
+INTCONST (275) 85 167
+CHAR_CONSTANT (276) 170
+RETURN (277) 27
+STRUCT (278) 15 18 25
+SWITCH (279) 117
+WHITESPACE (280) 159 164
+CASE (281) 118 119 123 124
+ELSE (282) 115
+DEFAULT (283) 120 121
+CONSTANT (284)
+STRING (285)
+INP_OP (286) 155 161
+OUT_OP (287) 157 158 159 162 163 164
+OR_OP (288)
+INC_OP (289) 60 62 66 68 87 89 140 142
+DEC_OP (290) 61 63 67 69 88 90 141 143
+AND_OP (291)
+LESS_EQ_OP (292) 106
+GRE_EQ_OP (293) 107
+DOUBLE_EQ_OP (294) 104
+NOT_EQ_OP (295) 105
+"int argc, char* argv[]" (296) 7
+"&&" (297) 109
+"||" (298) 110
+
+
+Nonterminals, with rules where they appear
+
+$accept (65)
+    on left: 0
+START (66)
+    on left: 1, on right: 0
+OUTER (67)
+    on left: 2 3 4 5, on right: 1 3 4 5
+MAINARG (68)
+    on left: 6 7, on right: 8 9
+MAINF (69)
+    on left: 8 9, on right: 1
+TYPE (70)
+    on left: 10 11 12 13 14 15 16 17, on right: 16 21 38 40 41 42 43
+    44 45 46 58 138
+STRUCT1 (71)
+    on left: 18, on right: 4
+MVARDEF (72)
+    on left: 19 20, on right: 18 19
+FUNCTION (73)
+    on left: 21, on right: 5
+INNER (74)
+    on left: 22 23 24 25 26 27 28 29 30 31 32, on right: 8 9 21 22
+    23 24 25 26 27 30 31 32 101 114 115 118 119 120 121 123 124 152
+    153 154
+VARNAME (75)
+    on left: 33 34 35, on right: 21 33 34 38 40 41 42 43 44 45 46 47
+    48 49 50 51 52 56 58 59 60 61 62 63 64 66 67 68 69 81 87 88 89
+    90 129 137 138 139 140 141 142 143 155 157 161 162
+BRACKET (76)
+    on left: 36 37, on right: 35 36
+MARG (77)
+    on left: 38 39, on right: 38 40
+FARG (78)
+    on left: 40, on right: 21
+VARDEF (79)
+    on left: 41 42 43 44 45 46, on right: 3 18 19 24
+MVAR (80)
+    on left: 47 48 49 50 51 52 53, on right: 41 42 43 44 45 46 47 48
+    49 50 51 52
+MCONST (81)
+    on left: 54 55, on right: 46 52 54
+MATH (82)
+    on left: 56 57 58 59 60 61 62 63, on right: 32 133
+RMATH (83)
+    on left: 64 65 66 67 68 69 70 71 72 73, on right: 44 50 56 58 59
+    70 71 77 78 79 80 112 126 127 137 138 139
+RADDSUB (84)
+    on left: 74 75 76, on right: 73 75 76
+RMULTIDIV (85)
+    on left: 77 78 79 80, on right: 74 75 76 78 79 80
+INTMATH (86)
+    on left: 81 82 83 84 85 86 87 88 89 90 91, on right: 36 83 84 95
+    96 97 98
+ADDSUB (87)
+    on left: 92 93 94, on right: 86 93 94
+MULTIDIV (88)
+    on left: 95 96 97 98, on right: 92 93 94 96 97 98
+CONDITIONAL (89)
+    on left: 99 100, on right: 23
+IFN (90)
+    on left: 101, on right: 99
+RELATIONALOPERATOR (91)
+    on left: 102 103 104 105 106 107, on right: 113
+COND (92)
+    on left: 108 109 110 111 112 113, on right: 101 108 109 110 111
+    113 114 117 135 153 154
+ELSEC (93)
+    on left: 114 115 116, on right: 101 114
+SWITCHN (94)
+    on left: 117, on right: 100
+SWITCHINNER (95)
+    on left: 118 119 120 121 122, on right: 117 118 119
+WODEFAULT (96)
+    on left: 123 124 125, on right: 120 121 123 124
+ARGT (97)
+    on left: 126, on right: 129
+MARGT (98)
+    on left: 127 128, on right: 126 127
+FCALL (99)
+    on left: 129, on right: 26 43 49 65 82
+LOOP (100)
+    on left: 130 131 132, on right: 22
+FL1 (101)
+    on left: 133 134, on right: 152
+FL2 (102)
+    on left: 135 136, on right: 152
+FL3 (103)
+    on left: 137 138 139 140 141 142 143, on right: 152
+OPERATOR (104)
+    on left: 144 145 146 147 148 149 150 151, on right: 59 139
+FORN (105)
+    on left: 152, on right: 130
+WHILEN (106)
+    on left: 153, on right: 131
+DOWHILEN (107)
+    on left: 154, on right: 132
+MIN (108)
+    on left: 155 156, on right: 155 161
+MOUT (109)
+    on left: 157 158 159 160, on right: 157 158 159 162 163 164
+INPUT (110)
+    on left: 161, on right: 30
+OUTPUT (111)
+    on left: 162 163 164, on right: 31
+CONST (112)
+    on left: 165 166 167 168 169 170, on right: 42 46 48 54 72 118
+    119 123 124 158 163
+
+
+State 0
+
+    0 $accept: . START $end
+
+    BOOL    shift, and go to state 1
+    INT     shift, and go to state 2
+    FLOAT   shift, and go to state 3
+    DOUBLE  shift, and go to state 4
+    CHAR    shift, and go to state 5
+    VOID    shift, and go to state 6
+    STRUCT  shift, and go to state 7
+
+    INT   [reduce using rule 2 (OUTER)]
+    VOID  [reduce using rule 2 (OUTER)]
+
+    START     go to state 8
+    OUTER     go to state 9
+    TYPE      go to state 10
+    STRUCT1   go to state 11
+    FUNCTION  go to state 12
+    VARDEF    go to state 13
+
+
+State 1
+
+   11 TYPE: BOOL .
+
+    $default  reduce using rule 11 (TYPE)
+
+
+State 2
+
+   10 TYPE: INT .
+
+    $default  reduce using rule 10 (TYPE)
+
+
+State 3
+
+   13 TYPE: FLOAT .
+
+    $default  reduce using rule 13 (TYPE)
+
+
+State 4
+
+   14 TYPE: DOUBLE .
+
+    $default  reduce using rule 14 (TYPE)
+
+
+State 5
+
+   17 TYPE: CHAR .
+
+    $default  reduce using rule 17 (TYPE)
+
+
+State 6
+
+   12 TYPE: VOID .
+
+    $default  reduce using rule 12 (TYPE)
+
+
+State 7
+
+   15 TYPE: STRUCT . IDENTIFIER
+   18 STRUCT1: STRUCT . IDENTIFIER '{' MVARDEF VARDEF ';' '}'
+
+    IDENTIFIER  shift, and go to state 14
+
+
+State 8
+
+    0 $accept: START . $end
+
+    $end  shift, and go to state 15
+
+
+State 9
+
+    1 START: OUTER . MAINF OUTER
+
+    INT   shift, and go to state 16
+    VOID  shift, and go to state 17
+
+    MAINF  go to state 18
+
+
+State 10
+
+   16 TYPE: TYPE . '*'
+   21 FUNCTION: TYPE . VARNAME '(' FARG ')' '{' INNER '}'
+   41 VARDEF: TYPE . MVAR VARNAME ';'
+   42       | TYPE . MVAR VARNAME '=' CONST ';'
+   43       | TYPE . MVAR VARNAME '=' FCALL ';'
+   44       | TYPE . MVAR VARNAME '=' RMATH ';'
+   45       | TYPE . MVAR VARNAME '=' VARNAME ';'
+   46       | TYPE . MVAR VARNAME '=' '{' MCONST CONST '}' ';'
+
+    IDENTIFIER  shift, and go to state 19
+    '*'         shift, and go to state 20
+    '&'         shift, and go to state 21
+
+    IDENTIFIER  [reduce using rule 53 (MVAR)]
+    '*'         [reduce using rule 53 (MVAR)]
+    '&'         [reduce using rule 53 (MVAR)]
+
+    VARNAME  go to state 22
+    MVAR     go to state 23
+
+
+State 11
+
+    4 OUTER: STRUCT1 . OUTER
+
+    BOOL    shift, and go to state 1
+    INT     shift, and go to state 2
+    FLOAT   shift, and go to state 3
+    DOUBLE  shift, and go to state 4
+    CHAR    shift, and go to state 5
+    VOID    shift, and go to state 6
+    STRUCT  shift, and go to state 7
+
+    INT       [reduce using rule 2 (OUTER)]
+    VOID      [reduce using rule 2 (OUTER)]
+    $default  reduce using rule 2 (OUTER)
+
+    OUTER     go to state 24
+    TYPE      go to state 10
+    STRUCT1   go to state 11
+    FUNCTION  go to state 12
+    VARDEF    go to state 13
+
+
+State 12
+
+    5 OUTER: FUNCTION . OUTER
+
+    BOOL    shift, and go to state 1
+    INT     shift, and go to state 2
+    FLOAT   shift, and go to state 3
+    DOUBLE  shift, and go to state 4
+    CHAR    shift, and go to state 5
+    VOID    shift, and go to state 6
+    STRUCT  shift, and go to state 7
+
+    INT       [reduce using rule 2 (OUTER)]
+    VOID      [reduce using rule 2 (OUTER)]
+    $default  reduce using rule 2 (OUTER)
+
+    OUTER     go to state 25
+    TYPE      go to state 10
+    STRUCT1   go to state 11
+    FUNCTION  go to state 12
+    VARDEF    go to state 13
+
+
+State 13
+
+    3 OUTER: VARDEF . OUTER
+
+    BOOL    shift, and go to state 1
+    INT     shift, and go to state 2
+    FLOAT   shift, and go to state 3
+    DOUBLE  shift, and go to state 4
+    CHAR    shift, and go to state 5
+    VOID    shift, and go to state 6
+    STRUCT  shift, and go to state 7
+
+    INT       [reduce using rule 2 (OUTER)]
+    VOID      [reduce using rule 2 (OUTER)]
+    $default  reduce using rule 2 (OUTER)
+
+    OUTER     go to state 26
+    TYPE      go to state 10
+    STRUCT1   go to state 11
+    FUNCTION  go to state 12
+    VARDEF    go to state 13
+
+
+State 14
+
+   15 TYPE: STRUCT IDENTIFIER .
+   18 STRUCT1: STRUCT IDENTIFIER . '{' MVARDEF VARDEF ';' '}'
+
+    '{'  shift, and go to state 27
+
+    $default  reduce using rule 15 (TYPE)
+
+
+State 15
+
+    0 $accept: START $end .
+
+    $default  accept
+
+
+State 16
+
+    9 MAINF: INT . MAIN '(' MAINARG ')' '{' INNER '}'
+
+    MAIN  shift, and go to state 28
+
+
+State 17
+
+    8 MAINF: VOID . MAIN '(' MAINARG ')' '{' INNER '}'
+
+    MAIN  shift, and go to state 29
+
+
+State 18
+
+    1 START: OUTER MAINF . OUTER
+
+    BOOL    shift, and go to state 1
+    INT     shift, and go to state 2
+    FLOAT   shift, and go to state 3
+    DOUBLE  shift, and go to state 4
+    CHAR    shift, and go to state 5
+    VOID    shift, and go to state 6
+    STRUCT  shift, and go to state 7
+
+    $default  reduce using rule 2 (OUTER)
+
+    OUTER     go to state 30
+    TYPE      go to state 10
+    STRUCT1   go to state 11
+    FUNCTION  go to state 12
+    VARDEF    go to state 13
+
+
+State 19
+
+   35 VARNAME: IDENTIFIER . BRACKET
+
+    $default  reduce using rule 37 (BRACKET)
+
+    BRACKET  go to state 31
+
+
+State 20
+
+   16 TYPE: TYPE '*' .
+   33 VARNAME: '*' . VARNAME
+
+    IDENTIFIER  shift, and go to state 19
+    '*'         shift, and go to state 32
+    '&'         shift, and go to state 21
+
+    IDENTIFIER  [reduce using rule 16 (TYPE)]
+    '*'         [reduce using rule 16 (TYPE)]
+    '&'         [reduce using rule 16 (TYPE)]
+
+    VARNAME  go to state 33
+
+
+State 21
+
+   34 VARNAME: '&' . VARNAME
+
+    IDENTIFIER  shift, and go to state 19
+    '*'         shift, and go to state 32
+    '&'         shift, and go to state 21
+
+    VARNAME  go to state 34
+
+
+State 22
+
+   21 FUNCTION: TYPE VARNAME . '(' FARG ')' '{' INNER '}'
+
+    '('  shift, and go to state 35
+
+
+State 23
+
+   41 VARDEF: TYPE MVAR . VARNAME ';'
+   42       | TYPE MVAR . VARNAME '=' CONST ';'
+   43       | TYPE MVAR . VARNAME '=' FCALL ';'
+   44       | TYPE MVAR . VARNAME '=' RMATH ';'
+   45       | TYPE MVAR . VARNAME '=' VARNAME ';'
+   46       | TYPE MVAR . VARNAME '=' '{' MCONST CONST '}' ';'
+   47 MVAR: MVAR . VARNAME ','
+   48     | MVAR . VARNAME '=' CONST ','
+   49     | MVAR . VARNAME '=' FCALL ','
+   50     | MVAR . VARNAME '=' RMATH ','
+   51     | MVAR . VARNAME '=' VARNAME ','
+   52     | MVAR . VARNAME '=' MCONST ','
+
+    IDENTIFIER  shift, and go to state 19
+    '*'         shift, and go to state 32
+    '&'         shift, and go to state 21
+
+    VARNAME  go to state 36
+
+
+State 24
+
+    4 OUTER: STRUCT1 OUTER .
+
+    $default  reduce using rule 4 (OUTER)
+
+
+State 25
+
+    5 OUTER: FUNCTION OUTER .
+
+    $default  reduce using rule 5 (OUTER)
+
+
+State 26
+
+    3 OUTER: VARDEF OUTER .
+
+    $default  reduce using rule 3 (OUTER)
+
+
+State 27
+
+   18 STRUCT1: STRUCT IDENTIFIER '{' . MVARDEF VARDEF ';' '}'
+
+    $default  reduce using rule 20 (MVARDEF)
+
+    MVARDEF  go to state 37
+
+
+State 28
+
+    9 MAINF: INT MAIN . '(' MAINARG ')' '{' INNER '}'
+
+    '('  shift, and go to state 38
+
+
+State 29
+
+    8 MAINF: VOID MAIN . '(' MAINARG ')' '{' INNER '}'
+
+    '('  shift, and go to state 39
+
+
+State 30
+
+    1 START: OUTER MAINF OUTER .
+
+    $default  reduce using rule 1 (START)
+
+
+State 31
+
+   35 VARNAME: IDENTIFIER BRACKET .
+   36 BRACKET: BRACKET . '[' INTMATH ']'
+
+    '['  shift, and go to state 40
+
+    $default  reduce using rule 35 (VARNAME)
+
+
+State 32
+
+   33 VARNAME: '*' . VARNAME
+
+    IDENTIFIER  shift, and go to state 19
+    '*'         shift, and go to state 32
+    '&'         shift, and go to state 21
+
+    VARNAME  go to state 33
+
+
+State 33
+
+   33 VARNAME: '*' VARNAME .
+
+    $default  reduce using rule 33 (VARNAME)
+
+
+State 34
+
+   34 VARNAME: '&' VARNAME .
+
+    $default  reduce using rule 34 (VARNAME)
+
+
+State 35
+
+   21 FUNCTION: TYPE VARNAME '(' . FARG ')' '{' INNER '}'
+
+    $default  reduce using rule 39 (MARG)
+
+    MARG  go to state 41
+    FARG  go to state 42
+
+
+State 36
+
+   41 VARDEF: TYPE MVAR VARNAME . ';'
+   42       | TYPE MVAR VARNAME . '=' CONST ';'
+   43       | TYPE MVAR VARNAME . '=' FCALL ';'
+   44       | TYPE MVAR VARNAME . '=' RMATH ';'
+   45       | TYPE MVAR VARNAME . '=' VARNAME ';'
+   46       | TYPE MVAR VARNAME . '=' '{' MCONST CONST '}' ';'
+   47 MVAR: MVAR VARNAME . ','
+   48     | MVAR VARNAME . '=' CONST ','
+   49     | MVAR VARNAME . '=' FCALL ','
+   50     | MVAR VARNAME . '=' RMATH ','
+   51     | MVAR VARNAME . '=' VARNAME ','
+   52     | MVAR VARNAME . '=' MCONST ','
+
+    ';'  shift, and go to state 43
+    ','  shift, and go to state 44
+    '='  shift, and go to state 45
+
+
+State 37
+
+   18 STRUCT1: STRUCT IDENTIFIER '{' MVARDEF . VARDEF ';' '}'
+   19 MVARDEF: MVARDEF . VARDEF ';'
+
+    BOOL    shift, and go to state 1
+    INT     shift, and go to state 2
+    FLOAT   shift, and go to state 3
+    DOUBLE  shift, and go to state 4
+    CHAR    shift, and go to state 5
+    VOID    shift, and go to state 6
+    STRUCT  shift, and go to state 46
+
+    TYPE    go to state 47
+    VARDEF  go to state 48
+
+
+State 38
+
+    9 MAINF: INT MAIN '(' . MAINARG ')' '{' INNER '}'
+
+    "int argc, char* argv[]"  shift, and go to state 49
+
+    $default  reduce using rule 6 (MAINARG)
+
+    MAINARG  go to state 50
+
+
+State 39
+
+    8 MAINF: VOID MAIN '(' . MAINARG ')' '{' INNER '}'
+
+    "int argc, char* argv[]"  shift, and go to state 49
+
+    $default  reduce using rule 6 (MAINARG)
+
+    MAINARG  go to state 51
+
+
+State 40
+
+   36 BRACKET: BRACKET '[' . INTMATH ']'
+
+    IDENTIFIER  shift, and go to state 19
+    INTCONST    shift, and go to state 52
+    INC_OP      shift, and go to state 53
+    DEC_OP      shift, and go to state 54
+    '('         shift, and go to state 55
+    '*'         shift, and go to state 32
+    '&'         shift, and go to state 21
+    '!'         shift, and go to state 56
+
+    '*'       [reduce using rule 91 (INTMATH)]
+    $default  reduce using rule 91 (INTMATH)
+
+    VARNAME   go to state 57
+    INTMATH   go to state 58
+    ADDSUB    go to state 59
+    MULTIDIV  go to state 60
+    FCALL     go to state 61
+
+
+State 41
+
+   38 MARG: MARG . TYPE VARNAME ','
+   40 FARG: MARG . TYPE VARNAME
+
+    BOOL    shift, and go to state 1
+    INT     shift, and go to state 2
+    FLOAT   shift, and go to state 3
+    DOUBLE  shift, and go to state 4
+    CHAR    shift, and go to state 5
+    VOID    shift, and go to state 6
+    STRUCT  shift, and go to state 46
+
+    TYPE  go to state 62
+
+
+State 42
+
+   21 FUNCTION: TYPE VARNAME '(' FARG . ')' '{' INNER '}'
+
+    ')'  shift, and go to state 63
+
+
+State 43
+
+   41 VARDEF: TYPE MVAR VARNAME ';' .
+
+    $default  reduce using rule 41 (VARDEF)
+
+
+State 44
+
+   47 MVAR: MVAR VARNAME ',' .
+
+    $default  reduce using rule 47 (MVAR)
+
+
+State 45
+
+   42 VARDEF: TYPE MVAR VARNAME '=' . CONST ';'
+   43       | TYPE MVAR VARNAME '=' . FCALL ';'
+   44       | TYPE MVAR VARNAME '=' . RMATH ';'
+   45       | TYPE MVAR VARNAME '=' . VARNAME ';'
+   46       | TYPE MVAR VARNAME '=' . '{' MCONST CONST '}' ';'
+   48 MVAR: MVAR VARNAME '=' . CONST ','
+   49     | MVAR VARNAME '=' . FCALL ','
+   50     | MVAR VARNAME '=' . RMATH ','
+   51     | MVAR VARNAME '=' . VARNAME ','
+   52     | MVAR VARNAME '=' . MCONST ','
+
+    IDENTIFIER     shift, and go to state 19
+    FLOAT          shift, and go to state 64
+    DOUBLE         shift, and go to state 65
+    FALSE          shift, and go to state 66
+    TRUE           shift, and go to state 67
+    INTCONST       shift, and go to state 68
+    CHAR_CONSTANT  shift, and go to state 69
+    INC_OP         shift, and go to state 70
+    DEC_OP         shift, and go to state 71
+    '('            shift, and go to state 72
+    '{'            shift, and go to state 73
+    '*'            shift, and go to state 32
+    '&'            shift, and go to state 21
+    '!'            shift, and go to state 74
+
+    FLOAT          [reduce using rule 55 (MCONST)]
+    DOUBLE         [reduce using rule 55 (MCONST)]
+    FALSE          [reduce using rule 55 (MCONST)]
+    TRUE           [reduce using rule 55 (MCONST)]
+    INTCONST       [reduce using rule 55 (MCONST)]
+    CHAR_CONSTANT  [reduce using rule 55 (MCONST)]
+    $default       reduce using rule 55 (MCONST)
+
+    VARNAME    go to state 75
+    MCONST     go to state 76
+    RMATH      go to state 77
+    RADDSUB    go to state 78
+    RMULTIDIV  go to state 79
+    FCALL      go to state 80
+    CONST      go to state 81
+
+
+State 46
+
+   15 TYPE: STRUCT . IDENTIFIER
+
+    IDENTIFIER  shift, and go to state 82
+
+
+State 47
+
+   16 TYPE: TYPE . '*'
+   41 VARDEF: TYPE . MVAR VARNAME ';'
+   42       | TYPE . MVAR VARNAME '=' CONST ';'
+   43       | TYPE . MVAR VARNAME '=' FCALL ';'
+   44       | TYPE . MVAR VARNAME '=' RMATH ';'
+   45       | TYPE . MVAR VARNAME '=' VARNAME ';'
+   46       | TYPE . MVAR VARNAME '=' '{' MCONST CONST '}' ';'
+
+    '*'  shift, and go to state 83
+
+    '*'       [reduce using rule 53 (MVAR)]
+    $default  reduce using rule 53 (MVAR)
+
+    MVAR  go to state 23
+
+
+State 48
+
+   18 STRUCT1: STRUCT IDENTIFIER '{' MVARDEF VARDEF . ';' '}'
+   19 MVARDEF: MVARDEF VARDEF . ';'
+
+    ';'  shift, and go to state 84
+
+
+State 49
+
+    7 MAINARG: "int argc, char* argv[]" .
+
+    $default  reduce using rule 7 (MAINARG)
+
+
+State 50
+
+    9 MAINF: INT MAIN '(' MAINARG . ')' '{' INNER '}'
+
+    ')'  shift, and go to state 85
+
+
+State 51
+
+    8 MAINF: VOID MAIN '(' MAINARG . ')' '{' INNER '}'
+
+    ')'  shift, and go to state 86
+
+
+State 52
+
+   85 INTMATH: INTCONST .
+
+    $default  reduce using rule 85 (INTMATH)
+
+
+State 53
+
+   89 INTMATH: INC_OP . VARNAME
+
+    IDENTIFIER  shift, and go to state 19
+    '*'         shift, and go to state 32
+    '&'         shift, and go to state 21
+
+    VARNAME  go to state 87
+
+
+State 54
+
+   90 INTMATH: DEC_OP . VARNAME
+
+    IDENTIFIER  shift, and go to state 19
+    '*'         shift, and go to state 32
+    '&'         shift, and go to state 21
+
+    VARNAME  go to state 88
+
+
+State 55
+
+   83 INTMATH: '(' . INTMATH ')'
+
+    IDENTIFIER  shift, and go to state 19
+    INTCONST    shift, and go to state 52
+    INC_OP      shift, and go to state 53
+    DEC_OP      shift, and go to state 54
+    '('         shift, and go to state 55
+    '*'         shift, and go to state 32
+    '&'         shift, and go to state 21
+    '!'         shift, and go to state 56
+
+    '*'       [reduce using rule 91 (INTMATH)]
+    $default  reduce using rule 91 (INTMATH)
+
+    VARNAME   go to state 57
+    INTMATH   go to state 89
+    ADDSUB    go to state 59
+    MULTIDIV  go to state 60
+    FCALL     go to state 61
+
+
+State 56
+
+   84 INTMATH: '!' . INTMATH
+
+    IDENTIFIER  shift, and go to state 19
+    INTCONST    shift, and go to state 52
+    INC_OP      shift, and go to state 53
+    DEC_OP      shift, and go to state 54
+    '('         shift, and go to state 55
+    '*'         shift, and go to state 32
+    '&'         shift, and go to state 21
+    '!'         shift, and go to state 56
+
+    '*'       [reduce using rule 91 (INTMATH)]
+    $default  reduce using rule 91 (INTMATH)
+
+    VARNAME   go to state 57
+    INTMATH   go to state 90
+    ADDSUB    go to state 59
+    MULTIDIV  go to state 60
+    FCALL     go to state 61
+
+
+State 57
+
+   81 INTMATH: VARNAME .
+   87        | VARNAME . INC_OP
+   88        | VARNAME . DEC_OP
+  129 FCALL: VARNAME . '(' ARGT ')'
+
+    INC_OP  shift, and go to state 91
+    DEC_OP  shift, and go to state 92
+    '('     shift, and go to state 93
+
+    $default  reduce using rule 81 (INTMATH)
+
+
+State 58
+
+   36 BRACKET: BRACKET '[' INTMATH . ']'
+   95 MULTIDIV: INTMATH .
+
+    ']'  shift, and go to state 94
+
+    ']'       [reduce using rule 95 (MULTIDIV)]
+    $default  reduce using rule 95 (MULTIDIV)
+
+
+State 59
+
+   86 INTMATH: ADDSUB .
+   93 ADDSUB: ADDSUB . '-' MULTIDIV
+   94       | ADDSUB . '+' MULTIDIV
+
+    '-'  shift, and go to state 95
+    '+'  shift, and go to state 96
+
+    '-'       [reduce using rule 86 (INTMATH)]
+    '+'       [reduce using rule 86 (INTMATH)]
+    $default  reduce using rule 86 (INTMATH)
+
+
+State 60
+
+   92 ADDSUB: MULTIDIV .
+   96 MULTIDIV: MULTIDIV . '*' INTMATH
+   97         | MULTIDIV . '/' INTMATH
+   98         | MULTIDIV . '%' INTMATH
+
+    '*'  shift, and go to state 97
+    '/'  shift, and go to state 98
+    '%'  shift, and go to state 99
+
+    '*'       [reduce using rule 92 (ADDSUB)]
+    '/'       [reduce using rule 92 (ADDSUB)]
+    '%'       [reduce using rule 92 (ADDSUB)]
+    $default  reduce using rule 92 (ADDSUB)
+
+
+State 61
+
+   82 INTMATH: FCALL .
+
+    $default  reduce using rule 82 (INTMATH)
+
+
+State 62
+
+   16 TYPE: TYPE . '*'
+   38 MARG: MARG TYPE . VARNAME ','
+   40 FARG: MARG TYPE . VARNAME
+
+    IDENTIFIER  shift, and go to state 19
+    '*'         shift, and go to state 20
+    '&'         shift, and go to state 21
+
+    VARNAME  go to state 100
+
+
+State 63
+
+   21 FUNCTION: TYPE VARNAME '(' FARG ')' . '{' INNER '}'
+
+    '{'  shift, and go to state 101
+
+
+State 64
+
+  168 CONST: FLOAT .
+
+    $default  reduce using rule 168 (CONST)
+
+
+State 65
+
+  169 CONST: DOUBLE .
+
+    $default  reduce using rule 169 (CONST)
+
+
+State 66
+
+  166 CONST: FALSE .
+
+    $default  reduce using rule 166 (CONST)
+
+
+State 67
+
+  165 CONST: TRUE .
+
+    $default  reduce using rule 165 (CONST)
+
+
+State 68
+
+  167 CONST: INTCONST .
+
+    $default  reduce using rule 167 (CONST)
+
+
+State 69
+
+  170 CONST: CHAR_CONSTANT .
+
+    $default  reduce using rule 170 (CONST)
+
+
+State 70
+
+   68 RMATH: INC_OP . VARNAME
+
+    IDENTIFIER  shift, and go to state 19
+    '*'         shift, and go to state 32
+    '&'         shift, and go to state 21
+
+    VARNAME  go to state 102
+
+
+State 71
+
+   69 RMATH: DEC_OP . VARNAME
+
+    IDENTIFIER  shift, and go to state 19
+    '*'         shift, and go to state 32
+    '&'         shift, and go to state 21
+
+    VARNAME  go to state 103
+
+
+State 72
+
+   70 RMATH: '(' . RMATH ')'
+
+    IDENTIFIER     shift, and go to state 19
+    FLOAT          shift, and go to state 64
+    DOUBLE         shift, and go to state 65
+    FALSE          shift, and go to state 66
+    TRUE           shift, and go to state 67
+    INTCONST       shift, and go to state 68
+    CHAR_CONSTANT  shift, and go to state 69
+    INC_OP         shift, and go to state 70
+    DEC_OP         shift, and go to state 71
+    '('            shift, and go to state 72
+    '*'            shift, and go to state 32
+    '&'            shift, and go to state 21
+    '!'            shift, and go to state 74
+
+    VARNAME    go to state 104
+    RMATH      go to state 105
+    RADDSUB    go to state 78
+    RMULTIDIV  go to state 79
+    FCALL      go to state 106
+    CONST      go to state 107
+
+
+State 73
+
+   46 VARDEF: TYPE MVAR VARNAME '=' '{' . MCONST CONST '}' ';'
+
+    $default  reduce using rule 55 (MCONST)
+
+    MCONST  go to state 108
+
+
+State 74
+
+   71 RMATH: '!' . RMATH
+
+    IDENTIFIER     shift, and go to state 19
+    FLOAT          shift, and go to state 64
+    DOUBLE         shift, and go to state 65
+    FALSE          shift, and go to state 66
+    TRUE           shift, and go to state 67
+    INTCONST       shift, and go to state 68
+    CHAR_CONSTANT  shift, and go to state 69
+    INC_OP         shift, and go to state 70
+    DEC_OP         shift, and go to state 71
+    '('            shift, and go to state 72
+    '*'            shift, and go to state 32
+    '&'            shift, and go to state 21
+    '!'            shift, and go to state 74
+
+    VARNAME    go to state 104
+    RMATH      go to state 109
+    RADDSUB    go to state 78
+    RMULTIDIV  go to state 79
+    FCALL      go to state 106
+    CONST      go to state 107
+
+
+State 75
+
+   45 VARDEF: TYPE MVAR VARNAME '=' VARNAME . ';'
+   51 MVAR: MVAR VARNAME '=' VARNAME . ','
+   64 RMATH: VARNAME .
+   66      | VARNAME . INC_OP
+   67      | VARNAME . DEC_OP
+  129 FCALL: VARNAME . '(' ARGT ')'
+
+    INC_OP  shift, and go to state 110
+    DEC_OP  shift, and go to state 111
+    '('     shift, and go to state 93
+    ';'     shift, and go to state 112
+    ','     shift, and go to state 113
+
+    ';'       [reduce using rule 64 (RMATH)]
+    ','       [reduce using rule 64 (RMATH)]
+    $default  reduce using rule 64 (RMATH)
+
+
+State 76
+
+   52 MVAR: MVAR VARNAME '=' MCONST . ','
+   54 MCONST: MCONST . CONST ','
+
+    FLOAT          shift, and go to state 64
+    DOUBLE         shift, and go to state 65
+    FALSE          shift, and go to state 66
+    TRUE           shift, and go to state 67
+    INTCONST       shift, and go to state 68
+    CHAR_CONSTANT  shift, and go to state 69
+    ','            shift, and go to state 114
+
+    CONST  go to state 115
+
+
+State 77
+
+   44 VARDEF: TYPE MVAR VARNAME '=' RMATH . ';'
+   50 MVAR: MVAR VARNAME '=' RMATH . ','
+   77 RMULTIDIV: RMATH .
+
+    ';'  shift, and go to state 116
+    ','  shift, and go to state 117
+
+    ';'       [reduce using rule 77 (RMULTIDIV)]
+    ','       [reduce using rule 77 (RMULTIDIV)]
+    $default  reduce using rule 77 (RMULTIDIV)
+
+
+State 78
+
+   73 RMATH: RADDSUB .
+   75 RADDSUB: RADDSUB . '-' RMULTIDIV
+   76        | RADDSUB . '+' RMULTIDIV
+
+    '-'  shift, and go to state 118
+    '+'  shift, and go to state 119
+
+    '-'       [reduce using rule 73 (RMATH)]
+    '+'       [reduce using rule 73 (RMATH)]
+    $default  reduce using rule 73 (RMATH)
+
+
+State 79
+
+   74 RADDSUB: RMULTIDIV .
+   78 RMULTIDIV: RMULTIDIV . '*' RMATH
+   79          | RMULTIDIV . '/' RMATH
+   80          | RMULTIDIV . '%' RMATH
+
+    '*'  shift, and go to state 120
+    '/'  shift, and go to state 121
+    '%'  shift, and go to state 122
+
+    '*'       [reduce using rule 74 (RADDSUB)]
+    '/'       [reduce using rule 74 (RADDSUB)]
+    '%'       [reduce using rule 74 (RADDSUB)]
+    $default  reduce using rule 74 (RADDSUB)
+
+
+State 80
+
+   43 VARDEF: TYPE MVAR VARNAME '=' FCALL . ';'
+   49 MVAR: MVAR VARNAME '=' FCALL . ','
+   65 RMATH: FCALL .
+
+    ';'  shift, and go to state 123
+    ','  shift, and go to state 124
+
+    ';'       [reduce using rule 65 (RMATH)]
+    ','       [reduce using rule 65 (RMATH)]
+    $default  reduce using rule 65 (RMATH)
+
+
+State 81
+
+   42 VARDEF: TYPE MVAR VARNAME '=' CONST . ';'
+   48 MVAR: MVAR VARNAME '=' CONST . ','
+   72 RMATH: CONST .
+
+    ';'  shift, and go to state 125
+    ','  shift, and go to state 126
+
+    ';'       [reduce using rule 72 (RMATH)]
+    ','       [reduce using rule 72 (RMATH)]
+    $default  reduce using rule 72 (RMATH)
+
+
+State 82
+
+   15 TYPE: STRUCT IDENTIFIER .
+
+    $default  reduce using rule 15 (TYPE)
+
+
+State 83
+
+   16 TYPE: TYPE '*' .
+
+    $default  reduce using rule 16 (TYPE)
+
+
+State 84
+
+   18 STRUCT1: STRUCT IDENTIFIER '{' MVARDEF VARDEF ';' . '}'
+   19 MVARDEF: MVARDEF VARDEF ';' .
+
+    '}'  shift, and go to state 127
+
+    $default  reduce using rule 19 (MVARDEF)
+
+
+State 85
+
+    9 MAINF: INT MAIN '(' MAINARG ')' . '{' INNER '}'
+
+    '{'  shift, and go to state 128
+
+
+State 86
+
+    8 MAINF: VOID MAIN '(' MAINARG ')' . '{' INNER '}'
+
+    '{'  shift, and go to state 129
+
+
+State 87
+
+   89 INTMATH: INC_OP VARNAME .
+
+    $default  reduce using rule 89 (INTMATH)
+
+
+State 88
+
+   90 INTMATH: DEC_OP VARNAME .
+
+    $default  reduce using rule 90 (INTMATH)
+
+
+State 89
+
+   83 INTMATH: '(' INTMATH . ')'
+   95 MULTIDIV: INTMATH .
+
+    ')'  shift, and go to state 130
+
+    ')'       [reduce using rule 95 (MULTIDIV)]
+    $default  reduce using rule 95 (MULTIDIV)
+
+
+State 90
+
+   84 INTMATH: '!' INTMATH .
+   95 MULTIDIV: INTMATH .
+
+    ')'       reduce using rule 84 (INTMATH)
+    ')'       [reduce using rule 95 (MULTIDIV)]
+    '*'       reduce using rule 84 (INTMATH)
+    '*'       [reduce using rule 95 (MULTIDIV)]
+    ']'       reduce using rule 84 (INTMATH)
+    ']'       [reduce using rule 95 (MULTIDIV)]
+    '-'       reduce using rule 84 (INTMATH)
+    '-'       [reduce using rule 95 (MULTIDIV)]
+    '+'       reduce using rule 84 (INTMATH)
+    '+'       [reduce using rule 95 (MULTIDIV)]
+    '/'       reduce using rule 84 (INTMATH)
+    '/'       [reduce using rule 95 (MULTIDIV)]
+    '%'       reduce using rule 84 (INTMATH)
+    '%'       [reduce using rule 95 (MULTIDIV)]
+    $default  reduce using rule 84 (INTMATH)
+
+
+State 91
+
+   87 INTMATH: VARNAME INC_OP .
+
+    $default  reduce using rule 87 (INTMATH)
+
+
+State 92
+
+   88 INTMATH: VARNAME DEC_OP .
+
+    $default  reduce using rule 88 (INTMATH)
+
+
+State 93
+
+  129 FCALL: VARNAME '(' . ARGT ')'
+
+    $default  reduce using rule 128 (MARGT)
+
+    ARGT   go to state 131
+    MARGT  go to state 132
+
+
+State 94
+
+   36 BRACKET: BRACKET '[' INTMATH ']' .
+
+    $default  reduce using rule 36 (BRACKET)
+
+
+State 95
+
+   93 ADDSUB: ADDSUB '-' . MULTIDIV
+
+    IDENTIFIER  shift, and go to state 19
+    INTCONST    shift, and go to state 52
+    INC_OP      shift, and go to state 53
+    DEC_OP      shift, and go to state 54
+    '('         shift, and go to state 55
+    '*'         shift, and go to state 32
+    '&'         shift, and go to state 21
+    '!'         shift, and go to state 56
+
+    '*'       [reduce using rule 91 (INTMATH)]
+    $default  reduce using rule 91 (INTMATH)
+
+    VARNAME   go to state 57
+    INTMATH   go to state 133
+    ADDSUB    go to state 59
+    MULTIDIV  go to state 134
+    FCALL     go to state 61
+
+
+State 96
+
+   94 ADDSUB: ADDSUB '+' . MULTIDIV
+
+    IDENTIFIER  shift, and go to state 19
+    INTCONST    shift, and go to state 52
+    INC_OP      shift, and go to state 53
+    DEC_OP      shift, and go to state 54
+    '('         shift, and go to state 55
+    '*'         shift, and go to state 32
+    '&'         shift, and go to state 21
+    '!'         shift, and go to state 56
+
+    '*'       [reduce using rule 91 (INTMATH)]
+    $default  reduce using rule 91 (INTMATH)
+
+    VARNAME   go to state 57
+    INTMATH   go to state 133
+    ADDSUB    go to state 59
+    MULTIDIV  go to state 135
+    FCALL     go to state 61
+
+
+State 97
+
+   96 MULTIDIV: MULTIDIV '*' . INTMATH
+
+    IDENTIFIER  shift, and go to state 19
+    INTCONST    shift, and go to state 52
+    INC_OP      shift, and go to state 53
+    DEC_OP      shift, and go to state 54
+    '('         shift, and go to state 55
+    '*'         shift, and go to state 32
+    '&'         shift, and go to state 21
+    '!'         shift, and go to state 56
+
+    '*'       [reduce using rule 91 (INTMATH)]
+    $default  reduce using rule 91 (INTMATH)
+
+    VARNAME   go to state 57
+    INTMATH   go to state 136
+    ADDSUB    go to state 59
+    MULTIDIV  go to state 60
+    FCALL     go to state 61
+
+
+State 98
+
+   97 MULTIDIV: MULTIDIV '/' . INTMATH
+
+    IDENTIFIER  shift, and go to state 19
+    INTCONST    shift, and go to state 52
+    INC_OP      shift, and go to state 53
+    DEC_OP      shift, and go to state 54
+    '('         shift, and go to state 55
+    '*'         shift, and go to state 32
+    '&'         shift, and go to state 21
+    '!'         shift, and go to state 56
+
+    '*'       [reduce using rule 91 (INTMATH)]
+    $default  reduce using rule 91 (INTMATH)
+
+    VARNAME   go to state 57
+    INTMATH   go to state 137
+    ADDSUB    go to state 59
+    MULTIDIV  go to state 60
+    FCALL     go to state 61
+
+
+State 99
+
+   98 MULTIDIV: MULTIDIV '%' . INTMATH
+
+    IDENTIFIER  shift, and go to state 19
+    INTCONST    shift, and go to state 52
+    INC_OP      shift, and go to state 53
+    DEC_OP      shift, and go to state 54
+    '('         shift, and go to state 55
+    '*'         shift, and go to state 32
+    '&'         shift, and go to state 21
+    '!'         shift, and go to state 56
+
+    '*'       [reduce using rule 91 (INTMATH)]
+    $default  reduce using rule 91 (INTMATH)
+
+    VARNAME   go to state 57
+    INTMATH   go to state 138
+    ADDSUB    go to state 59
+    MULTIDIV  go to state 60
+    FCALL     go to state 61
+
+
+State 100
+
+   38 MARG: MARG TYPE VARNAME . ','
+   40 FARG: MARG TYPE VARNAME .
+
+    ','  shift, and go to state 139
+
+    $default  reduce using rule 40 (FARG)
+
+
+State 101
+
+   21 FUNCTION: TYPE VARNAME '(' FARG ')' '{' . INNER '}'
+
+    IDENTIFIER  shift, and go to state 19
+    BOOL        shift, and go to state 1
+    INT         shift, and go to state 2
+    FLOAT       shift, and go to state 3
+    DOUBLE      shift, and go to state 4
+    CHAR        shift, and go to state 5
+    DO          shift, and go to state 140
+    WHILE       shift, and go to state 141
+    IF          shift, and go to state 142
+    IN          shift, and go to state 143
+    OUT         shift, and go to state 144
+    VOID        shift, and go to state 6
+    FOR         shift, and go to state 145
+    RETURN      shift, and go to state 146
+    STRUCT      shift, and go to state 147
+    SWITCH      shift, and go to state 148
+    INC_OP      shift, and go to state 149
+    DEC_OP      shift, and go to state 150
+    '*'         shift, and go to state 32
+    ';'         shift, and go to state 151
+    '&'         shift, and go to state 21
+
+    $default  reduce using rule 29 (INNER)
+
+    TYPE         go to state 152
+    INNER        go to state 153
+    VARNAME      go to state 154
+    VARDEF       go to state 155
+    MATH         go to state 156
+    CONDITIONAL  go to state 157
+    IFN          go to state 158
+    SWITCHN      go to state 159
+    FCALL        go to state 160
+    LOOP         go to state 161
+    FORN         go to state 162
+    WHILEN       go to state 163
+    DOWHILEN     go to state 164
+    INPUT        go to state 165
+    OUTPUT       go to state 166
+
+
+State 102
+
+   68 RMATH: INC_OP VARNAME .
+
+    $default  reduce using rule 68 (RMATH)
+
+
+State 103
+
+   69 RMATH: DEC_OP VARNAME .
+
+    $default  reduce using rule 69 (RMATH)
+
+
+State 104
+
+   64 RMATH: VARNAME .
+   66      | VARNAME . INC_OP
+   67      | VARNAME . DEC_OP
+  129 FCALL: VARNAME . '(' ARGT ')'
+
+    INC_OP  shift, and go to state 110
+    DEC_OP  shift, and go to state 111
+    '('     shift, and go to state 93
+
+    INC_OP    [reduce using rule 64 (RMATH)]
+    DEC_OP    [reduce using rule 64 (RMATH)]
+    '('       [reduce using rule 64 (RMATH)]
+    $default  reduce using rule 64 (RMATH)
+
+
+State 105
+
+   70 RMATH: '(' RMATH . ')'
+   77 RMULTIDIV: RMATH .
+
+    ')'  shift, and go to state 167
+
+    ')'       [reduce using rule 77 (RMULTIDIV)]
+    $default  reduce using rule 77 (RMULTIDIV)
+
+
+State 106
+
+   65 RMATH: FCALL .
+
+    $default  reduce using rule 65 (RMATH)
+
+
+State 107
+
+   72 RMATH: CONST .
+
+    $default  reduce using rule 72 (RMATH)
+
+
+State 108
+
+   46 VARDEF: TYPE MVAR VARNAME '=' '{' MCONST . CONST '}' ';'
+   54 MCONST: MCONST . CONST ','
+
+    FLOAT          shift, and go to state 64
+    DOUBLE         shift, and go to state 65
+    FALSE          shift, and go to state 66
+    TRUE           shift, and go to state 67
+    INTCONST       shift, and go to state 68
+    CHAR_CONSTANT  shift, and go to state 69
+
+    CONST  go to state 168
+
+
+State 109
+
+   71 RMATH: '!' RMATH .
+   77 RMULTIDIV: RMATH .
+
+    IDENTIFIER     reduce using rule 71 (RMATH)
+    IDENTIFIER     [reduce using rule 77 (RMULTIDIV)]
+    BOOL           reduce using rule 71 (RMATH)
+    BOOL           [reduce using rule 77 (RMULTIDIV)]
+    INT            reduce using rule 71 (RMATH)
+    INT            [reduce using rule 77 (RMULTIDIV)]
+    FLOAT          reduce using rule 71 (RMATH)
+    FLOAT          [reduce using rule 77 (RMULTIDIV)]
+    DOUBLE         reduce using rule 71 (RMATH)
+    DOUBLE         [reduce using rule 77 (RMULTIDIV)]
+    CHAR           reduce using rule 71 (RMATH)
+    CHAR           [reduce using rule 77 (RMULTIDIV)]
+    DO             reduce using rule 71 (RMATH)
+    DO             [reduce using rule 77 (RMULTIDIV)]
+    WHILE          reduce using rule 71 (RMATH)
+    WHILE          [reduce using rule 77 (RMULTIDIV)]
+    IF             reduce using rule 71 (RMATH)
+    IF             [reduce using rule 77 (RMULTIDIV)]
+    FALSE          reduce using rule 71 (RMATH)
+    FALSE          [reduce using rule 77 (RMULTIDIV)]
+    TRUE           reduce using rule 71 (RMATH)
+    TRUE           [reduce using rule 77 (RMULTIDIV)]
+    IN             reduce using rule 71 (RMATH)
+    IN             [reduce using rule 77 (RMULTIDIV)]
+    OUT            reduce using rule 71 (RMATH)
+    OUT            [reduce using rule 77 (RMULTIDIV)]
+    VOID           reduce using rule 71 (RMATH)
+    VOID           [reduce using rule 77 (RMULTIDIV)]
+    FOR            reduce using rule 71 (RMATH)
+    FOR            [reduce using rule 77 (RMULTIDIV)]
+    INTCONST       reduce using rule 71 (RMATH)
+    INTCONST       [reduce using rule 77 (RMULTIDIV)]
+    CHAR_CONSTANT  reduce using rule 71 (RMATH)
+    CHAR_CONSTANT  [reduce using rule 77 (RMULTIDIV)]
+    RETURN         reduce using rule 71 (RMATH)
+    RETURN         [reduce using rule 77 (RMULTIDIV)]
+    STRUCT         reduce using rule 71 (RMATH)
+    STRUCT         [reduce using rule 77 (RMULTIDIV)]
+    SWITCH         reduce using rule 71 (RMATH)
+    SWITCH         [reduce using rule 77 (RMULTIDIV)]
+    CASE           reduce using rule 71 (RMATH)
+    CASE           [reduce using rule 77 (RMULTIDIV)]
+    DEFAULT        reduce using rule 71 (RMATH)
+    DEFAULT        [reduce using rule 77 (RMULTIDIV)]
+    INC_OP         reduce using rule 71 (RMATH)
+    INC_OP         [reduce using rule 77 (RMULTIDIV)]
+    DEC_OP         reduce using rule 71 (RMATH)
+    DEC_OP         [reduce using rule 77 (RMULTIDIV)]
+    LESS_EQ_OP     reduce using rule 71 (RMATH)
+    LESS_EQ_OP     [reduce using rule 77 (RMULTIDIV)]
+    GRE_EQ_OP      reduce using rule 71 (RMATH)
+    GRE_EQ_OP      [reduce using rule 77 (RMULTIDIV)]
+    DOUBLE_EQ_OP   reduce using rule 71 (RMATH)
+    DOUBLE_EQ_OP   [reduce using rule 77 (RMULTIDIV)]
+    NOT_EQ_OP      reduce using rule 71 (RMATH)
+    NOT_EQ_OP      [reduce using rule 77 (RMULTIDIV)]
+    '('            reduce using rule 71 (RMATH)
+    '('            [reduce using rule 77 (RMULTIDIV)]
+    ')'            reduce using rule 71 (RMATH)
+    ')'            [reduce using rule 77 (RMULTIDIV)]
+    '}'            reduce using rule 71 (RMATH)
+    '}'            [reduce using rule 77 (RMULTIDIV)]
+    '*'            reduce using rule 71 (RMATH)
+    '*'            [reduce using rule 77 (RMULTIDIV)]
+    ';'            reduce using rule 71 (RMATH)
+    ';'            [reduce using rule 77 (RMULTIDIV)]
+    '&'            reduce using rule 71 (RMATH)
+    '&'            [reduce using rule 77 (RMULTIDIV)]
+    ','            reduce using rule 71 (RMATH)
+    ','            [reduce using rule 77 (RMULTIDIV)]
+    '!'            reduce using rule 71 (RMATH)
+    '!'            [reduce using rule 77 (RMULTIDIV)]
+    '-'            reduce using rule 71 (RMATH)
+    '-'            [reduce using rule 77 (RMULTIDIV)]
+    '+'            reduce using rule 71 (RMATH)
+    '+'            [reduce using rule 77 (RMULTIDIV)]
+    '/'            reduce using rule 71 (RMATH)
+    '/'            [reduce using rule 77 (RMULTIDIV)]
+    '%'            reduce using rule 71 (RMATH)
+    '%'            [reduce using rule 77 (RMULTIDIV)]
+    '>'            reduce using rule 71 (RMATH)
+    '>'            [reduce using rule 77 (RMULTIDIV)]
+    '<'            reduce using rule 71 (RMATH)
+    '<'            [reduce using rule 77 (RMULTIDIV)]
+    "&&"           reduce using rule 71 (RMATH)
+    "&&"           [reduce using rule 77 (RMULTIDIV)]
+    "||"           reduce using rule 71 (RMATH)
+    "||"           [reduce using rule 77 (RMULTIDIV)]
+    $default       reduce using rule 71 (RMATH)
+
+
+State 110
+
+   66 RMATH: VARNAME INC_OP .
+
+    $default  reduce using rule 66 (RMATH)
+
+
+State 111
+
+   67 RMATH: VARNAME DEC_OP .
+
+    $default  reduce using rule 67 (RMATH)
+
+
+State 112
+
+   45 VARDEF: TYPE MVAR VARNAME '=' VARNAME ';' .
+
+    $default  reduce using rule 45 (VARDEF)
+
+
+State 113
+
+   51 MVAR: MVAR VARNAME '=' VARNAME ',' .
+
+    $default  reduce using rule 51 (MVAR)
+
+
+State 114
+
+   52 MVAR: MVAR VARNAME '=' MCONST ',' .
+
+    $default  reduce using rule 52 (MVAR)
+
+
+State 115
+
+   54 MCONST: MCONST CONST . ','
+
+    ','  shift, and go to state 169
+
+
+State 116
+
+   44 VARDEF: TYPE MVAR VARNAME '=' RMATH ';' .
+
+    $default  reduce using rule 44 (VARDEF)
+
+
+State 117
+
+   50 MVAR: MVAR VARNAME '=' RMATH ',' .
+
+    $default  reduce using rule 50 (MVAR)
+
+
+State 118
+
+   75 RADDSUB: RADDSUB '-' . RMULTIDIV
+
+    IDENTIFIER     shift, and go to state 19
+    FLOAT          shift, and go to state 64
+    DOUBLE         shift, and go to state 65
+    FALSE          shift, and go to state 66
+    TRUE           shift, and go to state 67
+    INTCONST       shift, and go to state 68
+    CHAR_CONSTANT  shift, and go to state 69
+    INC_OP         shift, and go to state 70
+    DEC_OP         shift, and go to state 71
+    '('            shift, and go to state 72
+    '*'            shift, and go to state 32
+    '&'            shift, and go to state 21
+    '!'            shift, and go to state 74
+
+    VARNAME    go to state 104
+    RMATH      go to state 170
+    RADDSUB    go to state 78
+    RMULTIDIV  go to state 171
+    FCALL      go to state 106
+    CONST      go to state 107
+
+
+State 119
+
+   76 RADDSUB: RADDSUB '+' . RMULTIDIV
+
+    IDENTIFIER     shift, and go to state 19
+    FLOAT          shift, and go to state 64
+    DOUBLE         shift, and go to state 65
+    FALSE          shift, and go to state 66
+    TRUE           shift, and go to state 67
+    INTCONST       shift, and go to state 68
+    CHAR_CONSTANT  shift, and go to state 69
+    INC_OP         shift, and go to state 70
+    DEC_OP         shift, and go to state 71
+    '('            shift, and go to state 72
+    '*'            shift, and go to state 32
+    '&'            shift, and go to state 21
+    '!'            shift, and go to state 74
+
+    VARNAME    go to state 104
+    RMATH      go to state 170
+    RADDSUB    go to state 78
+    RMULTIDIV  go to state 172
+    FCALL      go to state 106
+    CONST      go to state 107
+
+
+State 120
+
+   78 RMULTIDIV: RMULTIDIV '*' . RMATH
+
+    IDENTIFIER     shift, and go to state 19
+    FLOAT          shift, and go to state 64
+    DOUBLE         shift, and go to state 65
+    FALSE          shift, and go to state 66
+    TRUE           shift, and go to state 67
+    INTCONST       shift, and go to state 68
+    CHAR_CONSTANT  shift, and go to state 69
+    INC_OP         shift, and go to state 70
+    DEC_OP         shift, and go to state 71
+    '('            shift, and go to state 72
+    '*'            shift, and go to state 32
+    '&'            shift, and go to state 21
+    '!'            shift, and go to state 74
+
+    VARNAME    go to state 104
+    RMATH      go to state 173
+    RADDSUB    go to state 78
+    RMULTIDIV  go to state 79
+    FCALL      go to state 106
+    CONST      go to state 107
+
+
+State 121
+
+   79 RMULTIDIV: RMULTIDIV '/' . RMATH
+
+    IDENTIFIER     shift, and go to state 19
+    FLOAT          shift, and go to state 64
+    DOUBLE         shift, and go to state 65
+    FALSE          shift, and go to state 66
+    TRUE           shift, and go to state 67
+    INTCONST       shift, and go to state 68
+    CHAR_CONSTANT  shift, and go to state 69
+    INC_OP         shift, and go to state 70
+    DEC_OP         shift, and go to state 71
+    '('            shift, and go to state 72
+    '*'            shift, and go to state 32
+    '&'            shift, and go to state 21
+    '!'            shift, and go to state 74
+
+    VARNAME    go to state 104
+    RMATH      go to state 174
+    RADDSUB    go to state 78
+    RMULTIDIV  go to state 79
+    FCALL      go to state 106
+    CONST      go to state 107
+
+
+State 122
+
+   80 RMULTIDIV: RMULTIDIV '%' . RMATH
+
+    IDENTIFIER     shift, and go to state 19
+    FLOAT          shift, and go to state 64
+    DOUBLE         shift, and go to state 65
+    FALSE          shift, and go to state 66
+    TRUE           shift, and go to state 67
+    INTCONST       shift, and go to state 68
+    CHAR_CONSTANT  shift, and go to state 69
+    INC_OP         shift, and go to state 70
+    DEC_OP         shift, and go to state 71
+    '('            shift, and go to state 72
+    '*'            shift, and go to state 32
+    '&'            shift, and go to state 21
+    '!'            shift, and go to state 74
+
+    VARNAME    go to state 104
+    RMATH      go to state 175
+    RADDSUB    go to state 78
+    RMULTIDIV  go to state 79
+    FCALL      go to state 106
+    CONST      go to state 107
+
+
+State 123
+
+   43 VARDEF: TYPE MVAR VARNAME '=' FCALL ';' .
+
+    $default  reduce using rule 43 (VARDEF)
+
+
+State 124
+
+   49 MVAR: MVAR VARNAME '=' FCALL ',' .
+
+    $default  reduce using rule 49 (MVAR)
+
+
+State 125
+
+   42 VARDEF: TYPE MVAR VARNAME '=' CONST ';' .
+
+    $default  reduce using rule 42 (VARDEF)
+
+
+State 126
+
+   48 MVAR: MVAR VARNAME '=' CONST ',' .
+
+    $default  reduce using rule 48 (MVAR)
+
+
+State 127
+
+   18 STRUCT1: STRUCT IDENTIFIER '{' MVARDEF VARDEF ';' '}' .
+
+    $default  reduce using rule 18 (STRUCT1)
+
+
+State 128
+
+    9 MAINF: INT MAIN '(' MAINARG ')' '{' . INNER '}'
+
+    IDENTIFIER  shift, and go to state 19
+    BOOL        shift, and go to state 1
+    INT         shift, and go to state 2
+    FLOAT       shift, and go to state 3
+    DOUBLE      shift, and go to state 4
+    CHAR        shift, and go to state 5
+    DO          shift, and go to state 140
+    WHILE       shift, and go to state 141
+    IF          shift, and go to state 142
+    IN          shift, and go to state 143
+    OUT         shift, and go to state 144
+    VOID        shift, and go to state 6
+    FOR         shift, and go to state 145
+    RETURN      shift, and go to state 146
+    STRUCT      shift, and go to state 147
+    SWITCH      shift, and go to state 148
+    INC_OP      shift, and go to state 149
+    DEC_OP      shift, and go to state 150
+    '*'         shift, and go to state 32
+    ';'         shift, and go to state 151
+    '&'         shift, and go to state 21
+
+    $default  reduce using rule 29 (INNER)
+
+    TYPE         go to state 152
+    INNER        go to state 176
+    VARNAME      go to state 154
+    VARDEF       go to state 155
+    MATH         go to state 156
+    CONDITIONAL  go to state 157
+    IFN          go to state 158
+    SWITCHN      go to state 159
+    FCALL        go to state 160
+    LOOP         go to state 161
+    FORN         go to state 162
+    WHILEN       go to state 163
+    DOWHILEN     go to state 164
+    INPUT        go to state 165
+    OUTPUT       go to state 166
+
+
+State 129
+
+    8 MAINF: VOID MAIN '(' MAINARG ')' '{' . INNER '}'
+
+    IDENTIFIER  shift, and go to state 19
+    BOOL        shift, and go to state 1
+    INT         shift, and go to state 2
+    FLOAT       shift, and go to state 3
+    DOUBLE      shift, and go to state 4
+    CHAR        shift, and go to state 5
+    DO          shift, and go to state 140
+    WHILE       shift, and go to state 141
+    IF          shift, and go to state 142
+    IN          shift, and go to state 143
+    OUT         shift, and go to state 144
+    VOID        shift, and go to state 6
+    FOR         shift, and go to state 145
+    RETURN      shift, and go to state 146
+    STRUCT      shift, and go to state 147
+    SWITCH      shift, and go to state 148
+    INC_OP      shift, and go to state 149
+    DEC_OP      shift, and go to state 150
+    '*'         shift, and go to state 32
+    ';'         shift, and go to state 151
+    '&'         shift, and go to state 21
+
+    $default  reduce using rule 29 (INNER)
+
+    TYPE         go to state 152
+    INNER        go to state 177
+    VARNAME      go to state 154
+    VARDEF       go to state 155
+    MATH         go to state 156
+    CONDITIONAL  go to state 157
+    IFN          go to state 158
+    SWITCHN      go to state 159
+    FCALL        go to state 160
+    LOOP         go to state 161
+    FORN         go to state 162
+    WHILEN       go to state 163
+    DOWHILEN     go to state 164
+    INPUT        go to state 165
+    OUTPUT       go to state 166
+
+
+State 130
+
+   83 INTMATH: '(' INTMATH ')' .
+
+    $default  reduce using rule 83 (INTMATH)
+
+
+State 131
+
+  129 FCALL: VARNAME '(' ARGT . ')'
+
+    ')'  shift, and go to state 178
+
+
+State 132
+
+  126 ARGT: MARGT . RMATH
+  127 MARGT: MARGT . RMATH ','
+
+    IDENTIFIER     shift, and go to state 19
+    FLOAT          shift, and go to state 64
+    DOUBLE         shift, and go to state 65
+    FALSE          shift, and go to state 66
+    TRUE           shift, and go to state 67
+    INTCONST       shift, and go to state 68
+    CHAR_CONSTANT  shift, and go to state 69
+    INC_OP         shift, and go to state 70
+    DEC_OP         shift, and go to state 71
+    '('            shift, and go to state 72
+    '*'            shift, and go to state 32
+    '&'            shift, and go to state 21
+    '!'            shift, and go to state 74
+
+    VARNAME    go to state 104
+    RMATH      go to state 179
+    RADDSUB    go to state 78
+    RMULTIDIV  go to state 79
+    FCALL      go to state 106
+    CONST      go to state 107
+
+
+State 133
+
+   95 MULTIDIV: INTMATH .
+
+    $default  reduce using rule 95 (MULTIDIV)
+
+
+State 134
+
+   92 ADDSUB: MULTIDIV .
+   93       | ADDSUB '-' MULTIDIV .
+   96 MULTIDIV: MULTIDIV . '*' INTMATH
+   97         | MULTIDIV . '/' INTMATH
+   98         | MULTIDIV . '%' INTMATH
+
+    '*'  shift, and go to state 97
+    '/'  shift, and go to state 98
+    '%'  shift, and go to state 99
+
+    ')'       reduce using rule 92 (ADDSUB)
+    ')'       [reduce using rule 93 (ADDSUB)]
+    '*'       [reduce using rule 92 (ADDSUB)]
+    '*'       [reduce using rule 93 (ADDSUB)]
+    ']'       reduce using rule 92 (ADDSUB)
+    ']'       [reduce using rule 93 (ADDSUB)]
+    '-'       reduce using rule 92 (ADDSUB)
+    '-'       [reduce using rule 93 (ADDSUB)]
+    '+'       reduce using rule 92 (ADDSUB)
+    '+'       [reduce using rule 93 (ADDSUB)]
+    '/'       [reduce using rule 92 (ADDSUB)]
+    '/'       [reduce using rule 93 (ADDSUB)]
+    '%'       [reduce using rule 92 (ADDSUB)]
+    '%'       [reduce using rule 93 (ADDSUB)]
+    $default  reduce using rule 92 (ADDSUB)
+
+
+State 135
+
+   92 ADDSUB: MULTIDIV .
+   94       | ADDSUB '+' MULTIDIV .
+   96 MULTIDIV: MULTIDIV . '*' INTMATH
+   97         | MULTIDIV . '/' INTMATH
+   98         | MULTIDIV . '%' INTMATH
+
+    '*'  shift, and go to state 97
+    '/'  shift, and go to state 98
+    '%'  shift, and go to state 99
+
+    ')'       reduce using rule 92 (ADDSUB)
+    ')'       [reduce using rule 94 (ADDSUB)]
+    '*'       [reduce using rule 92 (ADDSUB)]
+    '*'       [reduce using rule 94 (ADDSUB)]
+    ']'       reduce using rule 92 (ADDSUB)
+    ']'       [reduce using rule 94 (ADDSUB)]
+    '-'       reduce using rule 92 (ADDSUB)
+    '-'       [reduce using rule 94 (ADDSUB)]
+    '+'       reduce using rule 92 (ADDSUB)
+    '+'       [reduce using rule 94 (ADDSUB)]
+    '/'       [reduce using rule 92 (ADDSUB)]
+    '/'       [reduce using rule 94 (ADDSUB)]
+    '%'       [reduce using rule 92 (ADDSUB)]
+    '%'       [reduce using rule 94 (ADDSUB)]
+    $default  reduce using rule 92 (ADDSUB)
+
+
+State 136
+
+   95 MULTIDIV: INTMATH .
+   96         | MULTIDIV '*' INTMATH .
+
+    ')'       reduce using rule 95 (MULTIDIV)
+    ')'       [reduce using rule 96 (MULTIDIV)]
+    '*'       reduce using rule 95 (MULTIDIV)
+    '*'       [reduce using rule 96 (MULTIDIV)]
+    ']'       reduce using rule 95 (MULTIDIV)
+    ']'       [reduce using rule 96 (MULTIDIV)]
+    '-'       reduce using rule 95 (MULTIDIV)
+    '-'       [reduce using rule 96 (MULTIDIV)]
+    '+'       reduce using rule 95 (MULTIDIV)
+    '+'       [reduce using rule 96 (MULTIDIV)]
+    '/'       reduce using rule 95 (MULTIDIV)
+    '/'       [reduce using rule 96 (MULTIDIV)]
+    '%'       reduce using rule 95 (MULTIDIV)
+    '%'       [reduce using rule 96 (MULTIDIV)]
+    $default  reduce using rule 95 (MULTIDIV)
+
+
+State 137
+
+   95 MULTIDIV: INTMATH .
+   97         | MULTIDIV '/' INTMATH .
+
+    ')'       reduce using rule 95 (MULTIDIV)
+    ')'       [reduce using rule 97 (MULTIDIV)]
+    '*'       reduce using rule 95 (MULTIDIV)
+    '*'       [reduce using rule 97 (MULTIDIV)]
+    ']'       reduce using rule 95 (MULTIDIV)
+    ']'       [reduce using rule 97 (MULTIDIV)]
+    '-'       reduce using rule 95 (MULTIDIV)
+    '-'       [reduce using rule 97 (MULTIDIV)]
+    '+'       reduce using rule 95 (MULTIDIV)
+    '+'       [reduce using rule 97 (MULTIDIV)]
+    '/'       reduce using rule 95 (MULTIDIV)
+    '/'       [reduce using rule 97 (MULTIDIV)]
+    '%'       reduce using rule 95 (MULTIDIV)
+    '%'       [reduce using rule 97 (MULTIDIV)]
+    $default  reduce using rule 95 (MULTIDIV)
+
+
+State 138
+
+   95 MULTIDIV: INTMATH .
+   98         | MULTIDIV '%' INTMATH .
+
+    ')'       reduce using rule 95 (MULTIDIV)
+    ')'       [reduce using rule 98 (MULTIDIV)]
+    '*'       reduce using rule 95 (MULTIDIV)
+    '*'       [reduce using rule 98 (MULTIDIV)]
+    ']'       reduce using rule 95 (MULTIDIV)
+    ']'       [reduce using rule 98 (MULTIDIV)]
+    '-'       reduce using rule 95 (MULTIDIV)
+    '-'       [reduce using rule 98 (MULTIDIV)]
+    '+'       reduce using rule 95 (MULTIDIV)
+    '+'       [reduce using rule 98 (MULTIDIV)]
+    '/'       reduce using rule 95 (MULTIDIV)
+    '/'       [reduce using rule 98 (MULTIDIV)]
+    '%'       reduce using rule 95 (MULTIDIV)
+    '%'       [reduce using rule 98 (MULTIDIV)]
+    $default  reduce using rule 95 (MULTIDIV)
+
+
+State 139
+
+   38 MARG: MARG TYPE VARNAME ',' .
+
+    $default  reduce using rule 38 (MARG)
+
+
+State 140
+
+  154 DOWHILEN: DO . '{' INNER '}' WHILE '(' COND ')' ';'
+
+    '{'  shift, and go to state 180
+
+
+State 141
+
+  153 WHILEN: WHILE . '(' COND ')' '{' INNER '}'
+
+    '('  shift, and go to state 181
+
+
+State 142
+
+  101 IFN: IF . '(' COND ')' '{' INNER '}' ELSEC
+
+    '('  shift, and go to state 182
+
+
+State 143
+
+  161 INPUT: IN . MIN INP_OP VARNAME ';'
+
+    $default  reduce using rule 156 (MIN)
+
+    MIN  go to state 183
+
+
+State 144
+
+  162 OUTPUT: OUT . MOUT OUT_OP VARNAME ';'
+  163       | OUT . MOUT OUT_OP CONST ';'
+  164       | OUT . MOUT OUT_OP WHITESPACE ';'
+
+    $default  reduce using rule 160 (MOUT)
+
+    MOUT  go to state 184
+
+
+State 145
+
+  152 FORN: FOR . '(' FL1 FL2 ';' FL3 ')' '{' INNER '}'
+
+    '('  shift, and go to state 185
+
+
+State 146
+
+   27 INNER: RETURN . INNER
+
+    IDENTIFIER  shift, and go to state 19
+    BOOL        shift, and go to state 1
+    INT         shift, and go to state 2
+    FLOAT       shift, and go to state 3
+    DOUBLE      shift, and go to state 4
+    CHAR        shift, and go to state 5
+    DO          shift, and go to state 140
+    WHILE       shift, and go to state 141
+    IF          shift, and go to state 142
+    IN          shift, and go to state 143
+    OUT         shift, and go to state 144
+    VOID        shift, and go to state 6
+    FOR         shift, and go to state 145
+    RETURN      shift, and go to state 146
+    STRUCT      shift, and go to state 147
+    SWITCH      shift, and go to state 148
+    INC_OP      shift, and go to state 149
+    DEC_OP      shift, and go to state 150
+    '*'         shift, and go to state 32
+    ';'         shift, and go to state 151
+    '&'         shift, and go to state 21
+
+    $default  reduce using rule 29 (INNER)
+
+    TYPE         go to state 152
+    INNER        go to state 186
+    VARNAME      go to state 154
+    VARDEF       go to state 155
+    MATH         go to state 156
+    CONDITIONAL  go to state 157
+    IFN          go to state 158
+    SWITCHN      go to state 159
+    FCALL        go to state 160
+    LOOP         go to state 161
+    FORN         go to state 162
+    WHILEN       go to state 163
+    DOWHILEN     go to state 164
+    INPUT        go to state 165
+    OUTPUT       go to state 166
+
+
+State 147
+
+   15 TYPE: STRUCT . IDENTIFIER
+   25 INNER: STRUCT . INNER
+
+    IDENTIFIER  shift, and go to state 187
+    BOOL        shift, and go to state 1
+    INT         shift, and go to state 2
+    FLOAT       shift, and go to state 3
+    DOUBLE      shift, and go to state 4
+    CHAR        shift, and go to state 5
+    DO          shift, and go to state 140
+    WHILE       shift, and go to state 141
+    IF          shift, and go to state 142
+    IN          shift, and go to state 143
+    OUT         shift, and go to state 144
+    VOID        shift, and go to state 6
+    FOR         shift, and go to state 145
+    RETURN      shift, and go to state 146
+    STRUCT      shift, and go to state 147
+    SWITCH      shift, and go to state 148
+    INC_OP      shift, and go to state 149
+    DEC_OP      shift, and go to state 150
+    '*'         shift, and go to state 32
+    ';'         shift, and go to state 151
+    '&'         shift, and go to state 21
+
+    $default  reduce using rule 29 (INNER)
+
+    TYPE         go to state 152
+    INNER        go to state 188
+    VARNAME      go to state 154
+    VARDEF       go to state 155
+    MATH         go to state 156
+    CONDITIONAL  go to state 157
+    IFN          go to state 158
+    SWITCHN      go to state 159
+    FCALL        go to state 160
+    LOOP         go to state 161
+    FORN         go to state 162
+    WHILEN       go to state 163
+    DOWHILEN     go to state 164
+    INPUT        go to state 165
+    OUTPUT       go to state 166
+
+
+State 148
+
+  117 SWITCHN: SWITCH . '(' COND ')' '{' SWITCHINNER '}'
+
+    '('  shift, and go to state 189
+
+
+State 149
+
+   62 MATH: INC_OP . VARNAME ';'
+
+    IDENTIFIER  shift, and go to state 19
+    '*'         shift, and go to state 32
+    '&'         shift, and go to state 21
+
+    VARNAME  go to state 190
+
+
+State 150
+
+   63 MATH: DEC_OP . VARNAME ';'
+
+    IDENTIFIER  shift, and go to state 19
+    '*'         shift, and go to state 32
+    '&'         shift, and go to state 21
+
+    VARNAME  go to state 191
+
+
+State 151
+
+   28 INNER: ';' .
+   57 MATH: ';' .
+
+    CASE      reduce using rule 28 (INNER)
+    CASE      [reduce using rule 57 (MATH)]
+    DEFAULT   reduce using rule 28 (INNER)
+    DEFAULT   [reduce using rule 57 (MATH)]
+    '}'       reduce using rule 28 (INNER)
+    '}'       [reduce using rule 57 (MATH)]
+    $default  reduce using rule 57 (MATH)
+
+
+State 152
+
+   16 TYPE: TYPE . '*'
+   41 VARDEF: TYPE . MVAR VARNAME ';'
+   42       | TYPE . MVAR VARNAME '=' CONST ';'
+   43       | TYPE . MVAR VARNAME '=' FCALL ';'
+   44       | TYPE . MVAR VARNAME '=' RMATH ';'
+   45       | TYPE . MVAR VARNAME '=' VARNAME ';'
+   46       | TYPE . MVAR VARNAME '=' '{' MCONST CONST '}' ';'
+   58 MATH: TYPE . VARNAME '=' RMATH
+
+    IDENTIFIER  shift, and go to state 19
+    '*'         shift, and go to state 20
+    '&'         shift, and go to state 21
+
+    IDENTIFIER  [reduce using rule 53 (MVAR)]
+    '*'         [reduce using rule 53 (MVAR)]
+    '&'         [reduce using rule 53 (MVAR)]
+
+    VARNAME  go to state 192
+    MVAR     go to state 23
+
+
+State 153
+
+   21 FUNCTION: TYPE VARNAME '(' FARG ')' '{' INNER . '}'
+
+    '}'  shift, and go to state 193
+
+
+State 154
+
+   56 MATH: VARNAME . '=' RMATH ';'
+   59     | VARNAME . OPERATOR '=' RMATH ';'
+   60     | VARNAME . INC_OP ';'
+   61     | VARNAME . DEC_OP ';'
+  129 FCALL: VARNAME . '(' ARGT ')'
+
+    INC_OP  shift, and go to state 194
+    DEC_OP  shift, and go to state 195
+    '('     shift, and go to state 93
+    '*'     shift, and go to state 196
+    '&'     shift, and go to state 197
+    '='     shift, and go to state 198
+    '-'     shift, and go to state 199
+    '+'     shift, and go to state 200
+    '/'     shift, and go to state 201
+    '%'     shift, and go to state 202
+    '^'     shift, and go to state 203
+    '|'     shift, and go to state 204
+
+    OPERATOR  go to state 205
+
+
+State 155
+
+   24 INNER: VARDEF . INNER
+
+    IDENTIFIER  shift, and go to state 19
+    BOOL        shift, and go to state 1
+    INT         shift, and go to state 2
+    FLOAT       shift, and go to state 3
+    DOUBLE      shift, and go to state 4
+    CHAR        shift, and go to state 5
+    DO          shift, and go to state 140
+    WHILE       shift, and go to state 141
+    IF          shift, and go to state 142
+    IN          shift, and go to state 143
+    OUT         shift, and go to state 144
+    VOID        shift, and go to state 6
+    FOR         shift, and go to state 145
+    RETURN      shift, and go to state 146
+    STRUCT      shift, and go to state 147
+    SWITCH      shift, and go to state 148
+    INC_OP      shift, and go to state 149
+    DEC_OP      shift, and go to state 150
+    '*'         shift, and go to state 32
+    ';'         shift, and go to state 151
+    '&'         shift, and go to state 21
+
+    $default  reduce using rule 29 (INNER)
+
+    TYPE         go to state 152
+    INNER        go to state 206
+    VARNAME      go to state 154
+    VARDEF       go to state 155
+    MATH         go to state 156
+    CONDITIONAL  go to state 157
+    IFN          go to state 158
+    SWITCHN      go to state 159
+    FCALL        go to state 160
+    LOOP         go to state 161
+    FORN         go to state 162
+    WHILEN       go to state 163
+    DOWHILEN     go to state 164
+    INPUT        go to state 165
+    OUTPUT       go to state 166
+
+
+State 156
+
+   32 INNER: MATH . INNER
+
+    IDENTIFIER  shift, and go to state 19
+    BOOL        shift, and go to state 1
+    INT         shift, and go to state 2
+    FLOAT       shift, and go to state 3
+    DOUBLE      shift, and go to state 4
+    CHAR        shift, and go to state 5
+    DO          shift, and go to state 140
+    WHILE       shift, and go to state 141
+    IF          shift, and go to state 142
+    IN          shift, and go to state 143
+    OUT         shift, and go to state 144
+    VOID        shift, and go to state 6
+    FOR         shift, and go to state 145
+    RETURN      shift, and go to state 146
+    STRUCT      shift, and go to state 147
+    SWITCH      shift, and go to state 148
+    INC_OP      shift, and go to state 149
+    DEC_OP      shift, and go to state 150
+    '*'         shift, and go to state 32
+    ';'         shift, and go to state 151
+    '&'         shift, and go to state 21
+
+    $default  reduce using rule 29 (INNER)
+
+    TYPE         go to state 152
+    INNER        go to state 207
+    VARNAME      go to state 154
+    VARDEF       go to state 155
+    MATH         go to state 156
+    CONDITIONAL  go to state 157
+    IFN          go to state 158
+    SWITCHN      go to state 159
+    FCALL        go to state 160
+    LOOP         go to state 161
+    FORN         go to state 162
+    WHILEN       go to state 163
+    DOWHILEN     go to state 164
+    INPUT        go to state 165
+    OUTPUT       go to state 166
+
+
+State 157
+
+   23 INNER: CONDITIONAL . INNER
+
+    IDENTIFIER  shift, and go to state 19
+    BOOL        shift, and go to state 1
+    INT         shift, and go to state 2
+    FLOAT       shift, and go to state 3
+    DOUBLE      shift, and go to state 4
+    CHAR        shift, and go to state 5
+    DO          shift, and go to state 140
+    WHILE       shift, and go to state 141
+    IF          shift, and go to state 142
+    IN          shift, and go to state 143
+    OUT         shift, and go to state 144
+    VOID        shift, and go to state 6
+    FOR         shift, and go to state 145
+    RETURN      shift, and go to state 146
+    STRUCT      shift, and go to state 147
+    SWITCH      shift, and go to state 148
+    INC_OP      shift, and go to state 149
+    DEC_OP      shift, and go to state 150
+    '*'         shift, and go to state 32
+    ';'         shift, and go to state 151
+    '&'         shift, and go to state 21
+
+    $default  reduce using rule 29 (INNER)
+
+    TYPE         go to state 152
+    INNER        go to state 208
+    VARNAME      go to state 154
+    VARDEF       go to state 155
+    MATH         go to state 156
+    CONDITIONAL  go to state 157
+    IFN          go to state 158
+    SWITCHN      go to state 159
+    FCALL        go to state 160
+    LOOP         go to state 161
+    FORN         go to state 162
+    WHILEN       go to state 163
+    DOWHILEN     go to state 164
+    INPUT        go to state 165
+    OUTPUT       go to state 166
+
+
+State 158
+
+   99 CONDITIONAL: IFN .
+
+    $default  reduce using rule 99 (CONDITIONAL)
+
+
+State 159
+
+  100 CONDITIONAL: SWITCHN .
+
+    $default  reduce using rule 100 (CONDITIONAL)
+
+
+State 160
+
+   26 INNER: FCALL . INNER
+
+    IDENTIFIER  shift, and go to state 19
+    BOOL        shift, and go to state 1
+    INT         shift, and go to state 2
+    FLOAT       shift, and go to state 3
+    DOUBLE      shift, and go to state 4
+    CHAR        shift, and go to state 5
+    DO          shift, and go to state 140
+    WHILE       shift, and go to state 141
+    IF          shift, and go to state 142
+    IN          shift, and go to state 143
+    OUT         shift, and go to state 144
+    VOID        shift, and go to state 6
+    FOR         shift, and go to state 145
+    RETURN      shift, and go to state 146
+    STRUCT      shift, and go to state 147
+    SWITCH      shift, and go to state 148
+    INC_OP      shift, and go to state 149
+    DEC_OP      shift, and go to state 150
+    '*'         shift, and go to state 32
+    ';'         shift, and go to state 151
+    '&'         shift, and go to state 21
+
+    $default  reduce using rule 29 (INNER)
+
+    TYPE         go to state 152
+    INNER        go to state 209
+    VARNAME      go to state 154
+    VARDEF       go to state 155
+    MATH         go to state 156
+    CONDITIONAL  go to state 157
+    IFN          go to state 158
+    SWITCHN      go to state 159
+    FCALL        go to state 160
+    LOOP         go to state 161
+    FORN         go to state 162
+    WHILEN       go to state 163
+    DOWHILEN     go to state 164
+    INPUT        go to state 165
+    OUTPUT       go to state 166
+
+
+State 161
+
+   22 INNER: LOOP . INNER
+
+    IDENTIFIER  shift, and go to state 19
+    BOOL        shift, and go to state 1
+    INT         shift, and go to state 2
+    FLOAT       shift, and go to state 3
+    DOUBLE      shift, and go to state 4
+    CHAR        shift, and go to state 5
+    DO          shift, and go to state 140
+    WHILE       shift, and go to state 141
+    IF          shift, and go to state 142
+    IN          shift, and go to state 143
+    OUT         shift, and go to state 144
+    VOID        shift, and go to state 6
+    FOR         shift, and go to state 145
+    RETURN      shift, and go to state 146
+    STRUCT      shift, and go to state 147
+    SWITCH      shift, and go to state 148
+    INC_OP      shift, and go to state 149
+    DEC_OP      shift, and go to state 150
+    '*'         shift, and go to state 32
+    ';'         shift, and go to state 151
+    '&'         shift, and go to state 21
+
+    $default  reduce using rule 29 (INNER)
+
+    TYPE         go to state 152
+    INNER        go to state 210
+    VARNAME      go to state 154
+    VARDEF       go to state 155
+    MATH         go to state 156
+    CONDITIONAL  go to state 157
+    IFN          go to state 158
+    SWITCHN      go to state 159
+    FCALL        go to state 160
+    LOOP         go to state 161
+    FORN         go to state 162
+    WHILEN       go to state 163
+    DOWHILEN     go to state 164
+    INPUT        go to state 165
+    OUTPUT       go to state 166
+
+
+State 162
+
+  130 LOOP: FORN .
+
+    $default  reduce using rule 130 (LOOP)
+
+
+State 163
+
+  131 LOOP: WHILEN .
+
+    $default  reduce using rule 131 (LOOP)
+
+
+State 164
+
+  132 LOOP: DOWHILEN .
+
+    $default  reduce using rule 132 (LOOP)
+
+
+State 165
+
+   30 INNER: INPUT . INNER
+
+    IDENTIFIER  shift, and go to state 19
+    BOOL        shift, and go to state 1
+    INT         shift, and go to state 2
+    FLOAT       shift, and go to state 3
+    DOUBLE      shift, and go to state 4
+    CHAR        shift, and go to state 5
+    DO          shift, and go to state 140
+    WHILE       shift, and go to state 141
+    IF          shift, and go to state 142
+    IN          shift, and go to state 143
+    OUT         shift, and go to state 144
+    VOID        shift, and go to state 6
+    FOR         shift, and go to state 145
+    RETURN      shift, and go to state 146
+    STRUCT      shift, and go to state 147
+    SWITCH      shift, and go to state 148
+    INC_OP      shift, and go to state 149
+    DEC_OP      shift, and go to state 150
+    '*'         shift, and go to state 32
+    ';'         shift, and go to state 151
+    '&'         shift, and go to state 21
+
+    $default  reduce using rule 29 (INNER)
+
+    TYPE         go to state 152
+    INNER        go to state 211
+    VARNAME      go to state 154
+    VARDEF       go to state 155
+    MATH         go to state 156
+    CONDITIONAL  go to state 157
+    IFN          go to state 158
+    SWITCHN      go to state 159
+    FCALL        go to state 160
+    LOOP         go to state 161
+    FORN         go to state 162
+    WHILEN       go to state 163
+    DOWHILEN     go to state 164
+    INPUT        go to state 165
+    OUTPUT       go to state 166
+
+
+State 166
+
+   31 INNER: OUTPUT . INNER
+
+    IDENTIFIER  shift, and go to state 19
+    BOOL        shift, and go to state 1
+    INT         shift, and go to state 2
+    FLOAT       shift, and go to state 3
+    DOUBLE      shift, and go to state 4
+    CHAR        shift, and go to state 5
+    DO          shift, and go to state 140
+    WHILE       shift, and go to state 141
+    IF          shift, and go to state 142
+    IN          shift, and go to state 143
+    OUT         shift, and go to state 144
+    VOID        shift, and go to state 6
+    FOR         shift, and go to state 145
+    RETURN      shift, and go to state 146
+    STRUCT      shift, and go to state 147
+    SWITCH      shift, and go to state 148
+    INC_OP      shift, and go to state 149
+    DEC_OP      shift, and go to state 150
+    '*'         shift, and go to state 32
+    ';'         shift, and go to state 151
+    '&'         shift, and go to state 21
+
+    $default  reduce using rule 29 (INNER)
+
+    TYPE         go to state 152
+    INNER        go to state 212
+    VARNAME      go to state 154
+    VARDEF       go to state 155
+    MATH         go to state 156
+    CONDITIONAL  go to state 157
+    IFN          go to state 158
+    SWITCHN      go to state 159
+    FCALL        go to state 160
+    LOOP         go to state 161
+    FORN         go to state 162
+    WHILEN       go to state 163
+    DOWHILEN     go to state 164
+    INPUT        go to state 165
+    OUTPUT       go to state 166
+
+
+State 167
+
+   70 RMATH: '(' RMATH ')' .
+
+    $default  reduce using rule 70 (RMATH)
+
+
+State 168
+
+   46 VARDEF: TYPE MVAR VARNAME '=' '{' MCONST CONST . '}' ';'
+   54 MCONST: MCONST CONST . ','
+
+    '}'  shift, and go to state 213
+    ','  shift, and go to state 169
+
+
+State 169
+
+   54 MCONST: MCONST CONST ',' .
+
+    $default  reduce using rule 54 (MCONST)
+
+
+State 170
+
+   77 RMULTIDIV: RMATH .
+
+    $default  reduce using rule 77 (RMULTIDIV)
+
+
+State 171
+
+   74 RADDSUB: RMULTIDIV .
+   75        | RADDSUB '-' RMULTIDIV .
+   78 RMULTIDIV: RMULTIDIV . '*' RMATH
+   79          | RMULTIDIV . '/' RMATH
+   80          | RMULTIDIV . '%' RMATH
+
+    '*'  shift, and go to state 120
+    '/'  shift, and go to state 121
+    '%'  shift, and go to state 122
+
+    IDENTIFIER     reduce using rule 74 (RADDSUB)
+    IDENTIFIER     [reduce using rule 75 (RADDSUB)]
+    BOOL           reduce using rule 74 (RADDSUB)
+    BOOL           [reduce using rule 75 (RADDSUB)]
+    INT            reduce using rule 74 (RADDSUB)
+    INT            [reduce using rule 75 (RADDSUB)]
+    FLOAT          reduce using rule 74 (RADDSUB)
+    FLOAT          [reduce using rule 75 (RADDSUB)]
+    DOUBLE         reduce using rule 74 (RADDSUB)
+    DOUBLE         [reduce using rule 75 (RADDSUB)]
+    CHAR           reduce using rule 74 (RADDSUB)
+    CHAR           [reduce using rule 75 (RADDSUB)]
+    DO             reduce using rule 74 (RADDSUB)
+    DO             [reduce using rule 75 (RADDSUB)]
+    WHILE          reduce using rule 74 (RADDSUB)
+    WHILE          [reduce using rule 75 (RADDSUB)]
+    IF             reduce using rule 74 (RADDSUB)
+    IF             [reduce using rule 75 (RADDSUB)]
+    FALSE          reduce using rule 74 (RADDSUB)
+    FALSE          [reduce using rule 75 (RADDSUB)]
+    TRUE           reduce using rule 74 (RADDSUB)
+    TRUE           [reduce using rule 75 (RADDSUB)]
+    IN             reduce using rule 74 (RADDSUB)
+    IN             [reduce using rule 75 (RADDSUB)]
+    OUT            reduce using rule 74 (RADDSUB)
+    OUT            [reduce using rule 75 (RADDSUB)]
+    VOID           reduce using rule 74 (RADDSUB)
+    VOID           [reduce using rule 75 (RADDSUB)]
+    FOR            reduce using rule 74 (RADDSUB)
+    FOR            [reduce using rule 75 (RADDSUB)]
+    INTCONST       reduce using rule 74 (RADDSUB)
+    INTCONST       [reduce using rule 75 (RADDSUB)]
+    CHAR_CONSTANT  reduce using rule 74 (RADDSUB)
+    CHAR_CONSTANT  [reduce using rule 75 (RADDSUB)]
+    RETURN         reduce using rule 74 (RADDSUB)
+    RETURN         [reduce using rule 75 (RADDSUB)]
+    STRUCT         reduce using rule 74 (RADDSUB)
+    STRUCT         [reduce using rule 75 (RADDSUB)]
+    SWITCH         reduce using rule 74 (RADDSUB)
+    SWITCH         [reduce using rule 75 (RADDSUB)]
+    CASE           reduce using rule 74 (RADDSUB)
+    CASE           [reduce using rule 75 (RADDSUB)]
+    DEFAULT        reduce using rule 74 (RADDSUB)
+    DEFAULT        [reduce using rule 75 (RADDSUB)]
+    INC_OP         reduce using rule 74 (RADDSUB)
+    INC_OP         [reduce using rule 75 (RADDSUB)]
+    DEC_OP         reduce using rule 74 (RADDSUB)
+    DEC_OP         [reduce using rule 75 (RADDSUB)]
+    LESS_EQ_OP     reduce using rule 74 (RADDSUB)
+    LESS_EQ_OP     [reduce using rule 75 (RADDSUB)]
+    GRE_EQ_OP      reduce using rule 74 (RADDSUB)
+    GRE_EQ_OP      [reduce using rule 75 (RADDSUB)]
+    DOUBLE_EQ_OP   reduce using rule 74 (RADDSUB)
+    DOUBLE_EQ_OP   [reduce using rule 75 (RADDSUB)]
+    NOT_EQ_OP      reduce using rule 74 (RADDSUB)
+    NOT_EQ_OP      [reduce using rule 75 (RADDSUB)]
+    '('            reduce using rule 74 (RADDSUB)
+    '('            [reduce using rule 75 (RADDSUB)]
+    ')'            reduce using rule 74 (RADDSUB)
+    ')'            [reduce using rule 75 (RADDSUB)]
+    '}'            reduce using rule 74 (RADDSUB)
+    '}'            [reduce using rule 75 (RADDSUB)]
+    '*'            [reduce using rule 74 (RADDSUB)]
+    '*'            [reduce using rule 75 (RADDSUB)]
+    ';'            reduce using rule 74 (RADDSUB)
+    ';'            [reduce using rule 75 (RADDSUB)]
+    '&'            reduce using rule 74 (RADDSUB)
+    '&'            [reduce using rule 75 (RADDSUB)]
+    ','            reduce using rule 74 (RADDSUB)
+    ','            [reduce using rule 75 (RADDSUB)]
+    '!'            reduce using rule 74 (RADDSUB)
+    '!'            [reduce using rule 75 (RADDSUB)]
+    '-'            reduce using rule 74 (RADDSUB)
+    '-'            [reduce using rule 75 (RADDSUB)]
+    '+'            reduce using rule 74 (RADDSUB)
+    '+'            [reduce using rule 75 (RADDSUB)]
+    '/'            [reduce using rule 74 (RADDSUB)]
+    '/'            [reduce using rule 75 (RADDSUB)]
+    '%'            [reduce using rule 74 (RADDSUB)]
+    '%'            [reduce using rule 75 (RADDSUB)]
+    '>'            reduce using rule 74 (RADDSUB)
+    '>'            [reduce using rule 75 (RADDSUB)]
+    '<'            reduce using rule 74 (RADDSUB)
+    '<'            [reduce using rule 75 (RADDSUB)]
+    "&&"           reduce using rule 74 (RADDSUB)
+    "&&"           [reduce using rule 75 (RADDSUB)]
+    "||"           reduce using rule 74 (RADDSUB)
+    "||"           [reduce using rule 75 (RADDSUB)]
+    $default       reduce using rule 74 (RADDSUB)
+
+
+State 172
+
+   74 RADDSUB: RMULTIDIV .
+   76        | RADDSUB '+' RMULTIDIV .
+   78 RMULTIDIV: RMULTIDIV . '*' RMATH
+   79          | RMULTIDIV . '/' RMATH
+   80          | RMULTIDIV . '%' RMATH
+
+    '*'  shift, and go to state 120
+    '/'  shift, and go to state 121
+    '%'  shift, and go to state 122
+
+    IDENTIFIER     reduce using rule 74 (RADDSUB)
+    IDENTIFIER     [reduce using rule 76 (RADDSUB)]
+    BOOL           reduce using rule 74 (RADDSUB)
+    BOOL           [reduce using rule 76 (RADDSUB)]
+    INT            reduce using rule 74 (RADDSUB)
+    INT            [reduce using rule 76 (RADDSUB)]
+    FLOAT          reduce using rule 74 (RADDSUB)
+    FLOAT          [reduce using rule 76 (RADDSUB)]
+    DOUBLE         reduce using rule 74 (RADDSUB)
+    DOUBLE         [reduce using rule 76 (RADDSUB)]
+    CHAR           reduce using rule 74 (RADDSUB)
+    CHAR           [reduce using rule 76 (RADDSUB)]
+    DO             reduce using rule 74 (RADDSUB)
+    DO             [reduce using rule 76 (RADDSUB)]
+    WHILE          reduce using rule 74 (RADDSUB)
+    WHILE          [reduce using rule 76 (RADDSUB)]
+    IF             reduce using rule 74 (RADDSUB)
+    IF             [reduce using rule 76 (RADDSUB)]
+    FALSE          reduce using rule 74 (RADDSUB)
+    FALSE          [reduce using rule 76 (RADDSUB)]
+    TRUE           reduce using rule 74 (RADDSUB)
+    TRUE           [reduce using rule 76 (RADDSUB)]
+    IN             reduce using rule 74 (RADDSUB)
+    IN             [reduce using rule 76 (RADDSUB)]
+    OUT            reduce using rule 74 (RADDSUB)
+    OUT            [reduce using rule 76 (RADDSUB)]
+    VOID           reduce using rule 74 (RADDSUB)
+    VOID           [reduce using rule 76 (RADDSUB)]
+    FOR            reduce using rule 74 (RADDSUB)
+    FOR            [reduce using rule 76 (RADDSUB)]
+    INTCONST       reduce using rule 74 (RADDSUB)
+    INTCONST       [reduce using rule 76 (RADDSUB)]
+    CHAR_CONSTANT  reduce using rule 74 (RADDSUB)
+    CHAR_CONSTANT  [reduce using rule 76 (RADDSUB)]
+    RETURN         reduce using rule 74 (RADDSUB)
+    RETURN         [reduce using rule 76 (RADDSUB)]
+    STRUCT         reduce using rule 74 (RADDSUB)
+    STRUCT         [reduce using rule 76 (RADDSUB)]
+    SWITCH         reduce using rule 74 (RADDSUB)
+    SWITCH         [reduce using rule 76 (RADDSUB)]
+    CASE           reduce using rule 74 (RADDSUB)
+    CASE           [reduce using rule 76 (RADDSUB)]
+    DEFAULT        reduce using rule 74 (RADDSUB)
+    DEFAULT        [reduce using rule 76 (RADDSUB)]
+    INC_OP         reduce using rule 74 (RADDSUB)
+    INC_OP         [reduce using rule 76 (RADDSUB)]
+    DEC_OP         reduce using rule 74 (RADDSUB)
+    DEC_OP         [reduce using rule 76 (RADDSUB)]
+    LESS_EQ_OP     reduce using rule 74 (RADDSUB)
+    LESS_EQ_OP     [reduce using rule 76 (RADDSUB)]
+    GRE_EQ_OP      reduce using rule 74 (RADDSUB)
+    GRE_EQ_OP      [reduce using rule 76 (RADDSUB)]
+    DOUBLE_EQ_OP   reduce using rule 74 (RADDSUB)
+    DOUBLE_EQ_OP   [reduce using rule 76 (RADDSUB)]
+    NOT_EQ_OP      reduce using rule 74 (RADDSUB)
+    NOT_EQ_OP      [reduce using rule 76 (RADDSUB)]
+    '('            reduce using rule 74 (RADDSUB)
+    '('            [reduce using rule 76 (RADDSUB)]
+    ')'            reduce using rule 74 (RADDSUB)
+    ')'            [reduce using rule 76 (RADDSUB)]
+    '}'            reduce using rule 74 (RADDSUB)
+    '}'            [reduce using rule 76 (RADDSUB)]
+    '*'            [reduce using rule 74 (RADDSUB)]
+    '*'            [reduce using rule 76 (RADDSUB)]
+    ';'            reduce using rule 74 (RADDSUB)
+    ';'            [reduce using rule 76 (RADDSUB)]
+    '&'            reduce using rule 74 (RADDSUB)
+    '&'            [reduce using rule 76 (RADDSUB)]
+    ','            reduce using rule 74 (RADDSUB)
+    ','            [reduce using rule 76 (RADDSUB)]
+    '!'            reduce using rule 74 (RADDSUB)
+    '!'            [reduce using rule 76 (RADDSUB)]
+    '-'            reduce using rule 74 (RADDSUB)
+    '-'            [reduce using rule 76 (RADDSUB)]
+    '+'            reduce using rule 74 (RADDSUB)
+    '+'            [reduce using rule 76 (RADDSUB)]
+    '/'            [reduce using rule 74 (RADDSUB)]
+    '/'            [reduce using rule 76 (RADDSUB)]
+    '%'            [reduce using rule 74 (RADDSUB)]
+    '%'            [reduce using rule 76 (RADDSUB)]
+    '>'            reduce using rule 74 (RADDSUB)
+    '>'            [reduce using rule 76 (RADDSUB)]
+    '<'            reduce using rule 74 (RADDSUB)
+    '<'            [reduce using rule 76 (RADDSUB)]
+    "&&"           reduce using rule 74 (RADDSUB)
+    "&&"           [reduce using rule 76 (RADDSUB)]
+    "||"           reduce using rule 74 (RADDSUB)
+    "||"           [reduce using rule 76 (RADDSUB)]
+    $default       reduce using rule 74 (RADDSUB)
+
+
+State 173
+
+   77 RMULTIDIV: RMATH .
+   78          | RMULTIDIV '*' RMATH .
+
+    IDENTIFIER     reduce using rule 77 (RMULTIDIV)
+    IDENTIFIER     [reduce using rule 78 (RMULTIDIV)]
+    BOOL           reduce using rule 77 (RMULTIDIV)
+    BOOL           [reduce using rule 78 (RMULTIDIV)]
+    INT            reduce using rule 77 (RMULTIDIV)
+    INT            [reduce using rule 78 (RMULTIDIV)]
+    FLOAT          reduce using rule 77 (RMULTIDIV)
+    FLOAT          [reduce using rule 78 (RMULTIDIV)]
+    DOUBLE         reduce using rule 77 (RMULTIDIV)
+    DOUBLE         [reduce using rule 78 (RMULTIDIV)]
+    CHAR           reduce using rule 77 (RMULTIDIV)
+    CHAR           [reduce using rule 78 (RMULTIDIV)]
+    DO             reduce using rule 77 (RMULTIDIV)
+    DO             [reduce using rule 78 (RMULTIDIV)]
+    WHILE          reduce using rule 77 (RMULTIDIV)
+    WHILE          [reduce using rule 78 (RMULTIDIV)]
+    IF             reduce using rule 77 (RMULTIDIV)
+    IF             [reduce using rule 78 (RMULTIDIV)]
+    FALSE          reduce using rule 77 (RMULTIDIV)
+    FALSE          [reduce using rule 78 (RMULTIDIV)]
+    TRUE           reduce using rule 77 (RMULTIDIV)
+    TRUE           [reduce using rule 78 (RMULTIDIV)]
+    IN             reduce using rule 77 (RMULTIDIV)
+    IN             [reduce using rule 78 (RMULTIDIV)]
+    OUT            reduce using rule 77 (RMULTIDIV)
+    OUT            [reduce using rule 78 (RMULTIDIV)]
+    VOID           reduce using rule 77 (RMULTIDIV)
+    VOID           [reduce using rule 78 (RMULTIDIV)]
+    FOR            reduce using rule 77 (RMULTIDIV)
+    FOR            [reduce using rule 78 (RMULTIDIV)]
+    INTCONST       reduce using rule 77 (RMULTIDIV)
+    INTCONST       [reduce using rule 78 (RMULTIDIV)]
+    CHAR_CONSTANT  reduce using rule 77 (RMULTIDIV)
+    CHAR_CONSTANT  [reduce using rule 78 (RMULTIDIV)]
+    RETURN         reduce using rule 77 (RMULTIDIV)
+    RETURN         [reduce using rule 78 (RMULTIDIV)]
+    STRUCT         reduce using rule 77 (RMULTIDIV)
+    STRUCT         [reduce using rule 78 (RMULTIDIV)]
+    SWITCH         reduce using rule 77 (RMULTIDIV)
+    SWITCH         [reduce using rule 78 (RMULTIDIV)]
+    CASE           reduce using rule 77 (RMULTIDIV)
+    CASE           [reduce using rule 78 (RMULTIDIV)]
+    DEFAULT        reduce using rule 77 (RMULTIDIV)
+    DEFAULT        [reduce using rule 78 (RMULTIDIV)]
+    INC_OP         reduce using rule 77 (RMULTIDIV)
+    INC_OP         [reduce using rule 78 (RMULTIDIV)]
+    DEC_OP         reduce using rule 77 (RMULTIDIV)
+    DEC_OP         [reduce using rule 78 (RMULTIDIV)]
+    LESS_EQ_OP     reduce using rule 77 (RMULTIDIV)
+    LESS_EQ_OP     [reduce using rule 78 (RMULTIDIV)]
+    GRE_EQ_OP      reduce using rule 77 (RMULTIDIV)
+    GRE_EQ_OP      [reduce using rule 78 (RMULTIDIV)]
+    DOUBLE_EQ_OP   reduce using rule 77 (RMULTIDIV)
+    DOUBLE_EQ_OP   [reduce using rule 78 (RMULTIDIV)]
+    NOT_EQ_OP      reduce using rule 77 (RMULTIDIV)
+    NOT_EQ_OP      [reduce using rule 78 (RMULTIDIV)]
+    '('            reduce using rule 77 (RMULTIDIV)
+    '('            [reduce using rule 78 (RMULTIDIV)]
+    ')'            reduce using rule 77 (RMULTIDIV)
+    ')'            [reduce using rule 78 (RMULTIDIV)]
+    '}'            reduce using rule 77 (RMULTIDIV)
+    '}'            [reduce using rule 78 (RMULTIDIV)]
+    '*'            reduce using rule 77 (RMULTIDIV)
+    '*'            [reduce using rule 78 (RMULTIDIV)]
+    ';'            reduce using rule 77 (RMULTIDIV)
+    ';'            [reduce using rule 78 (RMULTIDIV)]
+    '&'            reduce using rule 77 (RMULTIDIV)
+    '&'            [reduce using rule 78 (RMULTIDIV)]
+    ','            reduce using rule 77 (RMULTIDIV)
+    ','            [reduce using rule 78 (RMULTIDIV)]
+    '!'            reduce using rule 77 (RMULTIDIV)
+    '!'            [reduce using rule 78 (RMULTIDIV)]
+    '-'            reduce using rule 77 (RMULTIDIV)
+    '-'            [reduce using rule 78 (RMULTIDIV)]
+    '+'            reduce using rule 77 (RMULTIDIV)
+    '+'            [reduce using rule 78 (RMULTIDIV)]
+    '/'            reduce using rule 77 (RMULTIDIV)
+    '/'            [reduce using rule 78 (RMULTIDIV)]
+    '%'            reduce using rule 77 (RMULTIDIV)
+    '%'            [reduce using rule 78 (RMULTIDIV)]
+    '>'            reduce using rule 77 (RMULTIDIV)
+    '>'            [reduce using rule 78 (RMULTIDIV)]
+    '<'            reduce using rule 77 (RMULTIDIV)
+    '<'            [reduce using rule 78 (RMULTIDIV)]
+    "&&"           reduce using rule 77 (RMULTIDIV)
+    "&&"           [reduce using rule 78 (RMULTIDIV)]
+    "||"           reduce using rule 77 (RMULTIDIV)
+    "||"           [reduce using rule 78 (RMULTIDIV)]
+    $default       reduce using rule 77 (RMULTIDIV)
+
+
+State 174
+
+   77 RMULTIDIV: RMATH .
+   79          | RMULTIDIV '/' RMATH .
+
+    IDENTIFIER     reduce using rule 77 (RMULTIDIV)
+    IDENTIFIER     [reduce using rule 79 (RMULTIDIV)]
+    BOOL           reduce using rule 77 (RMULTIDIV)
+    BOOL           [reduce using rule 79 (RMULTIDIV)]
+    INT            reduce using rule 77 (RMULTIDIV)
+    INT            [reduce using rule 79 (RMULTIDIV)]
+    FLOAT          reduce using rule 77 (RMULTIDIV)
+    FLOAT          [reduce using rule 79 (RMULTIDIV)]
+    DOUBLE         reduce using rule 77 (RMULTIDIV)
+    DOUBLE         [reduce using rule 79 (RMULTIDIV)]
+    CHAR           reduce using rule 77 (RMULTIDIV)
+    CHAR           [reduce using rule 79 (RMULTIDIV)]
+    DO             reduce using rule 77 (RMULTIDIV)
+    DO             [reduce using rule 79 (RMULTIDIV)]
+    WHILE          reduce using rule 77 (RMULTIDIV)
+    WHILE          [reduce using rule 79 (RMULTIDIV)]
+    IF             reduce using rule 77 (RMULTIDIV)
+    IF             [reduce using rule 79 (RMULTIDIV)]
+    FALSE          reduce using rule 77 (RMULTIDIV)
+    FALSE          [reduce using rule 79 (RMULTIDIV)]
+    TRUE           reduce using rule 77 (RMULTIDIV)
+    TRUE           [reduce using rule 79 (RMULTIDIV)]
+    IN             reduce using rule 77 (RMULTIDIV)
+    IN             [reduce using rule 79 (RMULTIDIV)]
+    OUT            reduce using rule 77 (RMULTIDIV)
+    OUT            [reduce using rule 79 (RMULTIDIV)]
+    VOID           reduce using rule 77 (RMULTIDIV)
+    VOID           [reduce using rule 79 (RMULTIDIV)]
+    FOR            reduce using rule 77 (RMULTIDIV)
+    FOR            [reduce using rule 79 (RMULTIDIV)]
+    INTCONST       reduce using rule 77 (RMULTIDIV)
+    INTCONST       [reduce using rule 79 (RMULTIDIV)]
+    CHAR_CONSTANT  reduce using rule 77 (RMULTIDIV)
+    CHAR_CONSTANT  [reduce using rule 79 (RMULTIDIV)]
+    RETURN         reduce using rule 77 (RMULTIDIV)
+    RETURN         [reduce using rule 79 (RMULTIDIV)]
+    STRUCT         reduce using rule 77 (RMULTIDIV)
+    STRUCT         [reduce using rule 79 (RMULTIDIV)]
+    SWITCH         reduce using rule 77 (RMULTIDIV)
+    SWITCH         [reduce using rule 79 (RMULTIDIV)]
+    CASE           reduce using rule 77 (RMULTIDIV)
+    CASE           [reduce using rule 79 (RMULTIDIV)]
+    DEFAULT        reduce using rule 77 (RMULTIDIV)
+    DEFAULT        [reduce using rule 79 (RMULTIDIV)]
+    INC_OP         reduce using rule 77 (RMULTIDIV)
+    INC_OP         [reduce using rule 79 (RMULTIDIV)]
+    DEC_OP         reduce using rule 77 (RMULTIDIV)
+    DEC_OP         [reduce using rule 79 (RMULTIDIV)]
+    LESS_EQ_OP     reduce using rule 77 (RMULTIDIV)
+    LESS_EQ_OP     [reduce using rule 79 (RMULTIDIV)]
+    GRE_EQ_OP      reduce using rule 77 (RMULTIDIV)
+    GRE_EQ_OP      [reduce using rule 79 (RMULTIDIV)]
+    DOUBLE_EQ_OP   reduce using rule 77 (RMULTIDIV)
+    DOUBLE_EQ_OP   [reduce using rule 79 (RMULTIDIV)]
+    NOT_EQ_OP      reduce using rule 77 (RMULTIDIV)
+    NOT_EQ_OP      [reduce using rule 79 (RMULTIDIV)]
+    '('            reduce using rule 77 (RMULTIDIV)
+    '('            [reduce using rule 79 (RMULTIDIV)]
+    ')'            reduce using rule 77 (RMULTIDIV)
+    ')'            [reduce using rule 79 (RMULTIDIV)]
+    '}'            reduce using rule 77 (RMULTIDIV)
+    '}'            [reduce using rule 79 (RMULTIDIV)]
+    '*'            reduce using rule 77 (RMULTIDIV)
+    '*'            [reduce using rule 79 (RMULTIDIV)]
+    ';'            reduce using rule 77 (RMULTIDIV)
+    ';'            [reduce using rule 79 (RMULTIDIV)]
+    '&'            reduce using rule 77 (RMULTIDIV)
+    '&'            [reduce using rule 79 (RMULTIDIV)]
+    ','            reduce using rule 77 (RMULTIDIV)
+    ','            [reduce using rule 79 (RMULTIDIV)]
+    '!'            reduce using rule 77 (RMULTIDIV)
+    '!'            [reduce using rule 79 (RMULTIDIV)]
+    '-'            reduce using rule 77 (RMULTIDIV)
+    '-'            [reduce using rule 79 (RMULTIDIV)]
+    '+'            reduce using rule 77 (RMULTIDIV)
+    '+'            [reduce using rule 79 (RMULTIDIV)]
+    '/'            reduce using rule 77 (RMULTIDIV)
+    '/'            [reduce using rule 79 (RMULTIDIV)]
+    '%'            reduce using rule 77 (RMULTIDIV)
+    '%'            [reduce using rule 79 (RMULTIDIV)]
+    '>'            reduce using rule 77 (RMULTIDIV)
+    '>'            [reduce using rule 79 (RMULTIDIV)]
+    '<'            reduce using rule 77 (RMULTIDIV)
+    '<'            [reduce using rule 79 (RMULTIDIV)]
+    "&&"           reduce using rule 77 (RMULTIDIV)
+    "&&"           [reduce using rule 79 (RMULTIDIV)]
+    "||"           reduce using rule 77 (RMULTIDIV)
+    "||"           [reduce using rule 79 (RMULTIDIV)]
+    $default       reduce using rule 77 (RMULTIDIV)
+
+
+State 175
+
+   77 RMULTIDIV: RMATH .
+   80          | RMULTIDIV '%' RMATH .
+
+    IDENTIFIER     reduce using rule 77 (RMULTIDIV)
+    IDENTIFIER     [reduce using rule 80 (RMULTIDIV)]
+    BOOL           reduce using rule 77 (RMULTIDIV)
+    BOOL           [reduce using rule 80 (RMULTIDIV)]
+    INT            reduce using rule 77 (RMULTIDIV)
+    INT            [reduce using rule 80 (RMULTIDIV)]
+    FLOAT          reduce using rule 77 (RMULTIDIV)
+    FLOAT          [reduce using rule 80 (RMULTIDIV)]
+    DOUBLE         reduce using rule 77 (RMULTIDIV)
+    DOUBLE         [reduce using rule 80 (RMULTIDIV)]
+    CHAR           reduce using rule 77 (RMULTIDIV)
+    CHAR           [reduce using rule 80 (RMULTIDIV)]
+    DO             reduce using rule 77 (RMULTIDIV)
+    DO             [reduce using rule 80 (RMULTIDIV)]
+    WHILE          reduce using rule 77 (RMULTIDIV)
+    WHILE          [reduce using rule 80 (RMULTIDIV)]
+    IF             reduce using rule 77 (RMULTIDIV)
+    IF             [reduce using rule 80 (RMULTIDIV)]
+    FALSE          reduce using rule 77 (RMULTIDIV)
+    FALSE          [reduce using rule 80 (RMULTIDIV)]
+    TRUE           reduce using rule 77 (RMULTIDIV)
+    TRUE           [reduce using rule 80 (RMULTIDIV)]
+    IN             reduce using rule 77 (RMULTIDIV)
+    IN             [reduce using rule 80 (RMULTIDIV)]
+    OUT            reduce using rule 77 (RMULTIDIV)
+    OUT            [reduce using rule 80 (RMULTIDIV)]
+    VOID           reduce using rule 77 (RMULTIDIV)
+    VOID           [reduce using rule 80 (RMULTIDIV)]
+    FOR            reduce using rule 77 (RMULTIDIV)
+    FOR            [reduce using rule 80 (RMULTIDIV)]
+    INTCONST       reduce using rule 77 (RMULTIDIV)
+    INTCONST       [reduce using rule 80 (RMULTIDIV)]
+    CHAR_CONSTANT  reduce using rule 77 (RMULTIDIV)
+    CHAR_CONSTANT  [reduce using rule 80 (RMULTIDIV)]
+    RETURN         reduce using rule 77 (RMULTIDIV)
+    RETURN         [reduce using rule 80 (RMULTIDIV)]
+    STRUCT         reduce using rule 77 (RMULTIDIV)
+    STRUCT         [reduce using rule 80 (RMULTIDIV)]
+    SWITCH         reduce using rule 77 (RMULTIDIV)
+    SWITCH         [reduce using rule 80 (RMULTIDIV)]
+    CASE           reduce using rule 77 (RMULTIDIV)
+    CASE           [reduce using rule 80 (RMULTIDIV)]
+    DEFAULT        reduce using rule 77 (RMULTIDIV)
+    DEFAULT        [reduce using rule 80 (RMULTIDIV)]
+    INC_OP         reduce using rule 77 (RMULTIDIV)
+    INC_OP         [reduce using rule 80 (RMULTIDIV)]
+    DEC_OP         reduce using rule 77 (RMULTIDIV)
+    DEC_OP         [reduce using rule 80 (RMULTIDIV)]
+    LESS_EQ_OP     reduce using rule 77 (RMULTIDIV)
+    LESS_EQ_OP     [reduce using rule 80 (RMULTIDIV)]
+    GRE_EQ_OP      reduce using rule 77 (RMULTIDIV)
+    GRE_EQ_OP      [reduce using rule 80 (RMULTIDIV)]
+    DOUBLE_EQ_OP   reduce using rule 77 (RMULTIDIV)
+    DOUBLE_EQ_OP   [reduce using rule 80 (RMULTIDIV)]
+    NOT_EQ_OP      reduce using rule 77 (RMULTIDIV)
+    NOT_EQ_OP      [reduce using rule 80 (RMULTIDIV)]
+    '('            reduce using rule 77 (RMULTIDIV)
+    '('            [reduce using rule 80 (RMULTIDIV)]
+    ')'            reduce using rule 77 (RMULTIDIV)
+    ')'            [reduce using rule 80 (RMULTIDIV)]
+    '}'            reduce using rule 77 (RMULTIDIV)
+    '}'            [reduce using rule 80 (RMULTIDIV)]
+    '*'            reduce using rule 77 (RMULTIDIV)
+    '*'            [reduce using rule 80 (RMULTIDIV)]
+    ';'            reduce using rule 77 (RMULTIDIV)
+    ';'            [reduce using rule 80 (RMULTIDIV)]
+    '&'            reduce using rule 77 (RMULTIDIV)
+    '&'            [reduce using rule 80 (RMULTIDIV)]
+    ','            reduce using rule 77 (RMULTIDIV)
+    ','            [reduce using rule 80 (RMULTIDIV)]
+    '!'            reduce using rule 77 (RMULTIDIV)
+    '!'            [reduce using rule 80 (RMULTIDIV)]
+    '-'            reduce using rule 77 (RMULTIDIV)
+    '-'            [reduce using rule 80 (RMULTIDIV)]
+    '+'            reduce using rule 77 (RMULTIDIV)
+    '+'            [reduce using rule 80 (RMULTIDIV)]
+    '/'            reduce using rule 77 (RMULTIDIV)
+    '/'            [reduce using rule 80 (RMULTIDIV)]
+    '%'            reduce using rule 77 (RMULTIDIV)
+    '%'            [reduce using rule 80 (RMULTIDIV)]
+    '>'            reduce using rule 77 (RMULTIDIV)
+    '>'            [reduce using rule 80 (RMULTIDIV)]
+    '<'            reduce using rule 77 (RMULTIDIV)
+    '<'            [reduce using rule 80 (RMULTIDIV)]
+    "&&"           reduce using rule 77 (RMULTIDIV)
+    "&&"           [reduce using rule 80 (RMULTIDIV)]
+    "||"           reduce using rule 77 (RMULTIDIV)
+    "||"           [reduce using rule 80 (RMULTIDIV)]
+    $default       reduce using rule 77 (RMULTIDIV)
+
+
+State 176
+
+    9 MAINF: INT MAIN '(' MAINARG ')' '{' INNER . '}'
+
+    '}'  shift, and go to state 214
+
+
+State 177
+
+    8 MAINF: VOID MAIN '(' MAINARG ')' '{' INNER . '}'
+
+    '}'  shift, and go to state 215
+
+
+State 178
+
+  129 FCALL: VARNAME '(' ARGT ')' .
+
+    $default  reduce using rule 129 (FCALL)
+
+
+State 179
+
+   77 RMULTIDIV: RMATH .
+  126 ARGT: MARGT RMATH .
+  127 MARGT: MARGT RMATH . ','
+
+    ','  shift, and go to state 216
+
+    ')'       reduce using rule 77 (RMULTIDIV)
+    ')'       [reduce using rule 126 (ARGT)]
+    ','       [reduce using rule 77 (RMULTIDIV)]
+    $default  reduce using rule 77 (RMULTIDIV)
+
+
+State 180
+
+  154 DOWHILEN: DO '{' . INNER '}' WHILE '(' COND ')' ';'
+
+    IDENTIFIER  shift, and go to state 19
+    BOOL        shift, and go to state 1
+    INT         shift, and go to state 2
+    FLOAT       shift, and go to state 3
+    DOUBLE      shift, and go to state 4
+    CHAR        shift, and go to state 5
+    DO          shift, and go to state 140
+    WHILE       shift, and go to state 141
+    IF          shift, and go to state 142
+    IN          shift, and go to state 143
+    OUT         shift, and go to state 144
+    VOID        shift, and go to state 6
+    FOR         shift, and go to state 145
+    RETURN      shift, and go to state 146
+    STRUCT      shift, and go to state 147
+    SWITCH      shift, and go to state 148
+    INC_OP      shift, and go to state 149
+    DEC_OP      shift, and go to state 150
+    '*'         shift, and go to state 32
+    ';'         shift, and go to state 151
+    '&'         shift, and go to state 21
+
+    $default  reduce using rule 29 (INNER)
+
+    TYPE         go to state 152
+    INNER        go to state 217
+    VARNAME      go to state 154
+    VARDEF       go to state 155
+    MATH         go to state 156
+    CONDITIONAL  go to state 157
+    IFN          go to state 158
+    SWITCHN      go to state 159
+    FCALL        go to state 160
+    LOOP         go to state 161
+    FORN         go to state 162
+    WHILEN       go to state 163
+    DOWHILEN     go to state 164
+    INPUT        go to state 165
+    OUTPUT       go to state 166
+
+
+State 181
+
+  153 WHILEN: WHILE '(' . COND ')' '{' INNER '}'
+
+    IDENTIFIER     shift, and go to state 19
+    FLOAT          shift, and go to state 64
+    DOUBLE         shift, and go to state 65
+    FALSE          shift, and go to state 66
+    TRUE           shift, and go to state 67
+    INTCONST       shift, and go to state 68
+    CHAR_CONSTANT  shift, and go to state 69
+    INC_OP         shift, and go to state 70
+    DEC_OP         shift, and go to state 71
+    '('            shift, and go to state 218
+    '*'            shift, and go to state 32
+    '&'            shift, and go to state 21
+    '!'            shift, and go to state 219
+
+    VARNAME    go to state 104
+    RMATH      go to state 220
+    RADDSUB    go to state 78
+    RMULTIDIV  go to state 79
+    COND       go to state 221
+    FCALL      go to state 106
+    CONST      go to state 107
+
+
+State 182
+
+  101 IFN: IF '(' . COND ')' '{' INNER '}' ELSEC
+
+    IDENTIFIER     shift, and go to state 19
+    FLOAT          shift, and go to state 64
+    DOUBLE         shift, and go to state 65
+    FALSE          shift, and go to state 66
+    TRUE           shift, and go to state 67
+    INTCONST       shift, and go to state 68
+    CHAR_CONSTANT  shift, and go to state 69
+    INC_OP         shift, and go to state 70
+    DEC_OP         shift, and go to state 71
+    '('            shift, and go to state 218
+    '*'            shift, and go to state 32
+    '&'            shift, and go to state 21
+    '!'            shift, and go to state 219
+
+    VARNAME    go to state 104
+    RMATH      go to state 220
+    RADDSUB    go to state 78
+    RMULTIDIV  go to state 79
+    COND       go to state 222
+    FCALL      go to state 106
+    CONST      go to state 107
+
+
+State 183
+
+  155 MIN: MIN . INP_OP VARNAME
+  161 INPUT: IN MIN . INP_OP VARNAME ';'
+
+    INP_OP  shift, and go to state 223
+
+
+State 184
+
+  157 MOUT: MOUT . OUT_OP VARNAME
+  158     | MOUT . OUT_OP CONST
+  159     | MOUT . OUT_OP WHITESPACE
+  162 OUTPUT: OUT MOUT . OUT_OP VARNAME ';'
+  163       | OUT MOUT . OUT_OP CONST ';'
+  164       | OUT MOUT . OUT_OP WHITESPACE ';'
+
+    OUT_OP  shift, and go to state 224
+
+
+State 185
+
+  152 FORN: FOR '(' . FL1 FL2 ';' FL3 ')' '{' INNER '}'
+
+    IDENTIFIER  shift, and go to state 19
+    BOOL        shift, and go to state 1
+    INT         shift, and go to state 2
+    FLOAT       shift, and go to state 3
+    DOUBLE      shift, and go to state 4
+    CHAR        shift, and go to state 5
+    VOID        shift, and go to state 6
+    STRUCT      shift, and go to state 46
+    INC_OP      shift, and go to state 149
+    DEC_OP      shift, and go to state 150
+    '*'         shift, and go to state 32
+    ';'         shift, and go to state 225
+    '&'         shift, and go to state 21
+
+    IDENTIFIER  [reduce using rule 134 (FL1)]
+    FLOAT       [reduce using rule 134 (FL1)]
+    DOUBLE      [reduce using rule 134 (FL1)]
+    INC_OP      [reduce using rule 134 (FL1)]
+    DEC_OP      [reduce using rule 134 (FL1)]
+    '*'         [reduce using rule 134 (FL1)]
+    ';'         [reduce using rule 134 (FL1)]
+    '&'         [reduce using rule 134 (FL1)]
+    $default    reduce using rule 134 (FL1)
+
+    TYPE     go to state 226
+    VARNAME  go to state 227
+    MATH     go to state 228
+    FL1      go to state 229
+
+
+State 186
+
+   27 INNER: RETURN INNER .
+
+    $default  reduce using rule 27 (INNER)
+
+
+State 187
+
+   15 TYPE: STRUCT IDENTIFIER .
+   35 VARNAME: IDENTIFIER . BRACKET
+
+    IDENTIFIER  reduce using rule 15 (TYPE)
+    '*'         reduce using rule 15 (TYPE)
+    '*'         [reduce using rule 37 (BRACKET)]
+    '&'         reduce using rule 15 (TYPE)
+    '&'         [reduce using rule 37 (BRACKET)]
+    $default    reduce using rule 37 (BRACKET)
+
+    BRACKET  go to state 31
+
+
+State 188
+
+   25 INNER: STRUCT INNER .
+
+    $default  reduce using rule 25 (INNER)
+
+
+State 189
+
+  117 SWITCHN: SWITCH '(' . COND ')' '{' SWITCHINNER '}'
+
+    IDENTIFIER     shift, and go to state 19
+    FLOAT          shift, and go to state 64
+    DOUBLE         shift, and go to state 65
+    FALSE          shift, and go to state 66
+    TRUE           shift, and go to state 67
+    INTCONST       shift, and go to state 68
+    CHAR_CONSTANT  shift, and go to state 69
+    INC_OP         shift, and go to state 70
+    DEC_OP         shift, and go to state 71
+    '('            shift, and go to state 218
+    '*'            shift, and go to state 32
+    '&'            shift, and go to state 21
+    '!'            shift, and go to state 219
+
+    VARNAME    go to state 104
+    RMATH      go to state 220
+    RADDSUB    go to state 78
+    RMULTIDIV  go to state 79
+    COND       go to state 230
+    FCALL      go to state 106
+    CONST      go to state 107
+
+
+State 190
+
+   62 MATH: INC_OP VARNAME . ';'
+
+    ';'  shift, and go to state 231
+
+
+State 191
+
+   63 MATH: DEC_OP VARNAME . ';'
+
+    ';'  shift, and go to state 232
+
+
+State 192
+
+   58 MATH: TYPE VARNAME . '=' RMATH
+
+    '='  shift, and go to state 233
+
+
+State 193
+
+   21 FUNCTION: TYPE VARNAME '(' FARG ')' '{' INNER '}' .
+
+    $default  reduce using rule 21 (FUNCTION)
+
+
+State 194
+
+   60 MATH: VARNAME INC_OP . ';'
+
+    ';'  shift, and go to state 234
+
+
+State 195
+
+   61 MATH: VARNAME DEC_OP . ';'
+
+    ';'  shift, and go to state 235
+
+
+State 196
+
+  146 OPERATOR: '*' .
+
+    $default  reduce using rule 146 (OPERATOR)
+
+
+State 197
+
+  148 OPERATOR: '&' .
+
+    $default  reduce using rule 148 (OPERATOR)
+
+
+State 198
+
+   56 MATH: VARNAME '=' . RMATH ';'
+
+    IDENTIFIER     shift, and go to state 19
+    FLOAT          shift, and go to state 64
+    DOUBLE         shift, and go to state 65
+    FALSE          shift, and go to state 66
+    TRUE           shift, and go to state 67
+    INTCONST       shift, and go to state 68
+    CHAR_CONSTANT  shift, and go to state 69
+    INC_OP         shift, and go to state 70
+    DEC_OP         shift, and go to state 71
+    '('            shift, and go to state 72
+    '*'            shift, and go to state 32
+    '&'            shift, and go to state 21
+    '!'            shift, and go to state 74
+
+    VARNAME    go to state 104
+    RMATH      go to state 236
+    RADDSUB    go to state 78
+    RMULTIDIV  go to state 79
+    FCALL      go to state 106
+    CONST      go to state 107
+
+
+State 199
+
+  145 OPERATOR: '-' .
+
+    $default  reduce using rule 145 (OPERATOR)
+
+
+State 200
+
+  144 OPERATOR: '+' .
+
+    $default  reduce using rule 144 (OPERATOR)
+
+
+State 201
+
+  147 OPERATOR: '/' .
+
+    $default  reduce using rule 147 (OPERATOR)
+
+
+State 202
+
+  151 OPERATOR: '%' .
+
+    $default  reduce using rule 151 (OPERATOR)
+
+
+State 203
+
+  149 OPERATOR: '^' .
+
+    $default  reduce using rule 149 (OPERATOR)
+
+
+State 204
+
+  150 OPERATOR: '|' .
+
+    $default  reduce using rule 150 (OPERATOR)
+
+
+State 205
+
+   59 MATH: VARNAME OPERATOR . '=' RMATH ';'
+
+    '='  shift, and go to state 237
+
+
+State 206
+
+   24 INNER: VARDEF INNER .
+
+    $default  reduce using rule 24 (INNER)
+
+
+State 207
+
+   32 INNER: MATH INNER .
+
+    $default  reduce using rule 32 (INNER)
+
+
+State 208
+
+   23 INNER: CONDITIONAL INNER .
+
+    $default  reduce using rule 23 (INNER)
+
+
+State 209
+
+   26 INNER: FCALL INNER .
+
+    $default  reduce using rule 26 (INNER)
+
+
+State 210
+
+   22 INNER: LOOP INNER .
+
+    $default  reduce using rule 22 (INNER)
+
+
+State 211
+
+   30 INNER: INPUT INNER .
+
+    $default  reduce using rule 30 (INNER)
+
+
+State 212
+
+   31 INNER: OUTPUT INNER .
+
+    $default  reduce using rule 31 (INNER)
+
+
+State 213
+
+   46 VARDEF: TYPE MVAR VARNAME '=' '{' MCONST CONST '}' . ';'
+
+    ';'  shift, and go to state 238
+
+
+State 214
+
+    9 MAINF: INT MAIN '(' MAINARG ')' '{' INNER '}' .
+
+    $default  reduce using rule 9 (MAINF)
+
+
+State 215
+
+    8 MAINF: VOID MAIN '(' MAINARG ')' '{' INNER '}' .
+
+    $default  reduce using rule 8 (MAINF)
+
+
+State 216
+
+  127 MARGT: MARGT RMATH ',' .
+
+    $default  reduce using rule 127 (MARGT)
+
+
+State 217
+
+  154 DOWHILEN: DO '{' INNER . '}' WHILE '(' COND ')' ';'
+
+    '}'  shift, and go to state 239
+
+
+State 218
+
+   70 RMATH: '(' . RMATH ')'
+  108 COND: '(' . COND ')'
+
+    IDENTIFIER     shift, and go to state 19
+    FLOAT          shift, and go to state 64
+    DOUBLE         shift, and go to state 65
+    FALSE          shift, and go to state 66
+    TRUE           shift, and go to state 67
+    INTCONST       shift, and go to state 68
+    CHAR_CONSTANT  shift, and go to state 69
+    INC_OP         shift, and go to state 70
+    DEC_OP         shift, and go to state 71
+    '('            shift, and go to state 218
+    '*'            shift, and go to state 32
+    '&'            shift, and go to state 21
+    '!'            shift, and go to state 219
+
+    VARNAME    go to state 104
+    RMATH      go to state 240
+    RADDSUB    go to state 78
+    RMULTIDIV  go to state 79
+    COND       go to state 241
+    FCALL      go to state 106
+    CONST      go to state 107
+
+
+State 219
+
+   71 RMATH: '!' . RMATH
+  111 COND: '!' . COND
+
+    IDENTIFIER     shift, and go to state 19
+    FLOAT          shift, and go to state 64
+    DOUBLE         shift, and go to state 65
+    FALSE          shift, and go to state 66
+    TRUE           shift, and go to state 67
+    INTCONST       shift, and go to state 68
+    CHAR_CONSTANT  shift, and go to state 69
+    INC_OP         shift, and go to state 70
+    DEC_OP         shift, and go to state 71
+    '('            shift, and go to state 218
+    '*'            shift, and go to state 32
+    '&'            shift, and go to state 21
+    '!'            shift, and go to state 219
+
+    VARNAME    go to state 104
+    RMATH      go to state 242
+    RADDSUB    go to state 78
+    RMULTIDIV  go to state 79
+    COND       go to state 243
+    FCALL      go to state 106
+    CONST      go to state 107
+
+
+State 220
+
+   77 RMULTIDIV: RMATH .
+  112 COND: RMATH .
+
+    LESS_EQ_OP    reduce using rule 77 (RMULTIDIV)
+    LESS_EQ_OP    [reduce using rule 112 (COND)]
+    GRE_EQ_OP     reduce using rule 77 (RMULTIDIV)
+    GRE_EQ_OP     [reduce using rule 112 (COND)]
+    DOUBLE_EQ_OP  reduce using rule 77 (RMULTIDIV)
+    DOUBLE_EQ_OP  [reduce using rule 112 (COND)]
+    NOT_EQ_OP     reduce using rule 77 (RMULTIDIV)
+    NOT_EQ_OP     [reduce using rule 112 (COND)]
+    ')'           reduce using rule 77 (RMULTIDIV)
+    ')'           [reduce using rule 112 (COND)]
+    ';'           reduce using rule 77 (RMULTIDIV)
+    ';'           [reduce using rule 112 (COND)]
+    '>'           reduce using rule 77 (RMULTIDIV)
+    '>'           [reduce using rule 112 (COND)]
+    '<'           reduce using rule 77 (RMULTIDIV)
+    '<'           [reduce using rule 112 (COND)]
+    "&&"          reduce using rule 77 (RMULTIDIV)
+    "&&"          [reduce using rule 112 (COND)]
+    "||"          reduce using rule 77 (RMULTIDIV)
+    "||"          [reduce using rule 112 (COND)]
+    $default      reduce using rule 77 (RMULTIDIV)
+
+
+State 221
+
+  109 COND: COND . "&&" COND
+  110     | COND . "||" COND
+  113     | COND . RELATIONALOPERATOR COND
+  153 WHILEN: WHILE '(' COND . ')' '{' INNER '}'
+
+    LESS_EQ_OP    shift, and go to state 244
+    GRE_EQ_OP     shift, and go to state 245
+    DOUBLE_EQ_OP  shift, and go to state 246
+    NOT_EQ_OP     shift, and go to state 247
+    ')'           shift, and go to state 248
+    '>'           shift, and go to state 249
+    '<'           shift, and go to state 250
+    "&&"          shift, and go to state 251
+    "||"          shift, and go to state 252
+
+    RELATIONALOPERATOR  go to state 253
+
+
+State 222
+
+  101 IFN: IF '(' COND . ')' '{' INNER '}' ELSEC
+  109 COND: COND . "&&" COND
+  110     | COND . "||" COND
+  113     | COND . RELATIONALOPERATOR COND
+
+    LESS_EQ_OP    shift, and go to state 244
+    GRE_EQ_OP     shift, and go to state 245
+    DOUBLE_EQ_OP  shift, and go to state 246
+    NOT_EQ_OP     shift, and go to state 247
+    ')'           shift, and go to state 254
+    '>'           shift, and go to state 249
+    '<'           shift, and go to state 250
+    "&&"          shift, and go to state 251
+    "||"          shift, and go to state 252
+
+    RELATIONALOPERATOR  go to state 253
+
+
+State 223
+
+  155 MIN: MIN INP_OP . VARNAME
+  161 INPUT: IN MIN INP_OP . VARNAME ';'
+
+    IDENTIFIER  shift, and go to state 19
+    '*'         shift, and go to state 32
+    '&'         shift, and go to state 21
+
+    VARNAME  go to state 255
+
+
+State 224
+
+  157 MOUT: MOUT OUT_OP . VARNAME
+  158     | MOUT OUT_OP . CONST
+  159     | MOUT OUT_OP . WHITESPACE
+  162 OUTPUT: OUT MOUT OUT_OP . VARNAME ';'
+  163       | OUT MOUT OUT_OP . CONST ';'
+  164       | OUT MOUT OUT_OP . WHITESPACE ';'
+
+    IDENTIFIER     shift, and go to state 19
+    FLOAT          shift, and go to state 64
+    DOUBLE         shift, and go to state 65
+    FALSE          shift, and go to state 66
+    TRUE           shift, and go to state 67
+    INTCONST       shift, and go to state 68
+    CHAR_CONSTANT  shift, and go to state 69
+    WHITESPACE     shift, and go to state 256
+    '*'            shift, and go to state 32
+    '&'            shift, and go to state 21
+
+    VARNAME  go to state 257
+    CONST    go to state 258
+
+
+State 225
+
+   57 MATH: ';' .
+
+    $default  reduce using rule 57 (MATH)
+
+
+State 226
+
+   16 TYPE: TYPE . '*'
+   58 MATH: TYPE . VARNAME '=' RMATH
+
+    IDENTIFIER  shift, and go to state 19
+    '*'         shift, and go to state 20
+    '&'         shift, and go to state 21
+
+    VARNAME  go to state 192
+
+
+State 227
+
+   56 MATH: VARNAME . '=' RMATH ';'
+   59     | VARNAME . OPERATOR '=' RMATH ';'
+   60     | VARNAME . INC_OP ';'
+   61     | VARNAME . DEC_OP ';'
+
+    INC_OP  shift, and go to state 194
+    DEC_OP  shift, and go to state 195
+    '*'     shift, and go to state 196
+    '&'     shift, and go to state 197
+    '='     shift, and go to state 198
+    '-'     shift, and go to state 199
+    '+'     shift, and go to state 200
+    '/'     shift, and go to state 201
+    '%'     shift, and go to state 202
+    '^'     shift, and go to state 203
+    '|'     shift, and go to state 204
+
+    OPERATOR  go to state 205
+
+
+State 228
+
+  133 FL1: MATH .
+
+    $default  reduce using rule 133 (FL1)
+
+
+State 229
+
+  152 FORN: FOR '(' FL1 . FL2 ';' FL3 ')' '{' INNER '}'
+
+    IDENTIFIER     shift, and go to state 19
+    FLOAT          shift, and go to state 64
+    DOUBLE         shift, and go to state 65
+    FALSE          shift, and go to state 66
+    TRUE           shift, and go to state 67
+    INTCONST       shift, and go to state 68
+    CHAR_CONSTANT  shift, and go to state 69
+    INC_OP         shift, and go to state 70
+    DEC_OP         shift, and go to state 71
+    '('            shift, and go to state 218
+    '*'            shift, and go to state 32
+    '&'            shift, and go to state 21
+    '!'            shift, and go to state 219
+
+    $default  reduce using rule 136 (FL2)
+
+    VARNAME    go to state 104
+    RMATH      go to state 220
+    RADDSUB    go to state 78
+    RMULTIDIV  go to state 79
+    COND       go to state 259
+    FCALL      go to state 106
+    FL2        go to state 260
+    CONST      go to state 107
+
+
+State 230
+
+  109 COND: COND . "&&" COND
+  110     | COND . "||" COND
+  113     | COND . RELATIONALOPERATOR COND
+  117 SWITCHN: SWITCH '(' COND . ')' '{' SWITCHINNER '}'
+
+    LESS_EQ_OP    shift, and go to state 244
+    GRE_EQ_OP     shift, and go to state 245
+    DOUBLE_EQ_OP  shift, and go to state 246
+    NOT_EQ_OP     shift, and go to state 247
+    ')'           shift, and go to state 261
+    '>'           shift, and go to state 249
+    '<'           shift, and go to state 250
+    "&&"          shift, and go to state 251
+    "||"          shift, and go to state 252
+
+    RELATIONALOPERATOR  go to state 253
+
+
+State 231
+
+   62 MATH: INC_OP VARNAME ';' .
+
+    $default  reduce using rule 62 (MATH)
+
+
+State 232
+
+   63 MATH: DEC_OP VARNAME ';' .
+
+    $default  reduce using rule 63 (MATH)
+
+
+State 233
+
+   58 MATH: TYPE VARNAME '=' . RMATH
+
+    IDENTIFIER     shift, and go to state 19
+    FLOAT          shift, and go to state 64
+    DOUBLE         shift, and go to state 65
+    FALSE          shift, and go to state 66
+    TRUE           shift, and go to state 67
+    INTCONST       shift, and go to state 68
+    CHAR_CONSTANT  shift, and go to state 69
+    INC_OP         shift, and go to state 70
+    DEC_OP         shift, and go to state 71
+    '('            shift, and go to state 72
+    '*'            shift, and go to state 32
+    '&'            shift, and go to state 21
+    '!'            shift, and go to state 74
+
+    VARNAME    go to state 104
+    RMATH      go to state 262
+    RADDSUB    go to state 78
+    RMULTIDIV  go to state 79
+    FCALL      go to state 106
+    CONST      go to state 107
+
+
+State 234
+
+   60 MATH: VARNAME INC_OP ';' .
+
+    $default  reduce using rule 60 (MATH)
+
+
+State 235
+
+   61 MATH: VARNAME DEC_OP ';' .
+
+    $default  reduce using rule 61 (MATH)
+
+
+State 236
+
+   56 MATH: VARNAME '=' RMATH . ';'
+   77 RMULTIDIV: RMATH .
+
+    ';'  shift, and go to state 263
+
+    ';'       [reduce using rule 77 (RMULTIDIV)]
+    $default  reduce using rule 77 (RMULTIDIV)
+
+
+State 237
+
+   59 MATH: VARNAME OPERATOR '=' . RMATH ';'
+
+    IDENTIFIER     shift, and go to state 19
+    FLOAT          shift, and go to state 64
+    DOUBLE         shift, and go to state 65
+    FALSE          shift, and go to state 66
+    TRUE           shift, and go to state 67
+    INTCONST       shift, and go to state 68
+    CHAR_CONSTANT  shift, and go to state 69
+    INC_OP         shift, and go to state 70
+    DEC_OP         shift, and go to state 71
+    '('            shift, and go to state 72
+    '*'            shift, and go to state 32
+    '&'            shift, and go to state 21
+    '!'            shift, and go to state 74
+
+    VARNAME    go to state 104
+    RMATH      go to state 264
+    RADDSUB    go to state 78
+    RMULTIDIV  go to state 79
+    FCALL      go to state 106
+    CONST      go to state 107
+
+
+State 238
+
+   46 VARDEF: TYPE MVAR VARNAME '=' '{' MCONST CONST '}' ';' .
+
+    $default  reduce using rule 46 (VARDEF)
+
+
+State 239
+
+  154 DOWHILEN: DO '{' INNER '}' . WHILE '(' COND ')' ';'
+
+    WHILE  shift, and go to state 265
+
+
+State 240
+
+   70 RMATH: '(' RMATH . ')'
+   77 RMULTIDIV: RMATH .
+  112 COND: RMATH .
+
+    ')'  shift, and go to state 167
+
+    LESS_EQ_OP    reduce using rule 77 (RMULTIDIV)
+    LESS_EQ_OP    [reduce using rule 112 (COND)]
+    GRE_EQ_OP     reduce using rule 77 (RMULTIDIV)
+    GRE_EQ_OP     [reduce using rule 112 (COND)]
+    DOUBLE_EQ_OP  reduce using rule 77 (RMULTIDIV)
+    DOUBLE_EQ_OP  [reduce using rule 112 (COND)]
+    NOT_EQ_OP     reduce using rule 77 (RMULTIDIV)
+    NOT_EQ_OP     [reduce using rule 112 (COND)]
+    ')'           [reduce using rule 77 (RMULTIDIV)]
+    ')'           [reduce using rule 112 (COND)]
+    '>'           reduce using rule 77 (RMULTIDIV)
+    '>'           [reduce using rule 112 (COND)]
+    '<'           reduce using rule 77 (RMULTIDIV)
+    '<'           [reduce using rule 112 (COND)]
+    "&&"          reduce using rule 77 (RMULTIDIV)
+    "&&"          [reduce using rule 112 (COND)]
+    "||"          reduce using rule 77 (RMULTIDIV)
+    "||"          [reduce using rule 112 (COND)]
+    $default      reduce using rule 77 (RMULTIDIV)
+
+
+State 241
+
+  108 COND: '(' COND . ')'
+  109     | COND . "&&" COND
+  110     | COND . "||" COND
+  113     | COND . RELATIONALOPERATOR COND
+
+    LESS_EQ_OP    shift, and go to state 244
+    GRE_EQ_OP     shift, and go to state 245
+    DOUBLE_EQ_OP  shift, and go to state 246
+    NOT_EQ_OP     shift, and go to state 247
+    ')'           shift, and go to state 266
+    '>'           shift, and go to state 249
+    '<'           shift, and go to state 250
+    "&&"          shift, and go to state 251
+    "||"          shift, and go to state 252
+
+    RELATIONALOPERATOR  go to state 253
+
+
+State 242
+
+   71 RMATH: '!' RMATH .
+   77 RMULTIDIV: RMATH .
+  112 COND: RMATH .
+
+    LESS_EQ_OP    reduce using rule 71 (RMATH)
+    LESS_EQ_OP    [reduce using rule 77 (RMULTIDIV)]
+    LESS_EQ_OP    [reduce using rule 112 (COND)]
+    GRE_EQ_OP     reduce using rule 71 (RMATH)
+    GRE_EQ_OP     [reduce using rule 77 (RMULTIDIV)]
+    GRE_EQ_OP     [reduce using rule 112 (COND)]
+    DOUBLE_EQ_OP  reduce using rule 71 (RMATH)
+    DOUBLE_EQ_OP  [reduce using rule 77 (RMULTIDIV)]
+    DOUBLE_EQ_OP  [reduce using rule 112 (COND)]
+    NOT_EQ_OP     reduce using rule 71 (RMATH)
+    NOT_EQ_OP     [reduce using rule 77 (RMULTIDIV)]
+    NOT_EQ_OP     [reduce using rule 112 (COND)]
+    ')'           reduce using rule 71 (RMATH)
+    ')'           [reduce using rule 77 (RMULTIDIV)]
+    ')'           [reduce using rule 112 (COND)]
+    '*'           reduce using rule 71 (RMATH)
+    '*'           [reduce using rule 77 (RMULTIDIV)]
+    ';'           reduce using rule 71 (RMATH)
+    ';'           [reduce using rule 77 (RMULTIDIV)]
+    ';'           [reduce using rule 112 (COND)]
+    '-'           reduce using rule 71 (RMATH)
+    '-'           [reduce using rule 77 (RMULTIDIV)]
+    '+'           reduce using rule 71 (RMATH)
+    '+'           [reduce using rule 77 (RMULTIDIV)]
+    '/'           reduce using rule 71 (RMATH)
+    '/'           [reduce using rule 77 (RMULTIDIV)]
+    '%'           reduce using rule 71 (RMATH)
+    '%'           [reduce using rule 77 (RMULTIDIV)]
+    '>'           reduce using rule 71 (RMATH)
+    '>'           [reduce using rule 77 (RMULTIDIV)]
+    '>'           [reduce using rule 112 (COND)]
+    '<'           reduce using rule 71 (RMATH)
+    '<'           [reduce using rule 77 (RMULTIDIV)]
+    '<'           [reduce using rule 112 (COND)]
+    "&&"          reduce using rule 71 (RMATH)
+    "&&"          [reduce using rule 77 (RMULTIDIV)]
+    "&&"          [reduce using rule 112 (COND)]
+    "||"          reduce using rule 71 (RMATH)
+    "||"          [reduce using rule 77 (RMULTIDIV)]
+    "||"          [reduce using rule 112 (COND)]
+    $default      reduce using rule 71 (RMATH)
+
+
+State 243
+
+  109 COND: COND . "&&" COND
+  110     | COND . "||" COND
+  111     | '!' COND .
+  113     | COND . RELATIONALOPERATOR COND
+
+    LESS_EQ_OP    shift, and go to state 244
+    GRE_EQ_OP     shift, and go to state 245
+    DOUBLE_EQ_OP  shift, and go to state 246
+    NOT_EQ_OP     shift, and go to state 247
+    '>'           shift, and go to state 249
+    '<'           shift, and go to state 250
+    "&&"          shift, and go to state 251
+    "||"          shift, and go to state 252
+
+    LESS_EQ_OP    [reduce using rule 111 (COND)]
+    GRE_EQ_OP     [reduce using rule 111 (COND)]
+    DOUBLE_EQ_OP  [reduce using rule 111 (COND)]
+    NOT_EQ_OP     [reduce using rule 111 (COND)]
+    '>'           [reduce using rule 111 (COND)]
+    '<'           [reduce using rule 111 (COND)]
+    "&&"          [reduce using rule 111 (COND)]
+    "||"          [reduce using rule 111 (COND)]
+    $default      reduce using rule 111 (COND)
+
+    RELATIONALOPERATOR  go to state 253
+
+
+State 244
+
+  106 RELATIONALOPERATOR: LESS_EQ_OP .
+
+    $default  reduce using rule 106 (RELATIONALOPERATOR)
+
+
+State 245
+
+  107 RELATIONALOPERATOR: GRE_EQ_OP .
+
+    $default  reduce using rule 107 (RELATIONALOPERATOR)
+
+
+State 246
+
+  104 RELATIONALOPERATOR: DOUBLE_EQ_OP .
+
+    $default  reduce using rule 104 (RELATIONALOPERATOR)
+
+
+State 247
+
+  105 RELATIONALOPERATOR: NOT_EQ_OP .
+
+    $default  reduce using rule 105 (RELATIONALOPERATOR)
+
+
+State 248
+
+  153 WHILEN: WHILE '(' COND ')' . '{' INNER '}'
+
+    '{'  shift, and go to state 267
+
+
+State 249
+
+  102 RELATIONALOPERATOR: '>' .
+
+    $default  reduce using rule 102 (RELATIONALOPERATOR)
+
+
+State 250
+
+  103 RELATIONALOPERATOR: '<' .
+
+    $default  reduce using rule 103 (RELATIONALOPERATOR)
+
+
+State 251
+
+  109 COND: COND "&&" . COND
+
+    IDENTIFIER     shift, and go to state 19
+    FLOAT          shift, and go to state 64
+    DOUBLE         shift, and go to state 65
+    FALSE          shift, and go to state 66
+    TRUE           shift, and go to state 67
+    INTCONST       shift, and go to state 68
+    CHAR_CONSTANT  shift, and go to state 69
+    INC_OP         shift, and go to state 70
+    DEC_OP         shift, and go to state 71
+    '('            shift, and go to state 218
+    '*'            shift, and go to state 32
+    '&'            shift, and go to state 21
+    '!'            shift, and go to state 219
+
+    VARNAME    go to state 104
+    RMATH      go to state 220
+    RADDSUB    go to state 78
+    RMULTIDIV  go to state 79
+    COND       go to state 268
+    FCALL      go to state 106
+    CONST      go to state 107
+
+
+State 252
+
+  110 COND: COND "||" . COND
+
+    IDENTIFIER     shift, and go to state 19
+    FLOAT          shift, and go to state 64
+    DOUBLE         shift, and go to state 65
+    FALSE          shift, and go to state 66
+    TRUE           shift, and go to state 67
+    INTCONST       shift, and go to state 68
+    CHAR_CONSTANT  shift, and go to state 69
+    INC_OP         shift, and go to state 70
+    DEC_OP         shift, and go to state 71
+    '('            shift, and go to state 218
+    '*'            shift, and go to state 32
+    '&'            shift, and go to state 21
+    '!'            shift, and go to state 219
+
+    VARNAME    go to state 104
+    RMATH      go to state 220
+    RADDSUB    go to state 78
+    RMULTIDIV  go to state 79
+    COND       go to state 269
+    FCALL      go to state 106
+    CONST      go to state 107
+
+
+State 253
+
+  113 COND: COND RELATIONALOPERATOR . COND
+
+    IDENTIFIER     shift, and go to state 19
+    FLOAT          shift, and go to state 64
+    DOUBLE         shift, and go to state 65
+    FALSE          shift, and go to state 66
+    TRUE           shift, and go to state 67
+    INTCONST       shift, and go to state 68
+    CHAR_CONSTANT  shift, and go to state 69
+    INC_OP         shift, and go to state 70
+    DEC_OP         shift, and go to state 71
+    '('            shift, and go to state 218
+    '*'            shift, and go to state 32
+    '&'            shift, and go to state 21
+    '!'            shift, and go to state 219
+
+    VARNAME    go to state 104
+    RMATH      go to state 220
+    RADDSUB    go to state 78
+    RMULTIDIV  go to state 79
+    COND       go to state 270
+    FCALL      go to state 106
+    CONST      go to state 107
+
+
+State 254
+
+  101 IFN: IF '(' COND ')' . '{' INNER '}' ELSEC
+
+    '{'  shift, and go to state 271
+
+
+State 255
+
+  155 MIN: MIN INP_OP VARNAME .
+  161 INPUT: IN MIN INP_OP VARNAME . ';'
+
+    ';'  shift, and go to state 272
+
+    $default  reduce using rule 155 (MIN)
+
+
+State 256
+
+  159 MOUT: MOUT OUT_OP WHITESPACE .
+  164 OUTPUT: OUT MOUT OUT_OP WHITESPACE . ';'
+
+    ';'  shift, and go to state 273
+
+    $default  reduce using rule 159 (MOUT)
+
+
+State 257
+
+  157 MOUT: MOUT OUT_OP VARNAME .
+  162 OUTPUT: OUT MOUT OUT_OP VARNAME . ';'
+
+    ';'  shift, and go to state 274
+
+    $default  reduce using rule 157 (MOUT)
+
+
+State 258
+
+  158 MOUT: MOUT OUT_OP CONST .
+  163 OUTPUT: OUT MOUT OUT_OP CONST . ';'
+
+    ';'  shift, and go to state 275
+
+    $default  reduce using rule 158 (MOUT)
+
+
+State 259
+
+  109 COND: COND . "&&" COND
+  110     | COND . "||" COND
+  113     | COND . RELATIONALOPERATOR COND
+  135 FL2: COND .
+
+    LESS_EQ_OP    shift, and go to state 244
+    GRE_EQ_OP     shift, and go to state 245
+    DOUBLE_EQ_OP  shift, and go to state 246
+    NOT_EQ_OP     shift, and go to state 247
+    '>'           shift, and go to state 249
+    '<'           shift, and go to state 250
+    "&&"          shift, and go to state 251
+    "||"          shift, and go to state 252
+
+    $default  reduce using rule 135 (FL2)
+
+    RELATIONALOPERATOR  go to state 253
+
+
+State 260
+
+  152 FORN: FOR '(' FL1 FL2 . ';' FL3 ')' '{' INNER '}'
+
+    ';'  shift, and go to state 276
+
+
+State 261
+
+  117 SWITCHN: SWITCH '(' COND ')' . '{' SWITCHINNER '}'
+
+    '{'  shift, and go to state 277
+
+
+State 262
+
+   58 MATH: TYPE VARNAME '=' RMATH .
+   77 RMULTIDIV: RMATH .
+
+    IDENTIFIER     reduce using rule 58 (MATH)
+    IDENTIFIER     [reduce using rule 77 (RMULTIDIV)]
+    BOOL           reduce using rule 58 (MATH)
+    BOOL           [reduce using rule 77 (RMULTIDIV)]
+    INT            reduce using rule 58 (MATH)
+    INT            [reduce using rule 77 (RMULTIDIV)]
+    FLOAT          reduce using rule 58 (MATH)
+    FLOAT          [reduce using rule 77 (RMULTIDIV)]
+    DOUBLE         reduce using rule 58 (MATH)
+    DOUBLE         [reduce using rule 77 (RMULTIDIV)]
+    CHAR           reduce using rule 58 (MATH)
+    CHAR           [reduce using rule 77 (RMULTIDIV)]
+    DO             reduce using rule 58 (MATH)
+    DO             [reduce using rule 77 (RMULTIDIV)]
+    WHILE          reduce using rule 58 (MATH)
+    WHILE          [reduce using rule 77 (RMULTIDIV)]
+    IF             reduce using rule 58 (MATH)
+    IF             [reduce using rule 77 (RMULTIDIV)]
+    FALSE          reduce using rule 58 (MATH)
+    FALSE          [reduce using rule 77 (RMULTIDIV)]
+    TRUE           reduce using rule 58 (MATH)
+    TRUE           [reduce using rule 77 (RMULTIDIV)]
+    IN             reduce using rule 58 (MATH)
+    IN             [reduce using rule 77 (RMULTIDIV)]
+    OUT            reduce using rule 58 (MATH)
+    OUT            [reduce using rule 77 (RMULTIDIV)]
+    VOID           reduce using rule 58 (MATH)
+    VOID           [reduce using rule 77 (RMULTIDIV)]
+    FOR            reduce using rule 58 (MATH)
+    FOR            [reduce using rule 77 (RMULTIDIV)]
+    INTCONST       reduce using rule 58 (MATH)
+    INTCONST       [reduce using rule 77 (RMULTIDIV)]
+    CHAR_CONSTANT  reduce using rule 58 (MATH)
+    CHAR_CONSTANT  [reduce using rule 77 (RMULTIDIV)]
+    RETURN         reduce using rule 58 (MATH)
+    RETURN         [reduce using rule 77 (RMULTIDIV)]
+    STRUCT         reduce using rule 58 (MATH)
+    STRUCT         [reduce using rule 77 (RMULTIDIV)]
+    SWITCH         reduce using rule 58 (MATH)
+    SWITCH         [reduce using rule 77 (RMULTIDIV)]
+    CASE           reduce using rule 58 (MATH)
+    CASE           [reduce using rule 77 (RMULTIDIV)]
+    DEFAULT        reduce using rule 58 (MATH)
+    DEFAULT        [reduce using rule 77 (RMULTIDIV)]
+    INC_OP         reduce using rule 58 (MATH)
+    INC_OP         [reduce using rule 77 (RMULTIDIV)]
+    DEC_OP         reduce using rule 58 (MATH)
+    DEC_OP         [reduce using rule 77 (RMULTIDIV)]
+    '('            reduce using rule 58 (MATH)
+    '('            [reduce using rule 77 (RMULTIDIV)]
+    '}'            reduce using rule 58 (MATH)
+    '}'            [reduce using rule 77 (RMULTIDIV)]
+    '*'            reduce using rule 58 (MATH)
+    '*'            [reduce using rule 77 (RMULTIDIV)]
+    ';'            reduce using rule 58 (MATH)
+    ';'            [reduce using rule 77 (RMULTIDIV)]
+    '&'            reduce using rule 58 (MATH)
+    '&'            [reduce using rule 77 (RMULTIDIV)]
+    '!'            reduce using rule 58 (MATH)
+    '!'            [reduce using rule 77 (RMULTIDIV)]
+    '-'            reduce using rule 77 (RMULTIDIV)
+    '+'            reduce using rule 77 (RMULTIDIV)
+    '/'            reduce using rule 77 (RMULTIDIV)
+    '%'            reduce using rule 77 (RMULTIDIV)
+    $default       reduce using rule 58 (MATH)
+
+
+State 263
+
+   56 MATH: VARNAME '=' RMATH ';' .
+
+    $default  reduce using rule 56 (MATH)
+
+
+State 264
+
+   59 MATH: VARNAME OPERATOR '=' RMATH . ';'
+   77 RMULTIDIV: RMATH .
+
+    ';'  shift, and go to state 278
+
+    ';'       [reduce using rule 77 (RMULTIDIV)]
+    $default  reduce using rule 77 (RMULTIDIV)
+
+
+State 265
+
+  154 DOWHILEN: DO '{' INNER '}' WHILE . '(' COND ')' ';'
+
+    '('  shift, and go to state 279
+
+
+State 266
+
+  108 COND: '(' COND ')' .
+
+    $default  reduce using rule 108 (COND)
+
+
+State 267
+
+  153 WHILEN: WHILE '(' COND ')' '{' . INNER '}'
+
+    IDENTIFIER  shift, and go to state 19
+    BOOL        shift, and go to state 1
+    INT         shift, and go to state 2
+    FLOAT       shift, and go to state 3
+    DOUBLE      shift, and go to state 4
+    CHAR        shift, and go to state 5
+    DO          shift, and go to state 140
+    WHILE       shift, and go to state 141
+    IF          shift, and go to state 142
+    IN          shift, and go to state 143
+    OUT         shift, and go to state 144
+    VOID        shift, and go to state 6
+    FOR         shift, and go to state 145
+    RETURN      shift, and go to state 146
+    STRUCT      shift, and go to state 147
+    SWITCH      shift, and go to state 148
+    INC_OP      shift, and go to state 149
+    DEC_OP      shift, and go to state 150
+    '*'         shift, and go to state 32
+    ';'         shift, and go to state 151
+    '&'         shift, and go to state 21
+
+    $default  reduce using rule 29 (INNER)
+
+    TYPE         go to state 152
+    INNER        go to state 280
+    VARNAME      go to state 154
+    VARDEF       go to state 155
+    MATH         go to state 156
+    CONDITIONAL  go to state 157
+    IFN          go to state 158
+    SWITCHN      go to state 159
+    FCALL        go to state 160
+    LOOP         go to state 161
+    FORN         go to state 162
+    WHILEN       go to state 163
+    DOWHILEN     go to state 164
+    INPUT        go to state 165
+    OUTPUT       go to state 166
+
+
+State 268
+
+  109 COND: COND . "&&" COND
+  109     | COND "&&" COND .
+  110     | COND . "||" COND
+  113     | COND . RELATIONALOPERATOR COND
+
+    LESS_EQ_OP    shift, and go to state 244
+    GRE_EQ_OP     shift, and go to state 245
+    DOUBLE_EQ_OP  shift, and go to state 246
+    NOT_EQ_OP     shift, and go to state 247
+    '>'           shift, and go to state 249
+    '<'           shift, and go to state 250
+    "&&"          shift, and go to state 251
+    "||"          shift, and go to state 252
+
+    LESS_EQ_OP    [reduce using rule 109 (COND)]
+    GRE_EQ_OP     [reduce using rule 109 (COND)]
+    DOUBLE_EQ_OP  [reduce using rule 109 (COND)]
+    NOT_EQ_OP     [reduce using rule 109 (COND)]
+    '>'           [reduce using rule 109 (COND)]
+    '<'           [reduce using rule 109 (COND)]
+    "&&"          [reduce using rule 109 (COND)]
+    "||"          [reduce using rule 109 (COND)]
+    $default      reduce using rule 109 (COND)
+
+    RELATIONALOPERATOR  go to state 253
+
+
+State 269
+
+  109 COND: COND . "&&" COND
+  110     | COND . "||" COND
+  110     | COND "||" COND .
+  113     | COND . RELATIONALOPERATOR COND
+
+    LESS_EQ_OP    shift, and go to state 244
+    GRE_EQ_OP     shift, and go to state 245
+    DOUBLE_EQ_OP  shift, and go to state 246
+    NOT_EQ_OP     shift, and go to state 247
+    '>'           shift, and go to state 249
+    '<'           shift, and go to state 250
+    "&&"          shift, and go to state 251
+    "||"          shift, and go to state 252
+
+    LESS_EQ_OP    [reduce using rule 110 (COND)]
+    GRE_EQ_OP     [reduce using rule 110 (COND)]
+    DOUBLE_EQ_OP  [reduce using rule 110 (COND)]
+    NOT_EQ_OP     [reduce using rule 110 (COND)]
+    '>'           [reduce using rule 110 (COND)]
+    '<'           [reduce using rule 110 (COND)]
+    "&&"          [reduce using rule 110 (COND)]
+    "||"          [reduce using rule 110 (COND)]
+    $default      reduce using rule 110 (COND)
+
+    RELATIONALOPERATOR  go to state 253
+
+
+State 270
+
+  109 COND: COND . "&&" COND
+  110     | COND . "||" COND
+  113     | COND . RELATIONALOPERATOR COND
+  113     | COND RELATIONALOPERATOR COND .
+
+    LESS_EQ_OP    shift, and go to state 244
+    GRE_EQ_OP     shift, and go to state 245
+    DOUBLE_EQ_OP  shift, and go to state 246
+    NOT_EQ_OP     shift, and go to state 247
+    '>'           shift, and go to state 249
+    '<'           shift, and go to state 250
+    "&&"          shift, and go to state 251
+    "||"          shift, and go to state 252
+
+    LESS_EQ_OP    [reduce using rule 113 (COND)]
+    GRE_EQ_OP     [reduce using rule 113 (COND)]
+    DOUBLE_EQ_OP  [reduce using rule 113 (COND)]
+    NOT_EQ_OP     [reduce using rule 113 (COND)]
+    '>'           [reduce using rule 113 (COND)]
+    '<'           [reduce using rule 113 (COND)]
+    "&&"          [reduce using rule 113 (COND)]
+    "||"          [reduce using rule 113 (COND)]
+    $default      reduce using rule 113 (COND)
+
+    RELATIONALOPERATOR  go to state 253
+
+
+State 271
+
+  101 IFN: IF '(' COND ')' '{' . INNER '}' ELSEC
+
+    IDENTIFIER  shift, and go to state 19
+    BOOL        shift, and go to state 1
+    INT         shift, and go to state 2
+    FLOAT       shift, and go to state 3
+    DOUBLE      shift, and go to state 4
+    CHAR        shift, and go to state 5
+    DO          shift, and go to state 140
+    WHILE       shift, and go to state 141
+    IF          shift, and go to state 142
+    IN          shift, and go to state 143
+    OUT         shift, and go to state 144
+    VOID        shift, and go to state 6
+    FOR         shift, and go to state 145
+    RETURN      shift, and go to state 146
+    STRUCT      shift, and go to state 147
+    SWITCH      shift, and go to state 148
+    INC_OP      shift, and go to state 149
+    DEC_OP      shift, and go to state 150
+    '*'         shift, and go to state 32
+    ';'         shift, and go to state 151
+    '&'         shift, and go to state 21
+
+    $default  reduce using rule 29 (INNER)
+
+    TYPE         go to state 152
+    INNER        go to state 281
+    VARNAME      go to state 154
+    VARDEF       go to state 155
+    MATH         go to state 156
+    CONDITIONAL  go to state 157
+    IFN          go to state 158
+    SWITCHN      go to state 159
+    FCALL        go to state 160
+    LOOP         go to state 161
+    FORN         go to state 162
+    WHILEN       go to state 163
+    DOWHILEN     go to state 164
+    INPUT        go to state 165
+    OUTPUT       go to state 166
+
+
+State 272
+
+  161 INPUT: IN MIN INP_OP VARNAME ';' .
+
+    $default  reduce using rule 161 (INPUT)
+
+
+State 273
+
+  164 OUTPUT: OUT MOUT OUT_OP WHITESPACE ';' .
+
+    $default  reduce using rule 164 (OUTPUT)
+
+
+State 274
+
+  162 OUTPUT: OUT MOUT OUT_OP VARNAME ';' .
+
+    $default  reduce using rule 162 (OUTPUT)
+
+
+State 275
+
+  163 OUTPUT: OUT MOUT OUT_OP CONST ';' .
+
+    $default  reduce using rule 163 (OUTPUT)
+
+
+State 276
+
+  152 FORN: FOR '(' FL1 FL2 ';' . FL3 ')' '{' INNER '}'
+
+    IDENTIFIER  shift, and go to state 19
+    BOOL        shift, and go to state 1
+    INT         shift, and go to state 2
+    FLOAT       shift, and go to state 3
+    DOUBLE      shift, and go to state 4
+    CHAR        shift, and go to state 5
+    VOID        shift, and go to state 6
+    STRUCT      shift, and go to state 46
+    INC_OP      shift, and go to state 282
+    DEC_OP      shift, and go to state 283
+    '*'         shift, and go to state 32
+    '&'         shift, and go to state 21
+
+    TYPE     go to state 284
+    VARNAME  go to state 285
+    FL3      go to state 286
+
+
+State 277
+
+  117 SWITCHN: SWITCH '(' COND ')' '{' . SWITCHINNER '}'
+
+    CASE     shift, and go to state 287
+    DEFAULT  shift, and go to state 288
+
+    $default  reduce using rule 122 (SWITCHINNER)
+
+    SWITCHINNER  go to state 289
+
+
+State 278
+
+   59 MATH: VARNAME OPERATOR '=' RMATH ';' .
+
+    $default  reduce using rule 59 (MATH)
+
+
+State 279
+
+  154 DOWHILEN: DO '{' INNER '}' WHILE '(' . COND ')' ';'
+
+    IDENTIFIER     shift, and go to state 19
+    FLOAT          shift, and go to state 64
+    DOUBLE         shift, and go to state 65
+    FALSE          shift, and go to state 66
+    TRUE           shift, and go to state 67
+    INTCONST       shift, and go to state 68
+    CHAR_CONSTANT  shift, and go to state 69
+    INC_OP         shift, and go to state 70
+    DEC_OP         shift, and go to state 71
+    '('            shift, and go to state 218
+    '*'            shift, and go to state 32
+    '&'            shift, and go to state 21
+    '!'            shift, and go to state 219
+
+    VARNAME    go to state 104
+    RMATH      go to state 220
+    RADDSUB    go to state 78
+    RMULTIDIV  go to state 79
+    COND       go to state 290
+    FCALL      go to state 106
+    CONST      go to state 107
+
+
+State 280
+
+  153 WHILEN: WHILE '(' COND ')' '{' INNER . '}'
+
+    '}'  shift, and go to state 291
+
+
+State 281
+
+  101 IFN: IF '(' COND ')' '{' INNER . '}' ELSEC
+
+    '}'  shift, and go to state 292
+
+
+State 282
+
+  142 FL3: INC_OP . VARNAME
+
+    IDENTIFIER  shift, and go to state 19
+    '*'         shift, and go to state 32
+    '&'         shift, and go to state 21
+
+    VARNAME  go to state 293
+
+
+State 283
+
+  143 FL3: DEC_OP . VARNAME
+
+    IDENTIFIER  shift, and go to state 19
+    '*'         shift, and go to state 32
+    '&'         shift, and go to state 21
+
+    VARNAME  go to state 294
+
+
+State 284
+
+   16 TYPE: TYPE . '*'
+  138 FL3: TYPE . VARNAME '=' RMATH
+
+    IDENTIFIER  shift, and go to state 19
+    '*'         shift, and go to state 20
+    '&'         shift, and go to state 21
+
+    VARNAME  go to state 295
+
+
+State 285
+
+  137 FL3: VARNAME . '=' RMATH
+  139    | VARNAME . OPERATOR '=' RMATH
+  140    | VARNAME . INC_OP
+  141    | VARNAME . DEC_OP
+
+    INC_OP  shift, and go to state 296
+    DEC_OP  shift, and go to state 297
+    '*'     shift, and go to state 196
+    '&'     shift, and go to state 197
+    '='     shift, and go to state 298
+    '-'     shift, and go to state 199
+    '+'     shift, and go to state 200
+    '/'     shift, and go to state 201
+    '%'     shift, and go to state 202
+    '^'     shift, and go to state 203
+    '|'     shift, and go to state 204
+
+    OPERATOR  go to state 299
+
+
+State 286
+
+  152 FORN: FOR '(' FL1 FL2 ';' FL3 . ')' '{' INNER '}'
+
+    ')'  shift, and go to state 300
+
+
+State 287
+
+  118 SWITCHINNER: CASE . CONST ':' '{' INNER '}' SWITCHINNER
+  119            | CASE . CONST ':' INNER SWITCHINNER
+
+    FLOAT          shift, and go to state 64
+    DOUBLE         shift, and go to state 65
+    FALSE          shift, and go to state 66
+    TRUE           shift, and go to state 67
+    INTCONST       shift, and go to state 68
+    CHAR_CONSTANT  shift, and go to state 69
+
+    CONST  go to state 301
+
+
+State 288
+
+  120 SWITCHINNER: DEFAULT . ':' '{' INNER '}' WODEFAULT
+  121            | DEFAULT . ':' INNER WODEFAULT
+
+    ':'  shift, and go to state 302
+
+
+State 289
+
+  117 SWITCHN: SWITCH '(' COND ')' '{' SWITCHINNER . '}'
+
+    '}'  shift, and go to state 303
+
+
+State 290
+
+  109 COND: COND . "&&" COND
+  110     | COND . "||" COND
+  113     | COND . RELATIONALOPERATOR COND
+  154 DOWHILEN: DO '{' INNER '}' WHILE '(' COND . ')' ';'
+
+    LESS_EQ_OP    shift, and go to state 244
+    GRE_EQ_OP     shift, and go to state 245
+    DOUBLE_EQ_OP  shift, and go to state 246
+    NOT_EQ_OP     shift, and go to state 247
+    ')'           shift, and go to state 304
+    '>'           shift, and go to state 249
+    '<'           shift, and go to state 250
+    "&&"          shift, and go to state 251
+    "||"          shift, and go to state 252
+
+    RELATIONALOPERATOR  go to state 253
+
+
+State 291
+
+  153 WHILEN: WHILE '(' COND ')' '{' INNER '}' .
+
+    $default  reduce using rule 153 (WHILEN)
+
+
+State 292
+
+  101 IFN: IF '(' COND ')' '{' INNER '}' . ELSEC
+
+    ELIF  shift, and go to state 305
+    ELSE  shift, and go to state 306
+
+    $default  reduce using rule 116 (ELSEC)
+
+    ELSEC  go to state 307
+
+
+State 293
+
+  142 FL3: INC_OP VARNAME .
+
+    $default  reduce using rule 142 (FL3)
+
+
+State 294
+
+  143 FL3: DEC_OP VARNAME .
+
+    $default  reduce using rule 143 (FL3)
+
+
+State 295
+
+  138 FL3: TYPE VARNAME . '=' RMATH
+
+    '='  shift, and go to state 308
+
+
+State 296
+
+  140 FL3: VARNAME INC_OP .
+
+    $default  reduce using rule 140 (FL3)
+
+
+State 297
+
+  141 FL3: VARNAME DEC_OP .
+
+    $default  reduce using rule 141 (FL3)
+
+
+State 298
+
+  137 FL3: VARNAME '=' . RMATH
+
+    IDENTIFIER     shift, and go to state 19
+    FLOAT          shift, and go to state 64
+    DOUBLE         shift, and go to state 65
+    FALSE          shift, and go to state 66
+    TRUE           shift, and go to state 67
+    INTCONST       shift, and go to state 68
+    CHAR_CONSTANT  shift, and go to state 69
+    INC_OP         shift, and go to state 70
+    DEC_OP         shift, and go to state 71
+    '('            shift, and go to state 72
+    '*'            shift, and go to state 32
+    '&'            shift, and go to state 21
+    '!'            shift, and go to state 74
+
+    VARNAME    go to state 104
+    RMATH      go to state 309
+    RADDSUB    go to state 78
+    RMULTIDIV  go to state 79
+    FCALL      go to state 106
+    CONST      go to state 107
+
+
+State 299
+
+  139 FL3: VARNAME OPERATOR . '=' RMATH
+
+    '='  shift, and go to state 310
+
+
+State 300
+
+  152 FORN: FOR '(' FL1 FL2 ';' FL3 ')' . '{' INNER '}'
+
+    '{'  shift, and go to state 311
+
+
+State 301
+
+  118 SWITCHINNER: CASE CONST . ':' '{' INNER '}' SWITCHINNER
+  119            | CASE CONST . ':' INNER SWITCHINNER
+
+    ':'  shift, and go to state 312
+
+
+State 302
+
+  120 SWITCHINNER: DEFAULT ':' . '{' INNER '}' WODEFAULT
+  121            | DEFAULT ':' . INNER WODEFAULT
+
+    IDENTIFIER  shift, and go to state 19
+    BOOL        shift, and go to state 1
+    INT         shift, and go to state 2
+    FLOAT       shift, and go to state 3
+    DOUBLE      shift, and go to state 4
+    CHAR        shift, and go to state 5
+    DO          shift, and go to state 140
+    WHILE       shift, and go to state 141
+    IF          shift, and go to state 142
+    IN          shift, and go to state 143
+    OUT         shift, and go to state 144
+    VOID        shift, and go to state 6
+    FOR         shift, and go to state 145
+    RETURN      shift, and go to state 146
+    STRUCT      shift, and go to state 147
+    SWITCH      shift, and go to state 148
+    INC_OP      shift, and go to state 149
+    DEC_OP      shift, and go to state 150
+    '{'         shift, and go to state 313
+    '*'         shift, and go to state 32
+    ';'         shift, and go to state 151
+    '&'         shift, and go to state 21
+
+    $default  reduce using rule 29 (INNER)
+
+    TYPE         go to state 152
+    INNER        go to state 314
+    VARNAME      go to state 154
+    VARDEF       go to state 155
+    MATH         go to state 156
+    CONDITIONAL  go to state 157
+    IFN          go to state 158
+    SWITCHN      go to state 159
+    FCALL        go to state 160
+    LOOP         go to state 161
+    FORN         go to state 162
+    WHILEN       go to state 163
+    DOWHILEN     go to state 164
+    INPUT        go to state 165
+    OUTPUT       go to state 166
+
+
+State 303
+
+  117 SWITCHN: SWITCH '(' COND ')' '{' SWITCHINNER '}' .
+
+    $default  reduce using rule 117 (SWITCHN)
+
+
+State 304
+
+  154 DOWHILEN: DO '{' INNER '}' WHILE '(' COND ')' . ';'
+
+    ';'  shift, and go to state 315
+
+
+State 305
+
+  114 ELSEC: ELIF . '(' COND ')' '{' INNER '}' ELSEC
+
+    '('  shift, and go to state 316
+
+
+State 306
+
+  115 ELSEC: ELSE . '{' INNER '}'
+
+    '{'  shift, and go to state 317
+
+
+State 307
+
+  101 IFN: IF '(' COND ')' '{' INNER '}' ELSEC .
+
+    $default  reduce using rule 101 (IFN)
+
+
+State 308
+
+  138 FL3: TYPE VARNAME '=' . RMATH
+
+    IDENTIFIER     shift, and go to state 19
+    FLOAT          shift, and go to state 64
+    DOUBLE         shift, and go to state 65
+    FALSE          shift, and go to state 66
+    TRUE           shift, and go to state 67
+    INTCONST       shift, and go to state 68
+    CHAR_CONSTANT  shift, and go to state 69
+    INC_OP         shift, and go to state 70
+    DEC_OP         shift, and go to state 71
+    '('            shift, and go to state 72
+    '*'            shift, and go to state 32
+    '&'            shift, and go to state 21
+    '!'            shift, and go to state 74
+
+    VARNAME    go to state 104
+    RMATH      go to state 318
+    RADDSUB    go to state 78
+    RMULTIDIV  go to state 79
+    FCALL      go to state 106
+    CONST      go to state 107
+
+
+State 309
+
+   77 RMULTIDIV: RMATH .
+  137 FL3: VARNAME '=' RMATH .
+
+    ')'       reduce using rule 77 (RMULTIDIV)
+    ')'       [reduce using rule 137 (FL3)]
+    $default  reduce using rule 77 (RMULTIDIV)
+
+
+State 310
+
+  139 FL3: VARNAME OPERATOR '=' . RMATH
+
+    IDENTIFIER     shift, and go to state 19
+    FLOAT          shift, and go to state 64
+    DOUBLE         shift, and go to state 65
+    FALSE          shift, and go to state 66
+    TRUE           shift, and go to state 67
+    INTCONST       shift, and go to state 68
+    CHAR_CONSTANT  shift, and go to state 69
+    INC_OP         shift, and go to state 70
+    DEC_OP         shift, and go to state 71
+    '('            shift, and go to state 72
+    '*'            shift, and go to state 32
+    '&'            shift, and go to state 21
+    '!'            shift, and go to state 74
+
+    VARNAME    go to state 104
+    RMATH      go to state 319
+    RADDSUB    go to state 78
+    RMULTIDIV  go to state 79
+    FCALL      go to state 106
+    CONST      go to state 107
+
+
+State 311
+
+  152 FORN: FOR '(' FL1 FL2 ';' FL3 ')' '{' . INNER '}'
+
+    IDENTIFIER  shift, and go to state 19
+    BOOL        shift, and go to state 1
+    INT         shift, and go to state 2
+    FLOAT       shift, and go to state 3
+    DOUBLE      shift, and go to state 4
+    CHAR        shift, and go to state 5
+    DO          shift, and go to state 140
+    WHILE       shift, and go to state 141
+    IF          shift, and go to state 142
+    IN          shift, and go to state 143
+    OUT         shift, and go to state 144
+    VOID        shift, and go to state 6
+    FOR         shift, and go to state 145
+    RETURN      shift, and go to state 146
+    STRUCT      shift, and go to state 147
+    SWITCH      shift, and go to state 148
+    INC_OP      shift, and go to state 149
+    DEC_OP      shift, and go to state 150
+    '*'         shift, and go to state 32
+    ';'         shift, and go to state 151
+    '&'         shift, and go to state 21
+
+    $default  reduce using rule 29 (INNER)
+
+    TYPE         go to state 152
+    INNER        go to state 320
+    VARNAME      go to state 154
+    VARDEF       go to state 155
+    MATH         go to state 156
+    CONDITIONAL  go to state 157
+    IFN          go to state 158
+    SWITCHN      go to state 159
+    FCALL        go to state 160
+    LOOP         go to state 161
+    FORN         go to state 162
+    WHILEN       go to state 163
+    DOWHILEN     go to state 164
+    INPUT        go to state 165
+    OUTPUT       go to state 166
+
+
+State 312
+
+  118 SWITCHINNER: CASE CONST ':' . '{' INNER '}' SWITCHINNER
+  119            | CASE CONST ':' . INNER SWITCHINNER
+
+    IDENTIFIER  shift, and go to state 19
+    BOOL        shift, and go to state 1
+    INT         shift, and go to state 2
+    FLOAT       shift, and go to state 3
+    DOUBLE      shift, and go to state 4
+    CHAR        shift, and go to state 5
+    DO          shift, and go to state 140
+    WHILE       shift, and go to state 141
+    IF          shift, and go to state 142
+    IN          shift, and go to state 143
+    OUT         shift, and go to state 144
+    VOID        shift, and go to state 6
+    FOR         shift, and go to state 145
+    RETURN      shift, and go to state 146
+    STRUCT      shift, and go to state 147
+    SWITCH      shift, and go to state 148
+    INC_OP      shift, and go to state 149
+    DEC_OP      shift, and go to state 150
+    '{'         shift, and go to state 321
+    '*'         shift, and go to state 32
+    ';'         shift, and go to state 151
+    '&'         shift, and go to state 21
+
+    $default  reduce using rule 29 (INNER)
+
+    TYPE         go to state 152
+    INNER        go to state 322
+    VARNAME      go to state 154
+    VARDEF       go to state 155
+    MATH         go to state 156
+    CONDITIONAL  go to state 157
+    IFN          go to state 158
+    SWITCHN      go to state 159
+    FCALL        go to state 160
+    LOOP         go to state 161
+    FORN         go to state 162
+    WHILEN       go to state 163
+    DOWHILEN     go to state 164
+    INPUT        go to state 165
+    OUTPUT       go to state 166
+
+
+State 313
+
+  120 SWITCHINNER: DEFAULT ':' '{' . INNER '}' WODEFAULT
+
+    IDENTIFIER  shift, and go to state 19
+    BOOL        shift, and go to state 1
+    INT         shift, and go to state 2
+    FLOAT       shift, and go to state 3
+    DOUBLE      shift, and go to state 4
+    CHAR        shift, and go to state 5
+    DO          shift, and go to state 140
+    WHILE       shift, and go to state 141
+    IF          shift, and go to state 142
+    IN          shift, and go to state 143
+    OUT         shift, and go to state 144
+    VOID        shift, and go to state 6
+    FOR         shift, and go to state 145
+    RETURN      shift, and go to state 146
+    STRUCT      shift, and go to state 147
+    SWITCH      shift, and go to state 148
+    INC_OP      shift, and go to state 149
+    DEC_OP      shift, and go to state 150
+    '*'         shift, and go to state 32
+    ';'         shift, and go to state 151
+    '&'         shift, and go to state 21
+
+    $default  reduce using rule 29 (INNER)
+
+    TYPE         go to state 152
+    INNER        go to state 323
+    VARNAME      go to state 154
+    VARDEF       go to state 155
+    MATH         go to state 156
+    CONDITIONAL  go to state 157
+    IFN          go to state 158
+    SWITCHN      go to state 159
+    FCALL        go to state 160
+    LOOP         go to state 161
+    FORN         go to state 162
+    WHILEN       go to state 163
+    DOWHILEN     go to state 164
+    INPUT        go to state 165
+    OUTPUT       go to state 166
+
+
+State 314
+
+  121 SWITCHINNER: DEFAULT ':' INNER . WODEFAULT
+
+    CASE  shift, and go to state 324
+
+    $default  reduce using rule 125 (WODEFAULT)
+
+    WODEFAULT  go to state 325
+
+
+State 315
+
+  154 DOWHILEN: DO '{' INNER '}' WHILE '(' COND ')' ';' .
+
+    $default  reduce using rule 154 (DOWHILEN)
+
+
+State 316
+
+  114 ELSEC: ELIF '(' . COND ')' '{' INNER '}' ELSEC
+
+    IDENTIFIER     shift, and go to state 19
+    FLOAT          shift, and go to state 64
+    DOUBLE         shift, and go to state 65
+    FALSE          shift, and go to state 66
+    TRUE           shift, and go to state 67
+    INTCONST       shift, and go to state 68
+    CHAR_CONSTANT  shift, and go to state 69
+    INC_OP         shift, and go to state 70
+    DEC_OP         shift, and go to state 71
+    '('            shift, and go to state 218
+    '*'            shift, and go to state 32
+    '&'            shift, and go to state 21
+    '!'            shift, and go to state 219
+
+    VARNAME    go to state 104
+    RMATH      go to state 220
+    RADDSUB    go to state 78
+    RMULTIDIV  go to state 79
+    COND       go to state 326
+    FCALL      go to state 106
+    CONST      go to state 107
+
+
+State 317
+
+  115 ELSEC: ELSE '{' . INNER '}'
+
+    IDENTIFIER  shift, and go to state 19
+    BOOL        shift, and go to state 1
+    INT         shift, and go to state 2
+    FLOAT       shift, and go to state 3
+    DOUBLE      shift, and go to state 4
+    CHAR        shift, and go to state 5
+    DO          shift, and go to state 140
+    WHILE       shift, and go to state 141
+    IF          shift, and go to state 142
+    IN          shift, and go to state 143
+    OUT         shift, and go to state 144
+    VOID        shift, and go to state 6
+    FOR         shift, and go to state 145
+    RETURN      shift, and go to state 146
+    STRUCT      shift, and go to state 147
+    SWITCH      shift, and go to state 148
+    INC_OP      shift, and go to state 149
+    DEC_OP      shift, and go to state 150
+    '*'         shift, and go to state 32
+    ';'         shift, and go to state 151
+    '&'         shift, and go to state 21
+
+    $default  reduce using rule 29 (INNER)
+
+    TYPE         go to state 152
+    INNER        go to state 327
+    VARNAME      go to state 154
+    VARDEF       go to state 155
+    MATH         go to state 156
+    CONDITIONAL  go to state 157
+    IFN          go to state 158
+    SWITCHN      go to state 159
+    FCALL        go to state 160
+    LOOP         go to state 161
+    FORN         go to state 162
+    WHILEN       go to state 163
+    DOWHILEN     go to state 164
+    INPUT        go to state 165
+    OUTPUT       go to state 166
+
+
+State 318
+
+   77 RMULTIDIV: RMATH .
+  138 FL3: TYPE VARNAME '=' RMATH .
+
+    ')'       reduce using rule 77 (RMULTIDIV)
+    ')'       [reduce using rule 138 (FL3)]
+    $default  reduce using rule 77 (RMULTIDIV)
+
+
+State 319
+
+   77 RMULTIDIV: RMATH .
+  139 FL3: VARNAME OPERATOR '=' RMATH .
+
+    ')'       reduce using rule 77 (RMULTIDIV)
+    ')'       [reduce using rule 139 (FL3)]
+    $default  reduce using rule 77 (RMULTIDIV)
+
+
+State 320
+
+  152 FORN: FOR '(' FL1 FL2 ';' FL3 ')' '{' INNER . '}'
+
+    '}'  shift, and go to state 328
+
+
+State 321
+
+  118 SWITCHINNER: CASE CONST ':' '{' . INNER '}' SWITCHINNER
+
+    IDENTIFIER  shift, and go to state 19
+    BOOL        shift, and go to state 1
+    INT         shift, and go to state 2
+    FLOAT       shift, and go to state 3
+    DOUBLE      shift, and go to state 4
+    CHAR        shift, and go to state 5
+    DO          shift, and go to state 140
+    WHILE       shift, and go to state 141
+    IF          shift, and go to state 142
+    IN          shift, and go to state 143
+    OUT         shift, and go to state 144
+    VOID        shift, and go to state 6
+    FOR         shift, and go to state 145
+    RETURN      shift, and go to state 146
+    STRUCT      shift, and go to state 147
+    SWITCH      shift, and go to state 148
+    INC_OP      shift, and go to state 149
+    DEC_OP      shift, and go to state 150
+    '*'         shift, and go to state 32
+    ';'         shift, and go to state 151
+    '&'         shift, and go to state 21
+
+    $default  reduce using rule 29 (INNER)
+
+    TYPE         go to state 152
+    INNER        go to state 329
+    VARNAME      go to state 154
+    VARDEF       go to state 155
+    MATH         go to state 156
+    CONDITIONAL  go to state 157
+    IFN          go to state 158
+    SWITCHN      go to state 159
+    FCALL        go to state 160
+    LOOP         go to state 161
+    FORN         go to state 162
+    WHILEN       go to state 163
+    DOWHILEN     go to state 164
+    INPUT        go to state 165
+    OUTPUT       go to state 166
+
+
+State 322
+
+  119 SWITCHINNER: CASE CONST ':' INNER . SWITCHINNER
+
+    CASE     shift, and go to state 287
+    DEFAULT  shift, and go to state 288
+
+    $default  reduce using rule 122 (SWITCHINNER)
+
+    SWITCHINNER  go to state 330
+
+
+State 323
+
+  120 SWITCHINNER: DEFAULT ':' '{' INNER . '}' WODEFAULT
+
+    '}'  shift, and go to state 331
+
+
+State 324
+
+  123 WODEFAULT: CASE . CONST ':' '{' INNER '}' WODEFAULT
+  124          | CASE . CONST ':' INNER WODEFAULT
+
+    FLOAT          shift, and go to state 64
+    DOUBLE         shift, and go to state 65
+    FALSE          shift, and go to state 66
+    TRUE           shift, and go to state 67
+    INTCONST       shift, and go to state 68
+    CHAR_CONSTANT  shift, and go to state 69
+
+    CONST  go to state 332
+
+
+State 325
+
+  121 SWITCHINNER: DEFAULT ':' INNER WODEFAULT .
+
+    $default  reduce using rule 121 (SWITCHINNER)
+
+
+State 326
+
+  109 COND: COND . "&&" COND
+  110     | COND . "||" COND
+  113     | COND . RELATIONALOPERATOR COND
+  114 ELSEC: ELIF '(' COND . ')' '{' INNER '}' ELSEC
+
+    LESS_EQ_OP    shift, and go to state 244
+    GRE_EQ_OP     shift, and go to state 245
+    DOUBLE_EQ_OP  shift, and go to state 246
+    NOT_EQ_OP     shift, and go to state 247
+    ')'           shift, and go to state 333
+    '>'           shift, and go to state 249
+    '<'           shift, and go to state 250
+    "&&"          shift, and go to state 251
+    "||"          shift, and go to state 252
+
+    RELATIONALOPERATOR  go to state 253
+
+
+State 327
+
+  115 ELSEC: ELSE '{' INNER . '}'
+
+    '}'  shift, and go to state 334
+
+
+State 328
+
+  152 FORN: FOR '(' FL1 FL2 ';' FL3 ')' '{' INNER '}' .
+
+    $default  reduce using rule 152 (FORN)
+
+
+State 329
+
+  118 SWITCHINNER: CASE CONST ':' '{' INNER . '}' SWITCHINNER
+
+    '}'  shift, and go to state 335
+
+
+State 330
+
+  119 SWITCHINNER: CASE CONST ':' INNER SWITCHINNER .
+
+    $default  reduce using rule 119 (SWITCHINNER)
+
+
+State 331
+
+  120 SWITCHINNER: DEFAULT ':' '{' INNER '}' . WODEFAULT
+
+    CASE  shift, and go to state 324
+
+    $default  reduce using rule 125 (WODEFAULT)
+
+    WODEFAULT  go to state 336
+
+
+State 332
+
+  123 WODEFAULT: CASE CONST . ':' '{' INNER '}' WODEFAULT
+  124          | CASE CONST . ':' INNER WODEFAULT
+
+    ':'  shift, and go to state 337
+
+
+State 333
+
+  114 ELSEC: ELIF '(' COND ')' . '{' INNER '}' ELSEC
+
+    '{'  shift, and go to state 338
+
+
+State 334
+
+  115 ELSEC: ELSE '{' INNER '}' .
+
+    $default  reduce using rule 115 (ELSEC)
+
+
+State 335
+
+  118 SWITCHINNER: CASE CONST ':' '{' INNER '}' . SWITCHINNER
+
+    CASE     shift, and go to state 287
+    DEFAULT  shift, and go to state 288
+
+    $default  reduce using rule 122 (SWITCHINNER)
+
+    SWITCHINNER  go to state 339
+
+
+State 336
+
+  120 SWITCHINNER: DEFAULT ':' '{' INNER '}' WODEFAULT .
+
+    $default  reduce using rule 120 (SWITCHINNER)
+
+
+State 337
+
+  123 WODEFAULT: CASE CONST ':' . '{' INNER '}' WODEFAULT
+  124          | CASE CONST ':' . INNER WODEFAULT
+
+    IDENTIFIER  shift, and go to state 19
+    BOOL        shift, and go to state 1
+    INT         shift, and go to state 2
+    FLOAT       shift, and go to state 3
+    DOUBLE      shift, and go to state 4
+    CHAR        shift, and go to state 5
+    DO          shift, and go to state 140
+    WHILE       shift, and go to state 141
+    IF          shift, and go to state 142
+    IN          shift, and go to state 143
+    OUT         shift, and go to state 144
+    VOID        shift, and go to state 6
+    FOR         shift, and go to state 145
+    RETURN      shift, and go to state 146
+    STRUCT      shift, and go to state 147
+    SWITCH      shift, and go to state 148
+    INC_OP      shift, and go to state 149
+    DEC_OP      shift, and go to state 150
+    '{'         shift, and go to state 340
+    '*'         shift, and go to state 32
+    ';'         shift, and go to state 151
+    '&'         shift, and go to state 21
+
+    $default  reduce using rule 29 (INNER)
+
+    TYPE         go to state 152
+    INNER        go to state 341
+    VARNAME      go to state 154
+    VARDEF       go to state 155
+    MATH         go to state 156
+    CONDITIONAL  go to state 157
+    IFN          go to state 158
+    SWITCHN      go to state 159
+    FCALL        go to state 160
+    LOOP         go to state 161
+    FORN         go to state 162
+    WHILEN       go to state 163
+    DOWHILEN     go to state 164
+    INPUT        go to state 165
+    OUTPUT       go to state 166
+
+
+State 338
+
+  114 ELSEC: ELIF '(' COND ')' '{' . INNER '}' ELSEC
+
+    IDENTIFIER  shift, and go to state 19
+    BOOL        shift, and go to state 1
+    INT         shift, and go to state 2
+    FLOAT       shift, and go to state 3
+    DOUBLE      shift, and go to state 4
+    CHAR        shift, and go to state 5
+    DO          shift, and go to state 140
+    WHILE       shift, and go to state 141
+    IF          shift, and go to state 142
+    IN          shift, and go to state 143
+    OUT         shift, and go to state 144
+    VOID        shift, and go to state 6
+    FOR         shift, and go to state 145
+    RETURN      shift, and go to state 146
+    STRUCT      shift, and go to state 147
+    SWITCH      shift, and go to state 148
+    INC_OP      shift, and go to state 149
+    DEC_OP      shift, and go to state 150
+    '*'         shift, and go to state 32
+    ';'         shift, and go to state 151
+    '&'         shift, and go to state 21
+
+    $default  reduce using rule 29 (INNER)
+
+    TYPE         go to state 152
+    INNER        go to state 342
+    VARNAME      go to state 154
+    VARDEF       go to state 155
+    MATH         go to state 156
+    CONDITIONAL  go to state 157
+    IFN          go to state 158
+    SWITCHN      go to state 159
+    FCALL        go to state 160
+    LOOP         go to state 161
+    FORN         go to state 162
+    WHILEN       go to state 163
+    DOWHILEN     go to state 164
+    INPUT        go to state 165
+    OUTPUT       go to state 166
+
+
+State 339
+
+  118 SWITCHINNER: CASE CONST ':' '{' INNER '}' SWITCHINNER .
+
+    $default  reduce using rule 118 (SWITCHINNER)
+
+
+State 340
+
+  123 WODEFAULT: CASE CONST ':' '{' . INNER '}' WODEFAULT
+
+    IDENTIFIER  shift, and go to state 19
+    BOOL        shift, and go to state 1
+    INT         shift, and go to state 2
+    FLOAT       shift, and go to state 3
+    DOUBLE      shift, and go to state 4
+    CHAR        shift, and go to state 5
+    DO          shift, and go to state 140
+    WHILE       shift, and go to state 141
+    IF          shift, and go to state 142
+    IN          shift, and go to state 143
+    OUT         shift, and go to state 144
+    VOID        shift, and go to state 6
+    FOR         shift, and go to state 145
+    RETURN      shift, and go to state 146
+    STRUCT      shift, and go to state 147
+    SWITCH      shift, and go to state 148
+    INC_OP      shift, and go to state 149
+    DEC_OP      shift, and go to state 150
+    '*'         shift, and go to state 32
+    ';'         shift, and go to state 151
+    '&'         shift, and go to state 21
+
+    $default  reduce using rule 29 (INNER)
+
+    TYPE         go to state 152
+    INNER        go to state 343
+    VARNAME      go to state 154
+    VARDEF       go to state 155
+    MATH         go to state 156
+    CONDITIONAL  go to state 157
+    IFN          go to state 158
+    SWITCHN      go to state 159
+    FCALL        go to state 160
+    LOOP         go to state 161
+    FORN         go to state 162
+    WHILEN       go to state 163
+    DOWHILEN     go to state 164
+    INPUT        go to state 165
+    OUTPUT       go to state 166
+
+
+State 341
+
+  124 WODEFAULT: CASE CONST ':' INNER . WODEFAULT
+
+    CASE  shift, and go to state 324
+
+    $default  reduce using rule 125 (WODEFAULT)
+
+    WODEFAULT  go to state 344
+
+
+State 342
+
+  114 ELSEC: ELIF '(' COND ')' '{' INNER . '}' ELSEC
+
+    '}'  shift, and go to state 345
+
+
+State 343
+
+  123 WODEFAULT: CASE CONST ':' '{' INNER . '}' WODEFAULT
+
+    '}'  shift, and go to state 346
+
+
+State 344
+
+  124 WODEFAULT: CASE CONST ':' INNER WODEFAULT .
+
+    $default  reduce using rule 124 (WODEFAULT)
+
+
+State 345
+
+  114 ELSEC: ELIF '(' COND ')' '{' INNER '}' . ELSEC
+
+    ELIF  shift, and go to state 305
+    ELSE  shift, and go to state 306
+
+    $default  reduce using rule 116 (ELSEC)
+
+    ELSEC  go to state 347
+
+
+State 346
+
+  123 WODEFAULT: CASE CONST ':' '{' INNER '}' . WODEFAULT
+
+    CASE  shift, and go to state 324
+
+    $default  reduce using rule 125 (WODEFAULT)
+
+    WODEFAULT  go to state 348
+
+
+State 347
+
+  114 ELSEC: ELIF '(' COND ')' '{' INNER '}' ELSEC .
+
+    $default  reduce using rule 114 (ELSEC)
+
+
+State 348
+
+  123 WODEFAULT: CASE CONST ':' '{' INNER '}' WODEFAULT .
+
+    $default  reduce using rule 123 (WODEFAULT)
